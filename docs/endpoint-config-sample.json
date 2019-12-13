@@ -1,0 +1,79 @@
+{
+  "path": "/my-ws-endpoint",
+  "authMode": "none",
+  "filters": {
+    "whitelistIps": ["127.0.0"],
+    "whitelistHosts": ["localhost"]
+  },
+  "routes": [
+    {
+      "type": "connect",
+      "name": "Connect",
+      "outbounds": [
+        {
+          "type": "http",
+          "destination": "service.1.example.com/connect"
+        },
+        {
+          "type": "kafka",
+          "destination": "service.2.connect.topic"
+        }
+      ]
+    },
+    {
+      "type": "disconnect",
+      "name": "Disconnect",
+      "outbounds": [
+        {
+          "type": "http",
+          "destination": "service.1.example.com/disconnect",
+          "timeout": 60,
+          "retries": 3
+        },
+        {
+          "type": "kafka",
+          "destination": "service.2.connect.disconnect"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Error",
+      "outbounds": [
+        {
+          "type": "http",
+          "destination": "service.1.example.com/errors"
+        }
+      ]
+    },
+    {
+      "type": "default",
+      "name": "Default",
+      "outbounds": [
+        {
+          "type": "http",
+          "destination": "service.1.example.com/events"
+        },
+        {
+          "type": "kafka",
+          "destination": "service.2.connect.events"
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "name": "Custom route",
+      "expresion": {
+        "path": "$.payload.book[0].title",
+        "type": "equal",
+        "value": "Clean Code"
+      },
+      "outbounds": [
+        {
+          "type": "http",
+          "destination": "service.1.example.com/clean-code"
+        }
+      ]
+    }
+  ]
+}

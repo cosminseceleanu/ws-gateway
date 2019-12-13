@@ -1,0 +1,39 @@
+title Events Flow Sequence
+
+alt connect
+Alice->WSGateway: Connect Request
+WSGateway->Service1: Forwards connect event
+WSGateway->Service2: Forwards connect event
+
+note right of Service1: Service process connect event
+
+end
+
+alt Alice send
+Alice->WSGateway: Send event {"Wello World!"}
+WSGateway->Service1: {"Wello World!"}
+WSGateway->Service2: Forwards {"Wello World!"}
+end
+
+alt Service2 send
+
+Service2->WSGateway: Send event {"Hello Alice!"}
+WSGateway->Alice: Forwards {"Hello Alice!"}
+
+end
+
+alt Service1 send
+
+Service2->WSGateway: Send event {"Hi Alice from S1!"}
+WSGateway->Alice: Forwards {"Hi Alice from S1!"}
+
+end
+
+alt Disconnect
+Alice->WSGateway: Disconnect request
+WSGateway->Service1: Forwards disconnect event
+WSGateway->Service2: Forwards disconnect event
+
+end
+
+
