@@ -1,1 +1,1 @@
-#WSGateway - WebSocket API Gateway
+# WSGateway - WebSocket API Gateway
