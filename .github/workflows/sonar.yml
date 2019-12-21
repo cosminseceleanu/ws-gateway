@@ -1,0 +1,13 @@
+name: WSGateway Pull Request Validator
+
+on: [pull_request]
+
+jobs:
+  CodeQuality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
