@@ -1,4 +1,4 @@
-name: WSGateway Pull Request Validator
+name: Sonar
 
 on: [pull_request]
 
