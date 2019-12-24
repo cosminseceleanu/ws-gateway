@@ -4,6 +4,7 @@ package controllers
 
 import java.util.concurrent.TimeUnit
 
+import common.AkkaWebSocketClient
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test._

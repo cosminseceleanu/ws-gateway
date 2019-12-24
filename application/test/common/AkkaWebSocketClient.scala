@@ -1,4 +1,4 @@
-package controllers
+package common
 
 import java.util.concurrent.LinkedBlockingDeque
 
@@ -7,8 +7,8 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, WebSocketRequest}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source, SourceQueueWithComplete}
+import akka.stream.{ActorMaterializer, OverflowStrategy}
 
 import scala.concurrent.Future
 
