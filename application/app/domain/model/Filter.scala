@@ -4,10 +4,16 @@ import domain.model.filters.{BlacklistHosts, BlacklistIps, WhitelistHosts, White
 
 trait Filter {
   val name: String
+  val value: FilterValue
   val filter: Map[String, String] => Boolean
 
-  def isValid(headers: Map[String, String]): Boolean = filter(headers)
+  def isAllowed(headers: Map[String, String]): Boolean = filter(headers)
 }
+
+sealed trait FilterValue
+case class StringValue(asString: String) extends FilterValue
+case class NumberValue(asInt: Int) extends FilterValue
+case class SetValue(asSet: Set[String]) extends FilterValue
 
 object Filter {
   val WHITELIST_IPS = "whitelistIps"
