@@ -1,7 +1,7 @@
 package api.rest.assemblers
 
-import api.rest.{EndpointResource, FilterResource, RouteResource}
-import common.ResourceAssembler
+import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
+import common.rest.ResourceAssembler
 import domain.model.{AuthenticationMode, Endpoint, Filter, Route}
 import javax.inject.{Inject, Singleton}
 

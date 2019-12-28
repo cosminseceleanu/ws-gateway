@@ -1,7 +1,7 @@
 package api.controllers
 
-import api.rest.{EndpointResource, FilterResource, RouteResource}
 import api.rest.assemblers.EndpointAssembler
+import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
 import domain.services.EndpointsProvider
 import javax.inject.Inject
 import play.api.libs.json.Json

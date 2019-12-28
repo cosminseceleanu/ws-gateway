@@ -1,4 +1,4 @@
-package api.rest
+package api.rest.resources
 
 case class EndpointResource(
                        id: String,
