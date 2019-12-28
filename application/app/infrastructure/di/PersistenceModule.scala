@@ -6,7 +6,7 @@ import domain.repositories.EndpointRepository
 import infrastructure.repositories.InMemoryEndpointRepository
 
 class PersistenceModule extends AbstractModule {
-  override def configure() = {
+  override def configure(): Unit = {
     bind(classOf[EndpointRepository])
       .annotatedWith(Names.named("endpointRepo"))
       .to(classOf[InMemoryEndpointRepository])
