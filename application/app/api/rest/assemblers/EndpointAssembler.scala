@@ -1,23 +1,26 @@
 package api.rest.assemblers
 
-import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
+import api.rest.resources.EndpointResource
 import common.rest.ResourceAssembler
-import domain.model.{AuthenticationMode, Endpoint, Filter, Route}
+import domain.model.{AuthenticationMode, Endpoint, EndpointConfiguration}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class EndpointAssembler @Inject() (filterAssembler: FilterAssembler) extends ResourceAssembler[Endpoint, EndpointResource] {
+class EndpointAssembler @Inject() (filterAssembler: FilterAssembler, routeAssembler: RouteAssembler) extends ResourceAssembler[Endpoint, EndpointResource] {
 
   override def toModel(resource: EndpointResource): Endpoint = Endpoint(
     resource.id,
     resource.path,
-    Set.empty[Filter],
-    Set.empty[Route],
-    AuthenticationMode.BASIC)
+    EndpointConfiguration(
+      filterAssembler.toModel(resource.filters),
+      routeAssembler.toModelsSet(resource.routes),
+      AuthenticationMode.withName(resource.authenticationMode)
+      ))
 
   override def toResource(model: Endpoint): EndpointResource = EndpointResource(
     model.id,
     model.path,
-    Set.empty[FilterResource],
-    Set.empty[RouteResource])
+    filterAssembler.toResource(model.filters),
+    routeAssembler.toResourcesSet(model.routes),
+    model.authenticationMode.toString)
 }

@@ -8,6 +8,25 @@ trait Filter {
   val filter: Map[String, String] => Boolean
 
   def isAllowed(headers: Map[String, String]): Boolean = filter(headers)
+
+  override def hashCode(): Int = {
+    val prime = 31
+    var result = 1
+    result = prime * result + (if (name == null) 0 else name.hashCode)
+    result
+  }
+
+  override def equals(that: Any): Boolean = {
+    that match {
+      case that: Route => {
+        that.canEqual(this) &&
+        this.name == that.name
+      }
+      case _ => false
+    }
+  }
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[Filter]
 }
 
 sealed trait FilterValue

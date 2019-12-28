@@ -25,7 +25,7 @@ class EndpointsController @Inject() (
 
   def getAll(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     endpointsProvider.getAll()
-      .map(endpoints => endpointAssembler.toResource(endpoints))
+      .map(endpoints => endpointAssembler.toResourcesSeq(endpoints))
       .map(resources => Ok(Json.toJson(resources)))
   }
 }
