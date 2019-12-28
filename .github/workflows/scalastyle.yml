@@ -1,9 +1,9 @@
-name: Scala Style
+name: Coding Style
 
 on: [pull_request]
 
 jobs:
-  ScalaStyle:
+  Linter:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -11,7 +11,5 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Run linter
+    - name: Run scalastyle linter
       run: sbt scalastyle
-    - name: Run jacoco
-      run: sbt jacoco
