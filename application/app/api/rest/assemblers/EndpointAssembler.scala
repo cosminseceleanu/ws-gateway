@@ -9,7 +9,7 @@ import javax.inject.{Inject, Singleton}
 class EndpointAssembler @Inject() (filterAssembler: FilterAssembler, routeAssembler: RouteAssembler) extends ResourceAssembler[Endpoint, EndpointResource] {
 
   override def toModel(resource: EndpointResource): Endpoint = Endpoint(
-    resource.id,
+    resource.id.orNull,
     resource.path,
     EndpointConfiguration(
       filterAssembler.toModel(resource.filters),
@@ -18,7 +18,7 @@ class EndpointAssembler @Inject() (filterAssembler: FilterAssembler, routeAssemb
       ))
 
   override def toResource(model: Endpoint): EndpointResource = EndpointResource(
-    model.id,
+    Some(model.id),
     model.path,
     filterAssembler.toResource(model.filters),
     routeAssembler.toResourcesSet(model.routes),

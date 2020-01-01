@@ -7,16 +7,17 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class EndpointCreationServiceSpec extends UnitSpec {
+class EndpointWriterSpec extends UnitSpec {
   private val repoMock = mock[EndpointRepository]
-  private val subject = new EndpointCreationService(repoMock)
+  private val providerMock = mock[EndpointsProvider]
+  private val subject = new EndpointWriter(repoMock, providerMock)
 
   "Create Endpoint" when {
     "has all required values" should {
       "be saved" in {
         val endpoint = Endpoint(null, "/a", Set.empty, Set(Route.connect(), Route.default(), Route.disconnect()))
         val expected = endpoint.copy(id = "a")
-        (repoMock.save _).expects(endpoint).returning(Future.successful(expected)).once()
+        (repoMock.create _).expects(endpoint).returning(Future.successful(expected)).once()
 
         val result = await(subject.create(endpoint))
 
@@ -30,7 +31,7 @@ class EndpointCreationServiceSpec extends UnitSpec {
     "has only connect route" should {
       "add the missing routes and then is saved" in {
         val endpoint = Endpoint(null, "/b", Set.empty, Set(Route.connect()))
-        (repoMock.save _).expects(*).onCall {
+        (repoMock.create _).expects(*).onCall {
           e: Endpoint => Future.successful(e.copy(id = "b"))
         }
         val result = await(subject.create(endpoint))

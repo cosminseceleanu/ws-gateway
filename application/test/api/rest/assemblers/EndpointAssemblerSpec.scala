@@ -14,7 +14,7 @@ class EndpointAssemblerSpec extends UnitSpec {
       "success" in {
         val routes = Set(RouteResource("type", "name"))
         val filter = FilterResource()
-        val resource = EndpointResource("a", "/a", filter, routes, AuthenticationMode.NONE.toString)
+        val resource = EndpointResource(Some("a"), "/a", filter, routes, AuthenticationMode.NONE.toString)
         val expectedFilter = Filter.blacklistHosts(Set("local"))
 
         (routeAssemblerMock.toModelsSet _).expects(routes).returning(Set(Route.default()))
@@ -33,7 +33,7 @@ class EndpointAssemblerSpec extends UnitSpec {
   "resource to model" when {
     "when resource has invalid authentication mode" should {
       "throw an exception" in {
-        val resource = EndpointResource("a", "/a", FilterResource(), Set.empty, "aaaa")
+        val resource = EndpointResource(Some("a"), "/a", FilterResource(), Set.empty, "aaaa")
         (routeAssemblerMock.toModelsSet _).expects(*).returning(Set(Route.default()))
         (filterAssemblerMock.toModel _).expects(*).returning(Set.empty)
 

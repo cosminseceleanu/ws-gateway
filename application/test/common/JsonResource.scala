@@ -1,4 +1,4 @@
-package api.rest.resources
+package common
 
 import play.api.libs.json.{Json, Reads, Writes}
 

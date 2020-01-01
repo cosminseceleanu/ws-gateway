@@ -1,31 +1,68 @@
 package api.controllers
 
 import api.rest.assemblers.EndpointAssembler
-import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
-import domain.services.EndpointsProvider
+import api.rest.resources.EndpointResource
+import common.rest.ErrorResource
+import domain.exceptions.EndpointNotFoundException
+import domain.services.{EndpointWriter, EndpointDelete, EndpointsProvider}
 import javax.inject.Inject
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Request}
+import play.api.libs.json.{JsError, Json, Reads}
+import play.api.mvc._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
-import ExecutionContext.Implicits.global
-
-
 
 class EndpointsController @Inject() (
-                                     endpointsProvider: EndpointsProvider,
-                                     endpointAssembler: EndpointAssembler,
-                                     val controllerComponents: ControllerComponents
+                                      endpointsProvider: EndpointsProvider,
+                                      endpointAssembler: EndpointAssembler,
+                                      endpointWriter: EndpointWriter,
+                                      endpointDelete: EndpointDelete,
+                                      val controllerComponents: ControllerComponents
                                    ) extends BaseController {
-
-  implicit val filterFormat = Json.format[FilterResource]
-  implicit val routeFormat = Json.format[RouteResource]
-  implicit val endpointsFormat = Json.format[EndpointResource]
-
 
   def getAll(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     endpointsProvider.getAll()
       .map(endpoints => endpointAssembler.toResourcesSeq(endpoints))
       .map(resources => Ok(Json.toJson(resources)))
+  }
+
+  def get(id: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    endpointsProvider.get(id)
+      .map(endpoints => endpointAssembler.toResource(endpoints))
+      .map(resources => Ok(Json.toJson(resources)))
+      .recoverWith({
+        case e: EndpointNotFoundException => Future.successful(NotFound(ErrorResource(e.getMessage).toJson()))
+      })
+  }
+
+  def create(): Action[EndpointResource] = Action(validateJson[EndpointResource]).async { implicit request =>
+    val endpointResource = request.body
+    Future.successful(endpointAssembler.toModel(endpointResource))
+      .flatMap(e => endpointWriter.create(e))
+      .map(e => endpointAssembler.toResource(e))
+      .map(r => Created(Json.toJson(r)))
+  }
+
+  def update(id: String): Action[EndpointResource] = Action(validateJson[EndpointResource]).async { implicit request =>
+    val endpointResource = request.body
+    Future.successful(endpointAssembler.toModel(endpointResource))
+      .flatMap(e => endpointWriter.update(id, e))
+      .map(e => endpointAssembler.toResource(e))
+      .map(r => Ok(Json.toJson(r)))
+      .recoverWith({
+        case e: EndpointNotFoundException => Future.successful(NotFound(ErrorResource(e.getMessage).toJson()))
+      })
+  }
+
+  private def validateJson[A: Reads] = parse.json.validate(
+    _.validate[A].asEither.left.map(e => BadRequest(ErrorResource(JsError(e).toString).toJson()))
+  )
+
+  def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
+    endpointDelete.delete(id)
+      .map(_ => NoContent)
+      .recoverWith({
+        case e: EndpointNotFoundException => Future.successful(NotFound(ErrorResource(e.getMessage).toJson()))
+      })
   }
 }
