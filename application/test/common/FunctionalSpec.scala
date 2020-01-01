@@ -12,5 +12,6 @@ abstract class FunctionalSpec extends FeatureSpec with MustMatchers with OptionV
   val wsClient: WSClient = app.injector.instanceOf[WSClient]
   val host: String = s"http://localhost:$port"
   val api: String = s"http://localhost:$port/api/internal"
+  val endpointsUrl = s"$api/endpoints"
   val contentTypeHeader: (String, String) = ("Content-Type", "application/json")
 }

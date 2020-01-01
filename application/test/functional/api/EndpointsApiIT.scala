@@ -14,7 +14,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
   feature("GET Api") {
     scenario("Existing endpoint") {
       Given("an existing endpoint id")
-      val url = s"$api/endpoints/id"
+      val url = s"$endpointsUrl/id"
 
       When("get by id is called")
       val response = await(wsClient.url(url).get())
@@ -50,13 +50,9 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
       val initial = EndpointFixtures.fullEndpointResource()
 
       When("post api is called")
-      val response = await(wsClient.url(url)
-                             .withHttpHeaders(contentTypeHeader)
-                             .post(toJson(initial)))
+      val created = createEndpoint(initial)
 
       Then("endpoint is created")
-      response.status mustEqual Status.CREATED
-      val created = fromJson(response.body) (EndpointResource.format)
 
       created.id != null mustEqual true
       created.routes mustEqual initial.routes
@@ -70,9 +66,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
       val json = "{\"foo\": \"bar\"}";
 
       When("post api is called")
-      val response = await(wsClient.url(url)
-                             .withHttpHeaders(contentTypeHeader)
-                             .post(json))
+      val response = await(wsClient.url(url).withHttpHeaders(contentTypeHeader).post(json))
 
       Then("response is bad request")
       response.status mustEqual Status.BAD_REQUEST
@@ -82,18 +76,11 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
   feature("DELETE Api") {
     scenario("endpoint is deleted") {
       Given("a new endpoint")
-
       val initial = EndpointFixtures.fullEndpointResource()
-      val url = s"$api/endpoints"
-      // @ToDo refactor this call so it can be reused
-      val createResponse = await(wsClient.url(url)
-                             .withHttpHeaders(contentTypeHeader)
-                             .post(toJson(initial)))
-      createResponse.status mustEqual Status.CREATED
-      val created = fromJson(createResponse.body) (EndpointResource.format)
+      val created = createEndpoint(initial)
 
       When("delete is called")
-      val deleteUrl = s"$url/${created.id.get}"
+      val deleteUrl = s"$endpointsUrl/${created.id.get}"
       val response = await(wsClient.url(deleteUrl).delete())
 
       Then("endpoint is deleted")
@@ -115,30 +102,16 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
   feature("PUT Api") {
     scenario("endpoint path, filters and routes are successfully updated") {
       Given("a new endpoint")
-
-      val initial = EndpointFixtures.fullEndpointResource()
-      val url = s"$api/endpoints"
-      // @ToDo refactor this call so it can be reused
-      val createResponse = await(wsClient.url(url)
-                                   .withHttpHeaders(contentTypeHeader)
-                                   .post(toJson(initial)))
-      createResponse.status mustEqual Status.CREATED
-      var endpoint = fromJson(createResponse.body) (EndpointResource.format)
+      var endpoint = createEndpoint(EndpointFixtures.fullEndpointResource())
 
       When("put is called with updated ")
       val expectedFilters = FilterResource()
       val expectedRoutes = EndpointFixtures.defaultRoutes + RouteResource(RouteType.CUSTOM.toString, "Some name")
       val expectedPath = "/some-new-path"
       endpoint = endpoint.copy(path = expectedPath, filters = expectedFilters, routes = expectedRoutes)
+      val result = updateEndpoint(endpoint.id.get, endpoint)
 
-      val response = await(wsClient.url(s"$url/${endpoint.id.get}")
-                             .withHttpHeaders(contentTypeHeader)
-                             .put(toJson(endpoint)))
-
-      Then("endpoint is deleted")
-      response.status mustEqual Status.OK
-      val result = fromJson(response.body) (EndpointResource.format)
-
+      Then("endpoint is updated")
       result.filters mustEqual expectedFilters
       result.routes mustEqual expectedRoutes
       result.path mustEqual expectedPath
@@ -147,16 +120,38 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
 
     scenario("Endpoint not found") {
       Given("endpoint id")
-      val url = s"$api/endpoints/someid"
-      val initial = EndpointFixtures.fullEndpointResource()
-
-      When("delete is called")
-      val response = await(wsClient.url(url)
-                             .withHttpHeaders(contentTypeHeader)
-                             .put(toJson(initial)))
+      When("put is called")
+      val response = executePut("someId", EndpointFixtures.fullEndpointResource())
 
       Then("response has not found status code")
       response.status mustEqual Status.NOT_FOUND
     }
+  }
+
+  private def updateEndpoint(id: String, endpoint: EndpointResource) = {
+    val response = executePut(id, endpoint)
+
+    response.status mustEqual Status.OK
+
+    fromJson(response.body) (EndpointResource.format)
+  }
+
+  private def executePut(id: String, endpoint: EndpointResource) = {
+    await(wsClient.url(s"$endpointsUrl/${id}")
+            .withHttpHeaders(contentTypeHeader)
+            .put(toJson(endpoint)))
+  }
+
+  private def createEndpoint(initial: EndpointResource) = {
+    val createResponse = executePost(initial)
+    createResponse.status mustEqual Status.CREATED
+
+    fromJson(createResponse.body) (EndpointResource.format)
+  }
+
+  private def executePost(initial: EndpointResource) = {
+    await(wsClient.url(endpointsUrl)
+            .withHttpHeaders(contentTypeHeader)
+            .post(toJson(initial)))
   }
 }
