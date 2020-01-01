@@ -1,6 +1,6 @@
 package api.rest.resources
 
-import common.UnitSpec
+import common.{JsonResource, UnitSpec}
 
 class FilterResourceSpec extends UnitSpec with JsonResource {
   "Empty FilterResource" when {
