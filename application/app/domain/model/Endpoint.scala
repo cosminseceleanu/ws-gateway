@@ -14,6 +14,8 @@ case class Endpoint(id: String, path: String, private val configuration: Endpoin
   def routes: Set[Route] = configuration.routes
   def filters: Set[Filter] = configuration.filters
   def authenticationMode: AuthenticationMode = configuration.authenticationMode
+
+  def matchesPath(targetPath: String): Boolean = targetPath.matches(path)
 }
 
 object Endpoint {

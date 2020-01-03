@@ -1,4 +1,4 @@
-package gateway
+package functional.gateway
 
 import java.util.concurrent.TimeUnit
 

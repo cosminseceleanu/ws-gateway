@@ -40,7 +40,7 @@ class AkkaWebSocketClient {
       if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
         (messageQueue, sourceMat)
       } else {
-        throw new RuntimeException(s"Connection failed: ${upgrade.response.status}")
+        throw new WsConnectionException(upgrade.response.status.intValue(), s"Connection failed: ${upgrade.response.status}")
       }
     }
   }

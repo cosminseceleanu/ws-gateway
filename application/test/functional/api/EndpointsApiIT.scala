@@ -17,7 +17,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
       val url = s"$endpointsUrl/id"
 
       When("get by id is called")
-      val response = await(wsClient.url(url).get())
+      val response = await(httpClient.url(url).get())
 
       Then("json response contains endpoint")
       response.status mustEqual Status.OK
@@ -35,7 +35,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
       val url = s"$api/endpoints/someid"
 
       When("get by id is called")
-      val response = await(wsClient.url(url).get())
+      val response = await(httpClient.url(url).get())
 
       Then("response has not found status code")
       response.status mustEqual Status.NOT_FOUND
@@ -66,7 +66,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
       val json = "{\"foo\": \"bar\"}";
 
       When("post api is called")
-      val response = await(wsClient.url(url).withHttpHeaders(contentTypeHeader).post(json))
+      val response = await(httpClient.url(url).withHttpHeaders(contentTypeHeader).post(json))
 
       Then("response is bad request")
       response.status mustEqual Status.BAD_REQUEST
@@ -81,7 +81,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
 
       When("delete is called")
       val deleteUrl = s"$endpointsUrl/${created.id.get}"
-      val response = await(wsClient.url(deleteUrl).delete())
+      val response = await(httpClient.url(deleteUrl).delete())
 
       Then("endpoint is deleted")
       response.status mustEqual Status.NO_CONTENT
@@ -92,7 +92,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
       val url = s"$api/endpoints/someid"
 
       When("delete is called")
-      val response = await(wsClient.url(url).delete())
+      val response = await(httpClient.url(url).delete())
 
       Then("response has not found status code")
       response.status mustEqual Status.NOT_FOUND
@@ -137,7 +137,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
   }
 
   private def executePut(id: String, endpoint: EndpointResource) = {
-    await(wsClient.url(s"$endpointsUrl/${id}")
+    await(httpClient.url(s"$endpointsUrl/${id}")
             .withHttpHeaders(contentTypeHeader)
             .put(toJson(endpoint)))
   }
@@ -150,7 +150,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
   }
 
   private def executePost(initial: EndpointResource) = {
-    await(wsClient.url(endpointsUrl)
+    await(httpClient.url(endpointsUrl)
             .withHttpHeaders(contentTypeHeader)
             .post(toJson(initial)))
   }
