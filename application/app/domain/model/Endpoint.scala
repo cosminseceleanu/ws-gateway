@@ -35,6 +35,9 @@ case class Endpoint(id: String, path: String, private val configuration: Endpoin
   def filters: Set[Filter] = configuration.filters
   def authenticationMode: AuthenticationMode = configuration.authenticationMode
 
+  def bufferSize: Int = configuration.bufferSize
+  def outboundParallelism: Int = configuration.outboundParallelism
+
   def matchesPath(targetPath: String): Boolean = targetPath.matches(path)
 }
 

@@ -2,7 +2,7 @@ package infrastructure.repositories
 
 import java.util.UUID
 
-import domain.model.{AuthenticationMode, Endpoint, Route, RouteType}
+import domain.model.{AuthenticationMode, Endpoint, Route}
 import domain.repositories.EndpointRepository
 import javax.inject.Singleton
 
@@ -16,7 +16,7 @@ class InMemoryEndpointRepository extends EndpointRepository {
     "id",
     "/demo",
     Set.empty,
-    Set(Route(RouteType.CONNECT, "Connect")),
+    Set(Route.connect(), Route.disconnect(), Route.default()),
     AuthenticationMode.BASIC
     )
 

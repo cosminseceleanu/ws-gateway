@@ -7,3 +7,4 @@ sealed trait InboundEvent extends Event {
 }
 
 case class DefaultInboundEvent(connectionId: String, payload: JsValue) extends InboundEvent
+case class AckEvent(connectionId: String, payload: JsValue) extends InboundEvent

@@ -3,7 +3,7 @@ package gateway
 import akka.actor.ActorSystem
 import akka.stream.{Materializer, OverflowStrategy}
 import domain.services.EndpointsProvider
-import gateway.connection.WsConnectionActor
+import gateway.connection.ConnectionActor
 import javax.inject.Inject
 import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow
@@ -20,7 +20,7 @@ class WsFrontController @Inject() (
     endpointsProvider.getFirstMatch(s"/$path")
       .map({
         case None => Left(NotFound)
-        case Some(e) => Right(ActorFlow.actorRef(out => WsConnectionActor.props(out, e), 50, OverflowStrategy.fail))
+        case Some(e) => Right(ActorFlow.actorRef(out => ConnectionActor.props(out, e), e.bufferSize, OverflowStrategy.fail))
       })
   }
 }

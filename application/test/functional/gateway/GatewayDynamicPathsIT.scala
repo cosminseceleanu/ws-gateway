@@ -26,7 +26,7 @@ class GatewayDynamicPathsIT extends FunctionalSpec with JsonResource {
     }
 
     scenario("No endpoint defined to match the requested path") {
-      Given("path that is not catched by an endpoint")
+      Given("path that does not match an endpoint")
       val path = "/ssss/s/2/d"
 
       When("try to connect")
