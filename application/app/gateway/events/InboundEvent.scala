@@ -1,10 +1,15 @@
 package gateway.events
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 
-sealed trait InboundEvent extends Event {
-  val payload: JsValue
+sealed trait InboundEvent extends Event
+
+case class Connected(connectionId: String) extends InboundEvent {
+  override val payload: JsValue = Json.obj("connectionId" -> connectionId)
 }
 
-case class DefaultInboundEvent(connectionId: String, payload: JsValue) extends InboundEvent
-case class AckEvent(connectionId: String, payload: JsValue) extends InboundEvent
+case class Disconnected(connectionId: String) extends InboundEvent {
+  override val payload: JsValue = Json.obj("connectionId" -> connectionId)
+}
+
+case class ReceivedEvent(connectionId: String, payload: JsValue) extends InboundEvent

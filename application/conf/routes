@@ -6,5 +6,6 @@ POST    /api/internal/endpoints                             api.controllers.Endp
 PUT     /api/internal/endpoints/:id                         api.controllers.EndpointsController.update(id)
 DELETE  /api/internal/endpoints/:id                         api.controllers.EndpointsController.delete(id)
 
-GET     /*path                                              gateway.WsFrontController.gateway(path)
+POST    /api/internal/connections/:connectionId             gateway.controllers.ConnectionController.sendEvent(connectionId)
+GET     /*path                                              gateway.controllers.WsFrontController.gateway(path)
 

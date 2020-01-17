@@ -3,9 +3,9 @@ package gateway
 import akka.actor.ActorRef
 import akka.stream.{FlowShape, Materializer, OverflowStrategy, QueueOfferResult}
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition, RunnableGraph, Sink, Source, SourceQueueWithComplete}
-import domain.model.{Endpoint, Outbound, Route}
-import gateway.events.{Connected, Disconnected, Event, InboundEvent, OutboundEvent, ReceivedEvent}
-import gateway.outbound.{BlackHoleConnector, OutboundConnector}
+import domain.model.{Endpoint, Backend, Route}
+import gateway.events.{Connected, Disconnected, Event, OutboundEvent, InboundEvent, ReceivedEvent}
+import gateway.backend.{BlackHoleConnector, BackendConnector}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent._
@@ -15,24 +15,28 @@ import scala.util.{Failure, Success, Try}
 class EventHandler(private val connectionId: String, private val endpoint: Endpoint, private val out: ActorRef) (implicit materializer: Materializer) {
   private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-  private val outboundConnector: OutboundConnector = new BlackHoleConnector
-  private val sendToUserSink = Sink.foreach[InboundEvent](msg => out ! msg.payload)
+  private val backendConnector: BackendConnector = new BlackHoleConnector
+  private val sendToUserSink = Sink.foreach[OutboundEvent](msg => out ! msg.payload)
   private val source = Source.queue[Event](endpoint.bufferSize, OverflowStrategy.backpressure)
 
-  private val outboundFlow = Flow[Event].collectType[OutboundEvent]
+  private val inboundFlow = Flow[Event].collectType[InboundEvent]
     .map({
       case e: Connected => (e, Set(endpoint.getConnectRoute))
       case e: Disconnected => (e, Set(endpoint.getDisconnectRoute))
       case e: ReceivedEvent => (e, getCustomRoutesOrDefault(endpoint))
     }).map(eventWithRoutesPair => {
-    val outbounds = eventWithRoutesPair._2.flatMap(_ => Set(Outbound.blackHole()))
-    (eventWithRoutesPair._1, outbounds)
-  }).mapAsync(endpoint.outboundParallelism)(eventOutboundsPair => {
-    val (event, outbounds) = eventOutboundsPair
-    Future.sequence(outbounds.map(o => outboundConnector.sendEvent(event, o.destination)))
-        .map(responses => responses.filter(_.isLeft).map(_.left.get))
-        .map(_.map(e => (event, e)))
-  }).mapConcat(eventErrorPairs => eventErrorPairs.map(_._1))
+      val backends = eventWithRoutesPair._2.flatMap(_ => Set(Backend.blackHole()))
+      (eventWithRoutesPair._1, backends)
+    }).mapAsync(endpoint.backendParallelism)(eventOutboundsPair => {
+      val (event, backends) = eventOutboundsPair
+      Future.sequence(backends.map(o => backendConnector.sendEvent(event, o.destination)))
+          .map(responses => getOnlyErrors(responses))
+          .map(_.map(e => (event, e)))
+    }).mapConcat(eventErrorPairs => eventErrorPairs.map(_._1))
+
+  private def getOnlyErrors(responses: Set[Either[Exception, Unit]]) = {
+    responses.filter(_.isLeft).map(_.left.get)
+  }
 
   private def getCustomRoutesOrDefault(endpoint: Endpoint): Set[Route] = {
     val custom = endpoint.getCustomRoutes
@@ -47,26 +51,26 @@ class EventHandler(private val connectionId: String, private val endpoint: Endpo
     import GraphDSL.Implicits._
 
     val partition = builder.add(Partition[Event](2, {
-      case _: OutboundEvent => 0
-      case _: InboundEvent => 1
+      case _: InboundEvent => 0
+      case _: OutboundEvent => 1
     }))
     val merge  = builder.add(Merge[Event](2))
 
-    partition.out(0) ~> outboundFlow ~> merge
-    partition.out(1) ~> Flow[Event].collectType[InboundEvent] ~> merge
+    partition.out(0) ~> inboundFlow ~> merge
+    partition.out(1) ~> Flow[Event].collectType[OutboundEvent] ~> merge
 
     FlowShape(partition.in, merge.out)
   }
 
   private val gatewayStream: RunnableGraph[SourceQueueWithComplete[Event]] = source
     .via(graph)
-    .collectType[InboundEvent]
+    .collectType[OutboundEvent]
     .to(sendToUserSink)
 
   private val queue = gatewayStream.run()
 
   /**
-   * Attention this method is not thread safe!!!
+   * Attention, this method is not thread safe!!!
    * It should be used only from an actor context and one instance shouldn't be shared across multiple actors
    */
   def handle(event: Event): Future[Try[Void]] = {

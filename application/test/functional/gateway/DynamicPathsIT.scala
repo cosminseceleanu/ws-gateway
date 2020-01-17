@@ -2,13 +2,13 @@ package functional.gateway
 
 import java.util.concurrent.TimeUnit
 
-import api.rest.resources.EndpointResource
-import common.{FunctionalSpec, JsonResource, WsConnectionException}
+import common.api.EndpointsClient
+import common.{FunctionalSpec, WsConnectionException}
 import fixtures.EndpointFixtures
 import play.api.test.Helpers._
 import play.mvc.Http.Status
 
-class GatewayDynamicPathsIT extends FunctionalSpec with JsonResource {
+class DynamicPathsIT extends FunctionalSpec with EndpointsClient {
   val defaultTimeout = 1000
 
   feature("WS Gateway dynamic paths") {
@@ -16,7 +16,7 @@ class GatewayDynamicPathsIT extends FunctionalSpec with JsonResource {
       Given("path that is not defined in routes")
       val path = "/test/s/2/d"
       val endpoint = EndpointFixtures.fromPath(path)
-      createEndpoint(endpoint)
+      createAndAssert(endpoint)
 
       When("try to connect")
       val (in, out) = await(wsClient.connect(s"$wsHost$path"))
@@ -37,14 +37,5 @@ class GatewayDynamicPathsIT extends FunctionalSpec with JsonResource {
 
       caught.getHttpCode() mustEqual Status.NOT_FOUND
     }
-  }
-
-  private def createEndpoint(initial: EndpointResource) = {
-    val createResponse = await(httpClient.url(endpointsUrl)
-                                 .withHttpHeaders(contentTypeHeader)
-                                 .post(toJson(initial)))
-    createResponse.status mustEqual Status.CREATED
-
-    fromJson(createResponse.body) (EndpointResource.format)
   }
 }

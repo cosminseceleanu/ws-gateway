@@ -8,7 +8,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
 import play.api.test._
 
-class WsFrontControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Injecting {
+class WsFrontControllerIT extends PlaySpec with GuiceOneServerPerSuite with Injecting {
   val wsClient = new AkkaWebSocketClient
 
   "WsFrontController" should {

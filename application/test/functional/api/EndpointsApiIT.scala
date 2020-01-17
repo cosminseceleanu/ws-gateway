@@ -1,16 +1,17 @@
 package functional.api
 
 import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
-import common.{FunctionalSpec, JsonResource}
-import play.api.test.Helpers._
-import play.mvc.Http.Status
 import com.jayway.jsonpath.matchers.JsonPathMatchers._
+import common.FunctionalSpec
+import common.api.EndpointsClient
 import domain.model.RouteType
 import fixtures.EndpointFixtures
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
+import play.api.test.Helpers._
+import play.mvc.Http.Status
 
-class EndpointsApiIT extends FunctionalSpec with JsonResource {
+class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
   feature("GET Api") {
     scenario("Existing endpoint") {
       Given("an existing endpoint id")
@@ -50,7 +51,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
       val initial = EndpointFixtures.fullEndpointResource()
 
       When("post api is called")
-      val created = createEndpoint(initial)
+      val created = createAndAssert(initial)
 
       Then("endpoint is created")
 
@@ -63,7 +64,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
 
     scenario("Invalid request body") {
       Given("Wrong json")
-      val json = "{\"foo\": \"bar\"}";
+      val json = "{\"foo\": \"bar\"}"
 
       When("post api is called")
       val response = await(httpClient.url(url).withHttpHeaders(contentTypeHeader).post(json))
@@ -77,7 +78,7 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
     scenario("endpoint is deleted") {
       Given("a new endpoint")
       val initial = EndpointFixtures.fullEndpointResource()
-      val created = createEndpoint(initial)
+      val created = createAndAssert(initial)
 
       When("delete is called")
       val deleteUrl = s"$endpointsUrl/${created.id.get}"
@@ -102,14 +103,18 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
   feature("PUT Api") {
     scenario("endpoint path, filters and routes are successfully updated") {
       Given("a new endpoint")
-      var endpoint = createEndpoint(EndpointFixtures.fullEndpointResource())
+      var endpoint = createAndAssert(EndpointFixtures.fullEndpointResource())
 
       When("put is called with updated ")
       val expectedFilters = FilterResource()
       val expectedRoutes = EndpointFixtures.defaultRoutes + RouteResource(RouteType.CUSTOM.toString, "Some name")
       val expectedPath = "/some-new-path"
       endpoint = endpoint.copy(path = expectedPath, filters = expectedFilters, routes = expectedRoutes)
-      val result = updateEndpoint(endpoint.id.get, endpoint)
+      val response = update(endpoint.id.get, endpoint)
+
+      response.status mustEqual Status.OK
+
+      val result = fromJson(response.body) (EndpointResource.format)
 
       Then("endpoint is updated")
       result.filters mustEqual expectedFilters
@@ -121,37 +126,10 @@ class EndpointsApiIT extends FunctionalSpec with JsonResource {
     scenario("Endpoint not found") {
       Given("endpoint id")
       When("put is called")
-      val response = executePut("someId", EndpointFixtures.fullEndpointResource())
+      val response = update("someId", EndpointFixtures.fullEndpointResource())
 
       Then("response has not found status code")
       response.status mustEqual Status.NOT_FOUND
     }
-  }
-
-  private def updateEndpoint(id: String, endpoint: EndpointResource) = {
-    val response = executePut(id, endpoint)
-
-    response.status mustEqual Status.OK
-
-    fromJson(response.body) (EndpointResource.format)
-  }
-
-  private def executePut(id: String, endpoint: EndpointResource) = {
-    await(httpClient.url(s"$endpointsUrl/${id}")
-            .withHttpHeaders(contentTypeHeader)
-            .put(toJson(endpoint)))
-  }
-
-  private def createEndpoint(initial: EndpointResource) = {
-    val createResponse = executePost(initial)
-    createResponse.status mustEqual Status.CREATED
-
-    fromJson(createResponse.body) (EndpointResource.format)
-  }
-
-  private def executePost(initial: EndpointResource) = {
-    await(httpClient.url(endpointsUrl)
-            .withHttpHeaders(contentTypeHeader)
-            .post(toJson(initial)))
   }
 }
