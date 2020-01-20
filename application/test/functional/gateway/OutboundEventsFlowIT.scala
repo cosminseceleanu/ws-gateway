@@ -10,7 +10,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 
-class InboundEventsFlowIT extends FunctionalSpec with EndpointsClient with ConnectionsClient {
+class OutboundEventsFlowIT extends FunctionalSpec with EndpointsClient with ConnectionsClient {
   private val DEFAULT_TIMEOUT = 5
   private val path = "/inbounds-flow"
 

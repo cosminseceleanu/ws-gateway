@@ -11,7 +11,7 @@ import fixtures.EndpointFixtures
 import play.api.http.Status
 import play.api.test.Helpers._
 
-class ConnectionOutboundEventsIT extends FunctionalSpec with EndpointsClient {
+class ConnectionEventsIT extends FunctionalSpec with EndpointsClient {
   private val wiremockServer = new WireMockServer(options().dynamicPort())
   private var backendUrl = ""
   private var wiremockPort = 0

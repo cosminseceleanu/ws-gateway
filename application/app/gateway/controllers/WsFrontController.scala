@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class WsFrontController @Inject() (
                                     val cc: ControllerComponents,
                                     val endpointsProvider: EndpointsProvider,
-                                    val idGenerator: IdGenerator,
+                                    val idGenerator: IdGenerator
                                   ) (implicit system: ActorSystem, mat: Materializer) extends AbstractController(cc) {
   def gateway(path: String): WebSocket = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
     endpointsProvider.getFirstMatch(s"/$path")
