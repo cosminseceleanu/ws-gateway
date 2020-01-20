@@ -7,7 +7,7 @@ case class Route(routeType: RouteType, name: String) {
   override def hashCode(): Int = {
     val prime = 31
     var result = 1
-    result = prime * result + routeType.hashCode();
+    result = prime * result + routeType.hashCode()
     result = prime * result + (if (name == null) 0 else name.hashCode)
     result
   }
