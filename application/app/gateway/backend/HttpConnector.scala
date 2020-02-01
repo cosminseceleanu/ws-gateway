@@ -1,26 +1,39 @@
 package gateway.backend
 
+import domain.model.BackendType.BackendType
+import domain.model.{BackendType, HttpSettings}
 import gateway.events.InboundEvent
 import javax.inject.Inject
+import org.slf4j.{Logger, LoggerFactory}
 import play.api.libs.ws._
 import play.mvc.Http.Status
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
+import scala.concurrent.duration._
 
 
 class HttpConnector @Inject()(httpClient: WSClient) extends BackendConnector {
+  private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-  override def sendEvent(outboundEvent: InboundEvent, destination: String): Future[Either[Exception, Unit]] = {
+  override type T = HttpSettings
+
+  override def supports(backendType: BackendType): Boolean = backendType == BackendType.HTTP
+
+  override def sendEvent(event: InboundEvent, destination: String, settings: HttpSettings): Future[Either[Exception, Unit]] = {
     httpClient.url(destination)
       .addHttpHeaders("Content-Type" -> "application/json")
-      .post(outboundEvent.payload)
+      .addHttpHeaders(settings.additionalHeaders.toList:_*)
+      .withRequestTimeout(Duration(settings.timeout, MILLISECONDS))
+      .post(event.payload)
       .map(response => response.status match {
         case s if s >= Status.BAD_REQUEST => Left(InvalidHttpStatusCodeException(response.status))
         case _ => Right()
       })
       .recover({
-        case e: Exception => Left(e)
+        case e: Exception =>
+          logger.error(s"Request to $destination failed with ${e.getMessage}", e)
+          Left(e)
       })
 
   }

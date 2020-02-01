@@ -1,11 +1,13 @@
 package functional.api
 
+import org.scalatest.Matchers._
+
 import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
 import com.jayway.jsonpath.matchers.JsonPathMatchers._
 import common.FunctionalSpec
 import common.api.EndpointsClient
 import domain.model.RouteType
-import fixtures.EndpointFixtures
+import fixtures.{BackendFixtures, EndpointFixtures, RouteFixtures}
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import play.api.test.Helpers._
@@ -15,10 +17,8 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
   feature("GET Api") {
     scenario("Existing endpoint") {
       Given("an existing endpoint id")
-      val url = s"$endpointsUrl/id"
-
       When("get by id is called")
-      val response = await(httpClient.url(url).get())
+      val response = getEndpoint("id")
 
       Then("json response contains endpoint")
       response.status mustEqual Status.OK
@@ -45,6 +45,26 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
 
   feature("POST Api") {
     val url = s"$api/endpoints"
+
+    scenario("Create endpoint with http backends") {
+      Given("new endpoint with http backends for default routes")
+      val routes = Set(
+        RouteFixtures.connectResourceWithDefaultHttpBackend,
+        RouteFixtures.defaultResourceWithDefaultHttpBackend,
+        RouteFixtures.disconnectResourceWithDefaultHttpBackend,
+      )
+      val initial = EndpointFixtures.withRoutes(routes)
+
+      When("post api is called")
+      val created = createAndAssert(initial)
+
+      Then("endpoint is created")
+
+      created.id != null mustEqual true
+      created.routes mustEqual initial.routes
+      created.httpBackends should have size 3
+      created.httpBackends should contain(BackendFixtures.httpBackendResource)
+    }
 
     scenario("Create endpoint") {
       Given("new endpoint")

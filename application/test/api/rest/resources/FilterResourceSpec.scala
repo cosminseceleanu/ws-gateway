@@ -1,8 +1,9 @@
 package api.rest.resources
 
-import common.{JsonResource, UnitSpec}
+import common.UnitSpec
+import common.rest.JsonSupport
 
-class FilterResourceSpec extends UnitSpec with JsonResource {
+class FilterResourceSpec extends UnitSpec with JsonSupport {
   "Empty FilterResource" when {
     "serialized as json" should {
       "all fields are present" in {
