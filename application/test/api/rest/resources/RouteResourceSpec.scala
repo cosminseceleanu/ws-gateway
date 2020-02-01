@@ -8,7 +8,7 @@ import org.scalatest.Matchers._
 class RouteResourceSpec extends UnitSpec with JsonSupport {
 
   private val fullJson = "{\"type\":\"connect\",\"name\":\"name\",\"http\":[{\"destination\":\"http://localhost\"," +
-    "\"additionalHeaders\":{\"X-Debug\":\"asdas\"},\"timeout\":1}],\"kafka\":[{\"topic\":\"some.topic\"}]}"
+    "\"additionalHeaders\":{\"X-Debug\":\"foo\"},\"timeout\":1}],\"kafka\":[{\"topic\":\"some.topic\"}]}"
 
   private val httpBackend = BackendFixtures.httpBackendResource
   private val kafkaBackend = BackendFixtures.kafkaBackendResource
@@ -17,7 +17,7 @@ class RouteResourceSpec extends UnitSpec with JsonSupport {
     "serialized as json" should {
       "should have all fields serialized correctly" in {
         val expectedJson = "{\"type\":\"connect\",\"name\":\"name\",\"http\":[{\"destination\":\"http://localhost\"," +
-          "\"additionalHeaders\":{\"X-Debug\":\"asdas\"},\"timeout\":1}],\"kafka\":[]}"
+          "\"additionalHeaders\":{\"X-Debug\":\"foo\"},\"timeout\":1}],\"kafka\":[]}"
         val resource = RouteResource("connect", "name", Set(httpBackend), Set.empty)
         val json = toJson(resource)
 

@@ -7,12 +7,12 @@ import gateway.backend.{BackendConnector, LoggerConnector}
 import gateway.events._
 import gateway.flow.dto.BackendResult
 import gateway.flow.stages.{MapEventToBackends, SendEventToBackends}
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-@Inject
+@Singleton
 class InboundFlowFactory @Inject() (
                                      private val mapEventToBackends: MapEventToBackends,
-                                     private val sendEventToBackends: SendEventToBackends,
+                                     private val sendEventToBackends: SendEventToBackends
                                    ) {
 
   private val backendConnector: BackendConnector = new LoggerConnector
