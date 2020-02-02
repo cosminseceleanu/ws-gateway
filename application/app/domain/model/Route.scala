@@ -2,7 +2,7 @@ package domain.model
 
 import domain.model.RouteType.RouteType
 
-case class Route(routeType: RouteType, name: String) {
+case class Route(routeType: RouteType, name: String, backends: Set[Backend[BackendSettings]]) {
 
   override def hashCode(): Int = {
     val prime = 31
@@ -27,7 +27,20 @@ case class Route(routeType: RouteType, name: String) {
 }
 
 object Route {
-  def connect(): Route = Route(RouteType.CONNECT, "Connect")
-  def disconnect(): Route = Route(RouteType.DISCONNECT, "Disconnect")
-  def default(): Route = Route(RouteType.DEFAULT, "Default route")
+  private val debugBackend: Set[Backend[BackendSettings]] = Set(Backend.debug())
+
+  def connect(): Route = Route(RouteType.CONNECT, "Connect", debugBackend)
+  def connect(backends: Set[Backend[BackendSettings]]): Route = Route(RouteType.CONNECT, "Connect", backends)
+
+  def disconnect(): Route = Route(RouteType.DISCONNECT, "Disconnect", debugBackend)
+  def disconnect(backends: Set[Backend[BackendSettings]]): Route = Route(RouteType.DISCONNECT, "Disconnect", backends)
+
+
+  def default(): Route = Route(RouteType.DEFAULT, "Default route", debugBackend)
+  def default(backends: Set[Backend[BackendSettings]]): Route = Route(RouteType.DEFAULT, "Default route", backends)
+
+  def apply(routeType: RouteType, name: String): Route = new Route(routeType, name, Set.empty)
+  def apply(routeType: RouteType, name: String, backends: Set[Backend[BackendSettings]]): Route = {
+    new Route(routeType, name, backends)
+  }
 }
