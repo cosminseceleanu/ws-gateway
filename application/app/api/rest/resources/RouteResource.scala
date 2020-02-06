@@ -4,7 +4,9 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 case class RouteResource(routeType: String, name: String,
-                         http: Set[HttpBackendResource], kafka: Set[KafkaBackendResource]
+                         http: Set[HttpBackendResource],
+                         kafka: Set[KafkaBackendResource],
+                         expression: Option[JsObject]
                         )
 
 object RouteResource {
@@ -13,26 +15,35 @@ object RouteResource {
     (JsPath \ "type").write[String] and
       (JsPath \ "name").write[String] and
       (JsPath \ "http").write[Set[HttpBackendResource]] and
-      (JsPath \ "kafka").write[Set[KafkaBackendResource]]
+      (JsPath \ "kafka").write[Set[KafkaBackendResource]] and
+      (JsPath \ "expression").writeNullable[JsValue]
     ) (unlift(RouteResource.unapply))
 
   implicit val routeReads: Reads[RouteResource] = (
     (JsPath \ "type").read[String] and
       (JsPath \ "name").read[String] and
       (JsPath \ "http").readNullable[Set[HttpBackendResource]] and
-      (JsPath \ "kafka").readNullable[Set[KafkaBackendResource]]
-    )((routeType, name, http, kafka) => RouteResource(routeType, name, http.getOrElse(Set.empty), kafka.getOrElse(Set.empty)))
+      (JsPath \ "kafka").readNullable[Set[KafkaBackendResource]] and
+      (JsPath \ "expression").readNullable[JsObject]
+    )((routeType, name, http, kafka, expression) => {
+      RouteResource(routeType, name, http.getOrElse(Set.empty), kafka.getOrElse(Set.empty), expression)
+  })
 
 
-  def apply(routeType: String, name: String): RouteResource = new RouteResource(routeType, name, Set.empty, Set.empty)
+  def apply(routeType: String, name: String): RouteResource = new RouteResource(routeType, name, Set.empty, Set.empty, Option.empty)
 
   def apply(routeType: String, name: String, http: Set[HttpBackendResource]): RouteResource = {
-    new RouteResource(routeType, name, http, Set.empty)
+    new RouteResource(routeType, name, http, Set.empty, Option.empty)
   }
 
   def apply(routeType: String, name: String,
             http: Set[HttpBackendResource],
             kafka: Set[KafkaBackendResource]
-           ): RouteResource = new RouteResource(routeType, name, http, kafka)
+           ): RouteResource = new RouteResource(routeType, name, http, kafka, Option.empty)
 
+  def apply(routeType: String, name: String,
+            http: Set[HttpBackendResource],
+            kafka: Set[KafkaBackendResource],
+            expression: Option[JsObject]
+           ): RouteResource = new RouteResource(routeType, name, http, kafka, expression)
 }

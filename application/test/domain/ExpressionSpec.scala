@@ -1,7 +1,7 @@
 package domain
 
 import common.UnitSpec
-import domain.model.{And, Equal, JsonPath, LiteralExpression, Matches, Or, StringExpression}
+import domain.model.Expression._
 
 class ExpressionSpec extends UnitSpec {
   private val json = "{\"category\":\"reference\",\"author\":\"Nigel Rees\",\"title\":\"Sayings of the Century\",\"price\":8.95}"
@@ -9,13 +9,13 @@ class ExpressionSpec extends UnitSpec {
   "debug expression" in {
     val expresion = Or(
       And(
-        Matches(JsonPath("$.author", () => json), "^Nigel*"),
-        Equal(StringExpression("cccc"), StringExpression("cccc")),
+        Matches("$.author", "^Nigel*"),
+        Equal("cccc", "cccc"),
       ),
-      Equal(JsonPath("$.category", () => json), StringExpression("reference"))
+      Equal("$.price", 8.95)
     )
 
-    val result = expresion.evaluate()
+    val result = expresion.evaluate(json)
 
     result mustBe true
   }
