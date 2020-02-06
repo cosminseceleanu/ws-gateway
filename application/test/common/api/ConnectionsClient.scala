@@ -1,12 +1,12 @@
 package common.api
 
-import common.JsonResource
+import common.rest.JsonSupport
 import org.scalatest.MustMatchers
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.Status
 
-trait ConnectionsClient extends ApiClient with JsonResource with MustMatchers {
+trait ConnectionsClient extends ApiClient with JsonSupport with MustMatchers {
   val connectionsUrl = s"$api/connections"
 
   def sendEventAndAssert(connectionId: String, payload: String): Unit = {
