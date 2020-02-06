@@ -44,6 +44,7 @@ For more about API Gateways check [here](https://microservices.io/patterns/apiga
 - [AWS Gateway](https://aws.amazon.com/blogs/compute/announcing-websocket-apis-in-amazon-api-gateway/)
 - Maybe [Kong](https://github.com/Kong/kong)
 - Maybe [Tyk](https://tyk.io/api-gateway/open-source/)
+- Check about Kaazing
 
 
 ### Drafts

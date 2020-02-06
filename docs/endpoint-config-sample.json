@@ -68,6 +68,7 @@
         "type": "equal",
         "value": "Clean Code"
       },
+      "expressionV2": "jsonPath($.payload.book[0].title) = \"Clean code\"",
       "outbounds": [
         {
           "type": "http",
