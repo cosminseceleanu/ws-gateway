@@ -88,7 +88,7 @@ class ExpressionAssembler extends ResourceAssembler[Expression[Boolean], JsObjec
   private def assembleBooleanExpressionJsArray(jsObject: JsObject, e: BooleanExpression) = {
     jsObject + (e.name, Json.arr(
       assembleJsObject(e.left, Json.obj()),
-      assembleJsObject(e.right, Json.obj()),
+      assembleJsObject(e.right, Json.obj())
     ))
   }
 }
