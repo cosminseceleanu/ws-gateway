@@ -14,6 +14,11 @@ sealed trait TerminalExpression[+T, +R] extends Expression[T] {
   def getValueForPath(json: String): R = JsonPath.read[R](json, path)
 }
 
+sealed trait BooleanExpression extends Expression[Boolean] {
+  val left: Expression[Boolean]
+  val right: Expression[Boolean]
+}
+
 object Expression {
   val AND = "and"
   val OR = "or"
@@ -36,12 +41,12 @@ object Expression {
     override def evaluate(json: String): Boolean = getValueForPath(json).matches(value)
   }
 
-  case class And(left: Expression[Boolean], right: Expression[Boolean]) extends Expression[Boolean] {
+  case class And(left: Expression[Boolean], right: Expression[Boolean]) extends BooleanExpression {
     override val name: String = AND
     override def evaluate(json: String): Boolean = left.evaluate(json) && right.evaluate(json)
   }
 
-  case class Or(left: Expression[Boolean], right: Expression[Boolean]) extends Expression[Boolean] {
+  case class Or(left: Expression[Boolean], right: Expression[Boolean]) extends BooleanExpression {
     override val name: String = OR
     override def evaluate(json: String): Boolean = left.evaluate(json) || right.evaluate(json)
   }

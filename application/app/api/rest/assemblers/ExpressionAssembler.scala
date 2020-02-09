@@ -2,17 +2,17 @@ package api.rest.assemblers
 
 import common.rest.ResourceAssembler
 import domain.exceptions.{ExpressionNotSupportedException, IncorrectBooleanExpressionException, IncorrectExpressionException}
-import domain.model.Expression
+import domain.model.{BooleanExpression, Expression, TerminalExpression}
 import domain.model.Expression._
-import play.api.libs.json.{JsArray, JsBoolean, JsDefined, JsNumber, JsObject, JsString, JsValue}
+import play.api.libs.json.{JsArray, JsBoolean, JsDefined, JsNumber, JsObject, JsString, JsValue, Json}
 
-class RouteExpressionAssembler extends ResourceAssembler[Expression[Boolean], JsObject] {
+class ExpressionAssembler extends ResourceAssembler[Expression[Boolean], JsObject] {
   private val BOOLEAN_EXPRESSION_SIZE = 2
   private val MAX_NESTED_LEVEL = 2;
 
   override def toModel(resource: JsObject): Expression[Boolean] = {
     if (resource.value.size > 1) {
-      throw new IncorrectExpressionException(s"Route expression can have only one root")
+      throw new IncorrectExpressionException(s"Expression can have only one root")
     }
     parseJsValue(resource, 0)
   }
@@ -21,7 +21,7 @@ class RouteExpressionAssembler extends ResourceAssembler[Expression[Boolean], Js
     val (name, jsValue) = json.value.head
 
     if (nestedLevel > MAX_NESTED_LEVEL) {
-      throw new IncorrectExpressionException(s"Route expression can at most only ${MAX_NESTED_LEVEL} nested levels")
+      throw new IncorrectExpressionException(s"Expression can at most only ${MAX_NESTED_LEVEL} nested levels")
     }
     name match {
       case Expression.EQUAL => Equal(readFieldAsString(jsValue, "path"), readValue(jsValue))
@@ -67,5 +67,28 @@ class RouteExpressionAssembler extends ResourceAssembler[Expression[Boolean], Js
     }
   }
 
-  override def toResource(model: Expression[Boolean]): JsObject = null
+  override def toResource(model: Expression[Boolean]): JsObject = assembleJsObject(model, Json.obj())
+
+  private def assembleJsObject(model: Expression[Boolean], jsObject: JsObject): JsObject = {
+    val result = model match {
+      case e: TerminalExpression[Boolean, _] =>
+        e.value match {
+          case v: String => jsObject + (e.name, Json.obj("path" -> e.path, "value" -> v))
+          case v: BigDecimal => jsObject + (e.name, Json.obj("path" -> e.path, "value" -> v))
+          case v: Int => jsObject + (e.name, Json.obj("path" -> e.path, "value" -> v))
+          case v: Boolean => jsObject + (e.name, Json.obj("path" -> e.path, "value" -> v))
+          case _ => throw IncorrectBooleanExpressionException(s"Expression value of type is not supported")
+        }
+      case e: BooleanExpression => assembleBooleanExpressionJsArray(jsObject, e)
+    }
+
+    result
+  }
+
+  private def assembleBooleanExpressionJsArray(jsObject: JsObject, e: BooleanExpression) = {
+    jsObject + (e.name, Json.arr(
+      assembleJsObject(e.left, Json.obj()),
+      assembleJsObject(e.right, Json.obj()),
+    ))
+  }
 }

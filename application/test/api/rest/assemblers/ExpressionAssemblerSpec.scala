@@ -4,12 +4,12 @@ import common.UnitSpec
 import common.rest.JsonSupport
 import domain.exceptions.{ExpressionNotSupportedException, IncorrectBooleanExpressionException, IncorrectExpressionException}
 import domain.model.Expression.{And, Equal, Matches, Or}
+import fixtures.ExpressionFixtures
 import play.api.libs.json.Json
-import org.scalatest._
 
-class RouteExpressionAssemblerSpec extends UnitSpec with JsonSupport {
+class ExpressionAssemblerSpec extends UnitSpec with JsonSupport {
 
-  private val assembler = new RouteExpressionAssembler
+  private val assembler = new ExpressionAssembler
 
   "resource to model" when {
     "expression is just an equal" should {
@@ -106,16 +106,7 @@ class RouteExpressionAssemblerSpec extends UnitSpec with JsonSupport {
 
     "expression has 2 nested levels" should {
       "JsObject is assembled as Expression" in {
-        val orJsObject = Json.obj("or" -> Json.arr(
-          Json.obj("matches" -> Json.obj("path" -> "$.a", "value" -> "a")),
-          Json.obj("equal" -> Json.obj("path" -> "$.c", "value" -> true)),
-        ))
-
-        val resource = Json.obj("and" -> Json.arr(
-          orJsObject,
-          Json.obj("equal" -> Json.obj("path" -> "$.b", "value" -> 8))
-          ))
-
+        val resource = ExpressionFixtures.nextedExpression
         val expression = assembler.toModel(resource)
 
         expression.isInstanceOf[And] mustEqual true
@@ -132,6 +123,36 @@ class RouteExpressionAssemblerSpec extends UnitSpec with JsonSupport {
 
         or.left.isInstanceOf[Matches] mustEqual true
         or.right.isInstanceOf[Equal[Boolean]] mustEqual true
+      }
+    }
+  }
+
+  "model to resource" when {
+    "simple expression" should {
+      "Expression is assembled as JsObject" in {
+        val expression = Equal("$.e", "b")
+        val expected = Json.obj("equal" -> Json.obj("path" -> "$.e", "value" -> "b"))
+
+        assembler.toResource(expression) mustEqual expected
+      }
+    }
+
+    "terminal expression value is not supported" should {
+      "throw an exception" in {
+        val expression = Equal("$.e", Set("1"))
+
+        an[IncorrectBooleanExpressionException] must be thrownBy assembler.toResource(expression)
+      }
+    }
+
+    "nested expression" should {
+      "Expression is assembled as JsObject" in {
+        val expression = And(
+          Or(Matches("$.a", "a"), Equal("$.c", true)),
+          Equal("$.b", 8)
+        )
+
+        assembler.toResource(expression) mustEqual ExpressionFixtures.nextedExpression
       }
     }
   }

@@ -1,8 +1,10 @@
 package domain.model
 
+import domain.exceptions.GenericException
 import domain.model.RouteType.RouteType
 
-case class Route(routeType: RouteType, name: String, backends: Set[Backend[BackendSettings]]) {
+case class Route(routeType: RouteType, name: String, backends: Set[Backend[BackendSettings]],
+                 expression: Option[Expression[Boolean]]) {
 
   override def hashCode(): Int = {
     val prime = 31
@@ -23,6 +25,16 @@ case class Route(routeType: RouteType, name: String, backends: Set[Backend[Backe
     }
   }
 
+  def appliesTo(json: String): Boolean = {
+    if (routeType != RouteType.CUSTOM) {
+      throw GenericException(s"expression can be evaluated only for custom routes")
+    }
+    expression match {
+      case Some(e) => e.evaluate(json)
+      case None => throw GenericException("Custom route does not have an expression")
+    }
+  }
+
   def canEqual(other: Any): Boolean = other.isInstanceOf[Route]
 }
 
@@ -39,8 +51,13 @@ object Route {
   def default(): Route = Route(RouteType.DEFAULT, "Default route", debugBackend)
   def default(backends: Set[Backend[BackendSettings]]): Route = Route(RouteType.DEFAULT, "Default route", backends)
 
-  def apply(routeType: RouteType, name: String): Route = new Route(routeType, name, Set.empty)
+  def apply(routeType: RouteType, name: String): Route = new Route(routeType, name, Set.empty, Option.empty)
   def apply(routeType: RouteType, name: String, backends: Set[Backend[BackendSettings]]): Route = {
-    new Route(routeType, name, backends)
+    new Route(routeType, name, backends, Option.empty)
+  }
+  def apply(routeType: RouteType, name: String,
+            backends: Set[Backend[BackendSettings]],
+            expression: Option[Expression[Boolean]]): Route = {
+    new Route(routeType, name, backends, expression)
   }
 }
