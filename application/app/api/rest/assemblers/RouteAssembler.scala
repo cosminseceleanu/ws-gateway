@@ -3,10 +3,10 @@ package api.rest.assemblers
 import api.rest.resources.{HttpBackendResource, KafkaBackendResource, RouteResource}
 import common.rest.ResourceAssembler
 import domain.model._
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class RouteAssembler extends ResourceAssembler[Route, RouteResource] {
+class RouteAssembler @Inject() (expressionAssembler: ExpressionAssembler) extends ResourceAssembler[Route, RouteResource] {
 
   override def toModel(resource: RouteResource): Route = {
     val httpBackends: Set[Backend[BackendSettings]] = resource.http
@@ -15,9 +15,10 @@ class RouteAssembler extends ResourceAssembler[Route, RouteResource] {
     val kafkaBackends: Set[Backend[BackendSettings]] = resource.kafka
       .map(r => KafkaBackend(r.topic))
 
-     val allBackends = httpBackends ++ kafkaBackends + DebugBackend()
+    val allBackends = httpBackends ++ kafkaBackends + DebugBackend()
+    val expression = resource.expression.map(e => expressionAssembler.toModel(e))
 
-    Route(RouteType.withName(resource.routeType), resource.name, allBackends)
+    Route(RouteType.withName(resource.routeType), resource.name, allBackends, expression)
   }
 
   override def toResource(model: Route): RouteResource = {
@@ -32,8 +33,8 @@ class RouteAssembler extends ResourceAssembler[Route, RouteResource] {
     val kafka = model.backends
       .filter(_.backendType == BackendType.KAFKA)
       .map(b => KafkaBackendResource(b.destination))
+    val expression = model.expression.map(e => expressionAssembler.toResource(e))
 
-
-    RouteResource(model.routeType.toString, model.name, http, kafka)
+    RouteResource(model.routeType.toString, model.name, http, kafka, expression)
   }
 }

@@ -7,7 +7,8 @@ import fixtures.{BackendFixtures, RouteFixtures}
 import org.scalatest.Matchers._
 
 class RouteAssemblerSpec extends UnitSpec {
-  private val subject = new RouteAssembler()
+  private val expressionAssemblerMock = mock[ExpressionAssembler]
+  private val subject = new RouteAssembler(expressionAssemblerMock)
 
   "resource to model" when {
     "resource does not have backends" should {

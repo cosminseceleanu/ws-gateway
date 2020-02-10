@@ -1,13 +1,12 @@
 package functional.api
 
 import org.scalatest.Matchers._
-
 import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
 import com.jayway.jsonpath.matchers.JsonPathMatchers._
 import common.FunctionalSpec
 import common.api.EndpointsClient
 import domain.model.RouteType
-import fixtures.{BackendFixtures, EndpointFixtures, RouteFixtures}
+import fixtures.{BackendFixtures, EndpointFixtures, ExpressionFixtures, RouteFixtures}
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import play.api.test.Helpers._
@@ -64,6 +63,24 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
       created.routes mustEqual initial.routes
       created.httpBackends should have size 3
       created.httpBackends should contain(BackendFixtures.httpBackendResource)
+    }
+
+    scenario("Create endpoint with custom route") {
+      Given("new endpoint with custom route")
+      val initialCustomRoute = RouteFixtures.customResourceWithDefaultHttpBackend("Test custom route", ExpressionFixtures.nextedExpression)
+      val routes = EndpointFixtures.defaultRoutes + initialCustomRoute
+      val initial = EndpointFixtures.withRoutes(routes)
+
+      When("post api is called")
+      val created = createAndAssert(initial)
+
+      Then("endpoint is created and has a custom route with expression")
+      val customRoute = created.routes.find(_.routeType == RouteType.CUSTOM.toString)
+
+      created.id != null mustEqual true
+      customRoute.isDefined mustEqual true
+      customRoute.get.expression.isDefined mustEqual true
+      customRoute.get.expression.get mustEqual ExpressionFixtures.nextedExpression
     }
 
     scenario("Create endpoint") {

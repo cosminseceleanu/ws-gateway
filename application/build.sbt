@@ -8,6 +8,7 @@ libraryDependencies += "com.typesafe.akka" %% "akka-cluster" % "2.6.1"
 libraryDependencies += "com.typesafe.akka" %% "akka-cluster-typed" % "2.6.1"
 libraryDependencies += "com.typesafe.akka" %% "akka-cluster-tools" % "2.6.1"
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.2.6"
+libraryDependencies += "com.jayway.jsonpath" % "json-path" % "2.4.0"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
