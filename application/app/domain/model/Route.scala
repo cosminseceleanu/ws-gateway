@@ -1,10 +1,20 @@
 package domain.model
 
+import common.validation.Validatable
+import common.validation.constraints.TraversableSize
 import domain.exceptions.GenericException
 import domain.model.RouteType.RouteType
+import domain.validation.constraints.ExpressionByRouteType
+import javax.validation.constraints.{NotBlank, NotNull, Size}
 
-case class Route(routeType: RouteType, name: String, backends: Set[Backend[BackendSettings]],
-                 expression: Option[Expression[Boolean]]) {
+import scala.annotation.meta.field
+
+@ExpressionByRouteType
+case class Route(@(NotNull @field) routeType: RouteType,
+                 @(Size @field)(min = 4, max = 255) @(NotBlank @field) name: String,
+                 @(TraversableSize @field)(max = 10) backends: Set[Backend[BackendSettings]],
+                 expression: Option[Expression[Boolean]]
+                ) extends Validatable {
 
   override def hashCode(): Int = {
     val prime = 31

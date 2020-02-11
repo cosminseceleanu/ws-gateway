@@ -5,7 +5,8 @@ import org.joda.time.DateTime
 
 case class EndpointConfiguration(
                                   id: String,
-                                  filters: Set[Filter], routes: Set[Route],
+                                  filters: Set[Filter],
+                                  routes: Set[Route],
                                   authenticationMode: AuthenticationMode,
                                   bufferSize: Int,
                                   backendParallelism: Int
