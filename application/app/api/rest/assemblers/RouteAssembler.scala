@@ -27,7 +27,7 @@ class RouteAssembler @Inject() (expressionAssembler: ExpressionAssembler) extend
         .map(b => HttpBackendResource(
           b.destination,
           b.settings.asInstanceOf[HttpSettings].additionalHeaders,
-          b.settings.asInstanceOf[HttpSettings].timeout)
+          b.settings.asInstanceOf[HttpSettings].timeoutInMillis)
         )
 
     val kafka = model.backends

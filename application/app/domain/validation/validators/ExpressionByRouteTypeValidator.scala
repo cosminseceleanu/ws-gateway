@@ -10,13 +10,13 @@ class ExpressionByRouteTypeValidator extends ConstraintValidator[ExpressionByRou
       return true
     }
     if (value.routeType == RouteType.CUSTOM && value.expression.isEmpty) {
-      context.disableDefaultConstraintViolation();
+      context.disableDefaultConstraintViolation()
       context.buildConstraintViolationWithTemplate(ExpressionByRouteTypeValidator.MISSING_EXPRESSION_MESSAGE)
         .addConstraintViolation()
       return false
     }
     if (value.routeType != RouteType.CUSTOM && value.expression.isDefined) {
-      context.disableDefaultConstraintViolation();
+      context.disableDefaultConstraintViolation()
       context.buildConstraintViolationWithTemplate(ExpressionByRouteTypeValidator.EXPRESSION_SET_FOR_NON_CUSTOM_ROUTE_MESSAGE)
         .addConstraintViolation()
       return false

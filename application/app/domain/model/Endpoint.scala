@@ -1,10 +1,19 @@
 package domain.model
 
+import common.validation.Validatable
 import domain.exceptions.RouteNotFoundException
 import domain.model.AuthenticationMode.AuthenticationMode
 import domain.model.RouteType.RouteType
+import javax.validation.Valid
+import javax.validation.constraints.{NotBlank, NotNull, Pattern}
 
-case class Endpoint(id: String, path: String, private val configuration: EndpointConfiguration) {
+import scala.annotation.meta.field
+
+case class Endpoint(
+                     id: String,
+                     @(NotBlank @field) @(Pattern @field)(regexp="^(?!\\/api\\/internal).*") path: String,
+                     @(Valid @field) @(NotNull @field) private val configuration: EndpointConfiguration
+                   ) extends Validatable {
   def getConnectRoute: Route = getRoute(RouteType.CONNECT) match {
     case Some(r) => r
     case None => throw RouteNotFoundException("Connect route is not defined")
@@ -44,6 +53,14 @@ case class Endpoint(id: String, path: String, private val configuration: Endpoin
 }
 
 object Endpoint {
+  def apply(id: String, path: String): Endpoint = {
+    new Endpoint(id, path, EndpointConfiguration(Set.empty, Set.empty))
+  }
+
+  def apply(id: String, path: String, endpointConfiguration: EndpointConfiguration): Endpoint = {
+    new Endpoint(id, path, endpointConfiguration)
+  }
+
   def apply(id: String, path: String, filters: Set[Filter], routes: Set[Route]): Endpoint = {
     new Endpoint(id, path, EndpointConfiguration(filters, routes))
   }

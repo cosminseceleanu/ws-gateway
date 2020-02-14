@@ -24,7 +24,7 @@ class HttpConnector @Inject()(httpClient: WSClient) extends BackendConnector {
     httpClient.url(destination)
       .addHttpHeaders("Content-Type" -> "application/json")
       .addHttpHeaders(settings.additionalHeaders.toList:_*)
-      .withRequestTimeout(Duration(settings.timeout, MILLISECONDS))
+      .withRequestTimeout(Duration(settings.timeoutInMillis, MILLISECONDS))
       .post(event.payload)
       .map(response => response.status match {
         case s if s >= Status.BAD_REQUEST => Left(InvalidHttpStatusCodeException(response.status))
