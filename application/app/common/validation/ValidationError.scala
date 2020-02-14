@@ -4,5 +4,5 @@ case class ValidationError(
                           message: String,
                           propertyPath: String,
                           invalidValue: Object,
-                          beanClassName: String,
+                          beanClassName: String
                           )

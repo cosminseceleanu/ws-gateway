@@ -13,19 +13,19 @@ object HttpBackendResource {
     (JsPath \ "destination").read[String] and
     (JsPath \ "additionalHeaders").readNullable[Map[String, String]] and
     (JsPath \ "timeoutInMillis").readNullable[Int]
-    )((destination, additionalHeaders, timeout) => {
-    HttpBackendResource(destination, additionalHeaders.getOrElse(Map.empty), timeout.getOrElse(DEFAULT_TIMEOUT))
+    )((destination, additionalHeaders, timeoutInMillis) => {
+    HttpBackendResource(destination, additionalHeaders.getOrElse(Map.empty), timeoutInMillis.getOrElse(DEFAULT_TIMEOUT))
   })
 
   def apply(destination: String): HttpBackendResource = new HttpBackendResource(destination, Map.empty, DEFAULT_TIMEOUT)
 
-  def apply(destination: String, timeout: Int): HttpBackendResource = new HttpBackendResource(destination, Map.empty, timeout)
+  def apply(destination: String, timeoutInMillis: Int): HttpBackendResource = new HttpBackendResource(destination, Map.empty, timeoutInMillis)
 
   def apply(destination: String, additionalHeaders: Map[String, String]): HttpBackendResource = {
     new HttpBackendResource(destination, additionalHeaders, DEFAULT_TIMEOUT)
   }
 
-  def apply(destination: String, additionalHeaders: Map[String, String], timeout: Int): HttpBackendResource = {
-    new HttpBackendResource(destination, additionalHeaders, timeout)
+  def apply(destination: String, additionalHeaders: Map[String, String], timeoutInMillis: Int): HttpBackendResource = {
+    new HttpBackendResource(destination, additionalHeaders, timeoutInMillis)
   }
 }

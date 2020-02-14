@@ -156,7 +156,13 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
 
       When("put is called with updated ")
       val expectedFilters = FilterResource()
-      val expectedRoutes = EndpointFixtures.defaultRoutes + RouteResource(RouteType.CUSTOM.toString, "Some name")
+      val expectedRoutes = EndpointFixtures.defaultRoutes + RouteResource(
+        RouteType.CUSTOM.toString,
+        "Some name",
+        Set.empty,
+        Set.empty,
+        Some(ExpressionFixtures.simpleEqualExpression)
+      )
       val expectedPath = "/some-new-path"
       endpoint = endpoint.copy(path = expectedPath, filters = expectedFilters, routes = expectedRoutes)
       val response = update(endpoint.id.get, endpoint)
