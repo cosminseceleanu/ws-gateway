@@ -1,6 +1,7 @@
 package domain.services
 
 import common.UnitSpec
+import common.validation.exceptions.ConstraintViolationException
 import domain.model.{Endpoint, Route}
 import domain.repositories.EndpointRepository
 import play.api.test.Helpers._
@@ -15,7 +16,7 @@ class EndpointWriterSpec extends UnitSpec {
   "Create Endpoint" when {
     "has all required values" should {
       "be saved" in {
-        val endpoint = Endpoint(null, "/a", Set.empty, Set(Route.connect(), Route.default(), Route.disconnect()))
+        val endpoint = Endpoint(None.orNull, "/a", Set.empty, Set(Route.connect(), Route.default(), Route.disconnect()))
         val expected = endpoint.copy(id = "a")
         (repoMock.create _).expects(endpoint).returning(Future.successful(expected)).once()
 
@@ -30,7 +31,7 @@ class EndpointWriterSpec extends UnitSpec {
 
     "has only connect route" should {
       "add the missing routes and then is saved" in {
-        val endpoint = Endpoint(null, "/b", Set.empty, Set(Route.connect()))
+        val endpoint = Endpoint(None.orNull, "/b", Set.empty, Set(Route.connect()))
         (repoMock.create _).expects(*).onCall {
           e: Endpoint => Future.successful(e.copy(id = "b"))
         }
@@ -42,6 +43,25 @@ class EndpointWriterSpec extends UnitSpec {
         result.routes must contain(Route.default())
       }
     }
+
+    "endpoint is invalid" should {
+      "an exception is thrown" in {
+        val endpoint = Endpoint(None.orNull, "/api/internal/adasda", None.orNull, Set(Route.connect()))
+
+        an[ConstraintViolationException] must be thrownBy (await(subject.create(endpoint)))
+      }
+    }
   }
 
+  "Update Endpoint" when {
+    "endpoint is invalid" should {
+      "an exception is thrown" in {
+        val initial = Endpoint("id", "/a", Set.empty, Set(Route.connect(), Route.default(), Route.disconnect()))
+        (providerMock.get _).expects("id").returning(Future.successful(initial)).once()
+        val endpoint = Endpoint(None.orNull, "/api/internal/adasda", None.orNull, Set(Route.connect()))
+
+        an[ConstraintViolationException] must be thrownBy (await(subject.update("id", endpoint)))
+      }
+    }
+  }
 }

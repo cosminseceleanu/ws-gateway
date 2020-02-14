@@ -109,6 +109,18 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
       Then("response is bad request")
       response.status mustEqual Status.BAD_REQUEST
     }
+
+    scenario("Invalid endpoint") {
+      Given("invalid endpoint")
+      val initial = EndpointFixtures.fullEndpointResource().copy(path = "/api/internal/invalid-path")
+
+      When("post api is called")
+      val created = create(initial)
+
+      Then("response has a status error")
+
+      created.status mustEqual Status.INTERNAL_SERVER_ERROR
+    }
   }
 
   feature("DELETE Api") {

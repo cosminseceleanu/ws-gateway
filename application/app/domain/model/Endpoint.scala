@@ -34,7 +34,7 @@ case class Endpoint(
   def findCustomRoute(json: String): Option[Route] = getCustomRoutes.find(r => r.appliesTo(json))
 
   def getRoute(routeType: RouteType): Option[Route] = configuration.routes.find(_.routeType == routeType)
-  def getRoutes(routeType: RouteType): Set[Route] = configuration.routes.filter(_.routeType == routeType)
+  def getRoutes(routeType: RouteType): Set[Route] = configuration.getRoutes(routeType)
   def hasRoute(routeType: RouteType): Boolean = configuration.routes.exists(_.routeType == routeType)
 
   def addRoutes(routes: Set[Route]): Endpoint = {

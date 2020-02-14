@@ -3,7 +3,10 @@ package domain.model
 import java.util
 
 import common.validation.Validatable
+import common.validation.constraints.TraversableSize
 import domain.model.AuthenticationMode.AuthenticationMode
+import domain.model.RouteType.RouteType
+import domain.validation.constraints.ValidRouteConfiguration
 import javax.validation.Valid
 import javax.validation.constraints.{Max, Min, NotNull}
 import org.joda.time.DateTime
@@ -11,11 +14,11 @@ import org.joda.time.DateTime
 import scala.annotation.meta.field
 import scala.collection.JavaConverters._
 
-//@ToDo add validation to ensure route type
+@ValidRouteConfiguration
 case class EndpointConfiguration(
                                   id: String,
-                                  @(NotNull @field) filters: Set[Filter],
-                                  @(NotNull @field) routes: Set[Route],
+                                  @(NotNull @field) @(TraversableSize @field)(max = 255) filters: Set[Filter],
+                                  @(NotNull @field) @(TraversableSize @field)(max = 255) routes: Set[Route],
                                   @(NotNull @field) authenticationMode: AuthenticationMode,
                                   @(Min @field)(10) @(Max @field)(10000) @(NotNull @field) bufferSize: Int,
                                   @(Min @field)(1) @(Max @field)(32) @(NotNull @field) backendParallelism: Int,
@@ -23,6 +26,8 @@ case class EndpointConfiguration(
                                 ) extends Ordered[EndpointConfiguration] with Validatable {
 
   override def compare(that: EndpointConfiguration): Int = createdAt.compareTo(that.createdAt)
+
+  def getRoutes(routeType: RouteType): Set[Route] = routes.filter(_.routeType == routeType)
 
   @Valid
   private val filterSet: util.Collection[Filter] = filters.asJavaCollection
@@ -56,5 +61,4 @@ object EndpointConfiguration {
             backendParallelism: Int, createdAt: DateTime): EndpointConfiguration = {
     new EndpointConfiguration(id, filters, routes, authenticationMode, bufferSize, backendParallelism, createdAt)
   }
-
 }

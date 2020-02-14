@@ -14,12 +14,18 @@ class EndpointWriter @Inject()(@Named("endpointRepo") endpointRepository: Endpoi
     RouteType.DISCONNECT -> Route.disconnect(),
     RouteType.DEFAULT -> Route.default())
 
-  def create(endpoint: Endpoint): Future[Endpoint] = endpointRepository.create(ensureDefaultRoutes(endpoint))
+  def create(endpoint: Endpoint): Future[Endpoint] = endpointRepository.create(ensureDefaultsAndValidate(endpoint))
 
   def update(id: String, endpoint: Endpoint): Future[Endpoint] = {
     endpointsProvider.get(id)
-      .map(_ => ensureDefaultRoutes(endpoint))
-      .flatMap(e => {endpointRepository.update(endpoint)})
+      .map(_ => ensureDefaultsAndValidate(endpoint))
+      .flatMap(e => {endpointRepository.update(e)})
+  }
+
+  private def ensureDefaultsAndValidate(endpoint: Endpoint) = {
+    val endpointWithDefaultRoutes = ensureDefaultRoutes(endpoint)
+    endpointWithDefaultRoutes.validate(endpointWithDefaultRoutes)
+    endpointWithDefaultRoutes
   }
 
   private def ensureDefaultRoutes(endpoint: Endpoint): Endpoint = {
