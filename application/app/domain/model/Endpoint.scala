@@ -1,10 +1,23 @@
 package domain.model
 
+import common.validation.Validatable
 import domain.exceptions.RouteNotFoundException
 import domain.model.AuthenticationMode.AuthenticationMode
 import domain.model.RouteType.RouteType
+import javax.validation.Valid
+import javax.validation.constraints.{NotBlank, NotNull, Pattern, Size}
 
-case class Endpoint(id: String, path: String, private val configuration: EndpointConfiguration) {
+import scala.annotation.meta.field
+
+case class Endpoint(
+                     id: String,
+                     @(NotBlank @field)
+                     @(Pattern @field)(regexp="^(?!\\/api\\/internal).*")
+                     @(Size @field)(min = 2, max = 255)
+                     path: String,
+                     @(Valid @field) @(NotNull @field)
+                     private val configuration: EndpointConfiguration
+                   ) extends Validatable {
   def getConnectRoute: Route = getRoute(RouteType.CONNECT) match {
     case Some(r) => r
     case None => throw RouteNotFoundException("Connect route is not defined")
@@ -25,7 +38,7 @@ case class Endpoint(id: String, path: String, private val configuration: Endpoin
   def findCustomRoute(json: String): Option[Route] = getCustomRoutes.find(r => r.appliesTo(json))
 
   def getRoute(routeType: RouteType): Option[Route] = configuration.routes.find(_.routeType == routeType)
-  def getRoutes(routeType: RouteType): Set[Route] = configuration.routes.filter(_.routeType == routeType)
+  def getRoutes(routeType: RouteType): Set[Route] = configuration.getRoutes(routeType)
   def hasRoute(routeType: RouteType): Boolean = configuration.routes.exists(_.routeType == routeType)
 
   def addRoutes(routes: Set[Route]): Endpoint = {
@@ -44,6 +57,14 @@ case class Endpoint(id: String, path: String, private val configuration: Endpoin
 }
 
 object Endpoint {
+  def apply(id: String, path: String): Endpoint = {
+    new Endpoint(id, path, EndpointConfiguration(Set.empty, Set.empty))
+  }
+
+  def apply(id: String, path: String, endpointConfiguration: EndpointConfiguration): Endpoint = {
+    new Endpoint(id, path, endpointConfiguration)
+  }
+
   def apply(id: String, path: String, filters: Set[Filter], routes: Set[Route]): Endpoint = {
     new Endpoint(id, path, EndpointConfiguration(filters, routes))
   }

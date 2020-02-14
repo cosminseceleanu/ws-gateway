@@ -8,7 +8,7 @@ import org.scalatest.Matchers._
 class RouteResourceSpec extends UnitSpec with JsonSupport {
 
   private val fullJson = "{\"type\":\"connect\",\"name\":\"name\",\"http\":[{\"destination\":\"http://localhost\"," +
-    "\"additionalHeaders\":{\"X-Debug\":\"foo\"},\"timeout\":1}],\"kafka\":[{\"topic\":\"some.topic\"}]}"
+    "\"additionalHeaders\":{\"X-Debug\":\"foo\"},\"timeoutInMillis\":1}],\"kafka\":[{\"topic\":\"some.topic\"}]}"
 
   private val customRouteJson = "{\"type\":\"custom\",\"name\":\"Custom route\",\"expression\":{\"and\":[{\"or\":[{\"matches\":{\"path\":\"$.a\",\"value\":\"a\"}}," +
                                 "{\"gte\":{\"path\":\"$.b\",\"value\":8}}]},{\"equal\":{\"path\":\"$.b\",\"value\":\"b\"}}]}," +
@@ -21,7 +21,7 @@ class RouteResourceSpec extends UnitSpec with JsonSupport {
     "serialized as json" should {
       "should have all fields serialized correctly" in {
         val expectedJson = "{\"type\":\"connect\",\"name\":\"name\",\"http\":[{\"destination\":\"http://localhost\"," +
-          "\"additionalHeaders\":{\"X-Debug\":\"foo\"},\"timeout\":1}],\"kafka\":[]}"
+          "\"additionalHeaders\":{\"X-Debug\":\"foo\"},\"timeoutInMillis\":1}],\"kafka\":[]}"
         val resource = RouteResource("connect", "name", Set(httpBackend), Set.empty)
         val json = toJson(resource)
 

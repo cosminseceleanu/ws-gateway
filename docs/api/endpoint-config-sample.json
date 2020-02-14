@@ -1,6 +1,8 @@
 {
   "path": "/my-ws-endpoint",
   "authMode": "none",
+  "bufferSize": 1000,
+  "backendParallelism": 4,
   "filters": {
     "whitelistIps": ["127.0.0"],
     "whitelistHosts": ["localhost"]
@@ -12,7 +14,7 @@
       "http": [
         {
           "destination": "service.1.example.com/connect",
-          "timeout": 300,
+          "timeoutInMillis": 300,
           "additionalHeaders": {
             "X-Debug-Id": "id"
           }

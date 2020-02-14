@@ -109,6 +109,18 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
       Then("response is bad request")
       response.status mustEqual Status.BAD_REQUEST
     }
+
+    scenario("Invalid endpoint") {
+      Given("invalid endpoint")
+      val initial = EndpointFixtures.fullEndpointResource().copy(path = "/api/internal/invalid-path")
+
+      When("post api is called")
+      val created = create(initial)
+
+      Then("response has a status error")
+
+      created.status mustEqual Status.INTERNAL_SERVER_ERROR
+    }
   }
 
   feature("DELETE Api") {
@@ -144,7 +156,13 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
 
       When("put is called with updated ")
       val expectedFilters = FilterResource()
-      val expectedRoutes = EndpointFixtures.defaultRoutes + RouteResource(RouteType.CUSTOM.toString, "Some name")
+      val expectedRoutes = EndpointFixtures.defaultRoutes + RouteResource(
+        RouteType.CUSTOM.toString,
+        "Some name",
+        Set.empty,
+        Set.empty,
+        Some(ExpressionFixtures.simpleEqualExpression)
+      )
       val expectedPath = "/some-new-path"
       endpoint = endpoint.copy(path = expectedPath, filters = expectedFilters, routes = expectedRoutes)
       val response = update(endpoint.id.get, endpoint)

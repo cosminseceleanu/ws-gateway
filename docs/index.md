@@ -54,5 +54,5 @@ For more about API Gateways check [here](https://microservices.io/patterns/apiga
 - Api Key
 - OAuth2
 
-##### Endpoint configuration proposal [Config](./endpoint-config-sample.json)
+##### Endpoint configuration proposal [Config](api/endpoint-config-sample.json)
 

@@ -1,5 +1,7 @@
 package domain.model
 
+import org.scalatest.Matchers._
+
 import common.UnitSpec
 
 class EndpointSpec extends UnitSpec {
@@ -54,6 +56,51 @@ class EndpointSpec extends UnitSpec {
         endpoint.routes must have size(2)
         endpoint.routes must contain(Route.connect())
         endpoint.routes must contain(Route.disconnect())
+      }
+    }
+  }
+
+  "Endpoint validation" when {
+    "path starts with /api/internal" should {
+      "should be invalid" in {
+        val endpoint = Endpoint("da", "/api/internal/my-custom-endpoint")
+        val violations = endpoint.getViolations(endpoint)
+
+        violations.size mustEqual 1
+        violations.head.propertyPath mustEqual "path"
+      }
+    }
+
+    "path is null" should {
+      "should be invalid" in {
+        val endpoint = Endpoint("da", None.orNull)
+        val violations = endpoint.getViolations(endpoint)
+
+        violations.size mustEqual 1
+        violations.head.propertyPath mustEqual "path"
+      }
+    }
+
+    "configuration is null" should {
+      "should be invalid" in {
+        val endpoint = Endpoint("da", "/some/path", None.orNull)
+        val violations = endpoint.getViolations(endpoint)
+
+        violations.size mustEqual 1
+        violations.head.propertyPath should include("configuration")
+        violations.head.message mustEqual "must not be null"
+      }
+    }
+
+    "configuration is not valid" should {
+      "should be invalid" in {
+        val configuration = EndpointConfiguration(Set.empty, None.orNull)
+        val endpoint = Endpoint("da", "/some/path", configuration)
+        val violations = endpoint.getViolations(endpoint)
+
+        violations.size mustEqual 1
+        violations.head.propertyPath should include("configuration.routes")
+        violations.head.message mustEqual "must not be null"
       }
     }
   }

@@ -10,7 +10,7 @@ class RouteAssembler @Inject() (expressionAssembler: ExpressionAssembler) extend
 
   override def toModel(resource: RouteResource): Route = {
     val httpBackends: Set[Backend[BackendSettings]] = resource.http
-      .map(r => HttpBackend(r.destination, HttpSettings(r.additionalHeaders, r.timeout)))
+      .map(r => HttpBackend(r.destination, HttpSettings(r.additionalHeaders, r.timeoutInMillis)))
 
     val kafkaBackends: Set[Backend[BackendSettings]] = resource.kafka
       .map(r => KafkaBackend(r.topic))
@@ -27,7 +27,7 @@ class RouteAssembler @Inject() (expressionAssembler: ExpressionAssembler) extend
         .map(b => HttpBackendResource(
           b.destination,
           b.settings.asInstanceOf[HttpSettings].additionalHeaders,
-          b.settings.asInstanceOf[HttpSettings].timeout)
+          b.settings.asInstanceOf[HttpSettings].timeoutInMillis)
         )
 
     val kafka = model.backends
