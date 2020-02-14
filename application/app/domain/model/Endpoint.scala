@@ -5,14 +5,18 @@ import domain.exceptions.RouteNotFoundException
 import domain.model.AuthenticationMode.AuthenticationMode
 import domain.model.RouteType.RouteType
 import javax.validation.Valid
-import javax.validation.constraints.{NotBlank, NotNull, Pattern}
+import javax.validation.constraints.{NotBlank, NotNull, Pattern, Size}
 
 import scala.annotation.meta.field
 
 case class Endpoint(
                      id: String,
-                     @(NotBlank @field) @(Pattern @field)(regexp="^(?!\\/api\\/internal).*") path: String,
-                     @(Valid @field) @(NotNull @field) private val configuration: EndpointConfiguration
+                     @(NotBlank @field)
+                     @(Pattern @field)(regexp="^(?!\\/api\\/internal).*")
+                     @(Size @field)(min = 2, max = 255)
+                     path: String,
+                     @(Valid @field) @(NotNull @field)
+                     private val configuration: EndpointConfiguration
                    ) extends Validatable {
   def getConnectRoute: Route = getRoute(RouteType.CONNECT) match {
     case Some(r) => r

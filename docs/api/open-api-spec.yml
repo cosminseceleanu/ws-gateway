@@ -1,0 +1,313 @@
+openapi: 3.0.0
+info:
+  description: |
+    WSGateway Api, You find out more on the
+    [Git](https://github.com/cosminseceleanu/ws-gateway) page
+  version: "1.0.0"
+  title: WSGateway Api
+  termsOfService: 'https://github.com/cosminseceleanu/ws-gateway'
+  contact:
+    email: ToBeDefined@email.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - description: Local
+    url: http://locahost:9000
+tags:
+  - name: Endpoints
+    description: Api's used to manage endpoints
+    externalDocs:
+      description: Find out more
+      url: 'https://github.com/cosminseceleanu/ws-gateway'
+paths:
+  /api/internal/endpoints:
+    get:
+      tags:
+        - Endpoints
+      summary: Get all the endpoints
+      operationId: getEndpoints
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Endpoint'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - Endpoints
+      summary: Create new endpoint
+      operationId: createEndpoint
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Endpoint'
+        '400':
+          description: Invalid endpoint supplied
+        '500':
+          description: Internal Server Error
+      requestBody:
+        $ref: '#/components/requestBodies/Endpoint'
+  /api/internal/endpoints/{endpointId}:
+    get:
+      tags:
+        - Endpoints
+      summary: Get endpoint by id
+      description: Get single endoint
+      operationId: getEndpoint
+      parameters:
+        - name: endpointId
+          in: path
+          description: Id of the endpoint
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Endpoint'
+        '404':
+          description: Endpoint not found
+    put:
+      tags:
+        - Endpoints
+      summary: Update an endpoint
+      description: Update an endpoint
+      operationId: updateEndpoint
+      parameters:
+        - name: endpointId
+          in: path
+          description: Id of the endpoint
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Endpoint'
+        '400':
+          description: Invalid endpoint
+        '500':
+          description: Internal server error
+      requestBody:
+        $ref: '#/components/requestBodies/Endpoint'
+    delete:
+      tags:
+        - Endpoints
+      summary: Delete endpoint
+      description: Delete endpoint by id
+      operationId: deleteEndpoint
+      parameters:
+        - name: endpointId
+          in: path
+          description: Id of the endpoint
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: Endpoint not found
+        '500':
+          description: Internal server error
+  /api/internal/connections/{connectionId}:
+    post:
+      tags:
+        - Connections
+      summary: Send event to user
+      description: Send a json event to the end user through the websocket connection
+      operationId: sendEvent
+      parameters:
+        - name: connectionId
+          in: path
+          description: Websocket connection id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The json event to be sent
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: successful operation
+        '500':
+          description: Internal server error
+externalDocs:
+  description: Find out more WSGateway
+  url: 'https://github.com/cosminseceleanu/ws-gateway'
+components:
+  schemas:
+    Endpoint:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        path:
+          description: The url path used to by the user to establish a WebSocket connection
+          type: string
+          pattern: "^(?!\\/api\\/internal).*"
+          minLength: 2
+          maxLength: 255
+          nullable: false
+        bufferSize:
+          description: The WS connection buffer size for the incoming events
+          type: integer
+          minimum: 10
+          maximum: 10000
+          default: 50
+          nullable: false
+        backendParallelism:
+          description: Parallelism used to send inbound events to backends
+          type: integer
+          minimum: 1
+          maximum: 32
+          default: 4
+          nullable: false
+        authMode:
+          description: Authentification mode that apply for the given endpoint
+          type: string
+          nullable: false
+          default: NONE
+          enum: [NONE, BASIC]
+        filters:
+          type: object
+          properties:
+            whitelistIps:
+              description: A set of IP's to whitelist
+              type: array
+              nullable: false
+              maxItems: 255
+              items:
+                type: string
+                format: ipv4
+            whitelistHosts:
+              description: A set of hosts to whitelist
+              type: array
+              nullable: false
+              maxItems: 255
+              items:
+                type: string
+                format: hostname
+            blacklistHosts:
+              description: A set of hosts to blacklist
+              type: array
+              nullable: false
+              maxItems: 255
+              items:
+                type: string
+                format: hostname
+            blacklistIps:
+              description: A set of IP's to blacklist
+              type: array
+              nullable: false
+              maxItems: 255
+              items:
+                type: string
+                format: ipv4
+        routes:
+          description: A set of routes
+          type: array
+          maxItems: 255
+          nullable: false
+          items:
+            $ref: "#/components/schemas/Route"
+      required:
+        - path
+        - authMode
+    Route:
+      description: A Route is a way to forward inbound events to a set of backends(REST api's, kafka topics)
+      type: object
+      properties:
+        type:
+          description: Type of the route
+          type: string
+          enum: [CONNECT, DISCONNECT, DEFAULT, CUSTOM]
+          nullable: false
+        name:
+          description: A name of the route. Within an endpoint you can not have (name, type) twice
+          type: string
+          nullable: false
+          minLength: 4
+          maxLength: 255
+        http:
+          description: Http backends to forward inbound events for current route. For maxItems=10 all backends are taken into account, regardless of their type
+          type: array
+          nullable: false
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              destination:
+                description: Http url of your API
+                type: string
+                nullable: false
+                format: uri
+              timeoutInMillis:
+                description: HTTP request timeout in milliseconds
+                type: integer
+                minimum: 10
+                maximum: 600000
+                default: 200
+                nullable: false
+              additionalHeaders:
+                description: Any additional http headers to be sent for each request
+                type: object
+                nullable: false
+                maxProperties: 255
+                default: {}
+            required:
+              - destination
+        kafka:
+          description: Kafka topics to forward inbound events for current route
+          type: array
+          nullable: false
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              destination:
+                description: Kafka topic
+                nullable: false
+                type: string
+            required:
+              - destination
+        expression:
+          description: Expression to be evaluated against the inbound event. For custom routes the expression is mandatory
+          type: object
+          nullable: true
+      required:
+        - type
+        - name
+
+  requestBodies:
+    Endpoint:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Endpoint'
+          examples:
+            fullEndpoint:
+              summary: Endpoint sample
+              externalValue: 'https://github.com/cosminseceleanu/ws-gateway/blob/master/docs/endpoint-config-sample.json'
+      description: All configuration details used by Gateway for one endpoint
+      required: true
