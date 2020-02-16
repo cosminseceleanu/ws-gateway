@@ -119,7 +119,7 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
 
       Then("response has a status error")
 
-      created.status mustEqual Status.INTERNAL_SERVER_ERROR
+      created.status mustEqual Status.BAD_REQUEST
     }
   }
 
