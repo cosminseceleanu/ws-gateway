@@ -12,9 +12,9 @@ class ConstraintViolationExceptionMapper extends ExceptionMapper {
   override def mapToError(exception: ConstraintViolationException): (Int, ErrorResource) = {
     val errors = exception.errors
         .toList
-        .map(e => s"Validation failed! Cause: ${e.message} property: ${e.propertyPath}")
+        .map(e => s"Validation failed! Cause: property ${e.propertyPath} ${e.message}")
 
-    (Status.BAD_REQUEST, ErrorResource("ConstraintViolation", exception.getMessage, errors))
+    (Status.BAD_REQUEST, ErrorResource("ConstraintViolation", "Invalid request body", errors))
   }
 
   override def getExceptionClass: Class[ConstraintViolationException] = classOf[ConstraintViolationException]

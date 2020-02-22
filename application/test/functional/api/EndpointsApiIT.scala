@@ -5,6 +5,7 @@ import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
 import com.jayway.jsonpath.matchers.JsonPathMatchers._
 import common.FunctionalSpec
 import common.api.EndpointsClient
+import common.rest.errors.ErrorResource
 import domain.model.RouteType
 import fixtures.{BackendFixtures, EndpointFixtures, ExpressionFixtures, RouteFixtures}
 import org.hamcrest.MatcherAssert.assertThat
@@ -115,11 +116,13 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
       val initial = EndpointFixtures.fullEndpointResource().copy(path = "/api/internal/invalid-path")
 
       When("post api is called")
-      val created = create(initial)
+      val response = create(initial)
 
       Then("response has a status error")
 
-      created.status mustEqual Status.BAD_REQUEST
+      response.status mustEqual Status.BAD_REQUEST
+      val error = fromJson[ErrorResource](response.body)
+      error.errorType mustEqual "ConstraintViolation"
     }
   }
 
