@@ -169,6 +169,7 @@ components:
           minLength: 2
           maxLength: 255
           nullable: false
+          example: /ws/chat
         bufferSize:
           description: The WS connection buffer size for the incoming events
           type: integer
@@ -176,6 +177,7 @@ components:
           maximum: 10000
           default: 50
           nullable: false
+          example: 50
         backendParallelism:
           description: Parallelism used to send inbound events to backends
           type: integer
@@ -183,8 +185,9 @@ components:
           maximum: 32
           default: 4
           nullable: false
+          example: 4
         authMode:
-          description: Authentification mode that apply for the given endpoint
+          description: Authentification mode that applies for the given endpoint
           type: string
           nullable: false
           default: NONE
@@ -198,6 +201,7 @@ components:
               nullable: false
               maxItems: 255
               items:
+                example: 127.0.0.1
                 type: string
                 format: ipv4
             whitelistHosts:
@@ -208,6 +212,7 @@ components:
               items:
                 type: string
                 format: hostname
+                example: my.rest.api.com
             blacklistHosts:
               description: A set of hosts to blacklist
               type: array
@@ -216,6 +221,7 @@ components:
               items:
                 type: string
                 format: hostname
+                example: my.rest.api.com
             blacklistIps:
               description: A set of IP's to blacklist
               type: array
@@ -224,6 +230,7 @@ components:
               items:
                 type: string
                 format: ipv4
+                example: 127.0.0.1
         routes:
           description: A set of routes
           type: array
@@ -243,12 +250,14 @@ components:
           type: string
           enum: [CONNECT, DISCONNECT, DEFAULT, CUSTOM]
           nullable: false
+          example: CONNECT
         name:
-          description: A name of the route. Within an endpoint you can not have (name, type) twice
+          description: The name of the route. Within an endpoint pair (name, type) is unique
           type: string
           nullable: false
           minLength: 4
           maxLength: 255
+          example: Connect Route
         http:
           description: Http backends to forward inbound events for current route. For maxItems=10 all backends are taken into account, regardless of their type
           type: array
@@ -262,6 +271,7 @@ components:
                 type: string
                 nullable: false
                 format: uri
+                example: https:my.rest.api.com
               timeoutInMillis:
                 description: HTTP request timeout in milliseconds
                 type: integer
@@ -270,7 +280,7 @@ components:
                 default: 200
                 nullable: false
               additionalHeaders:
-                description: Any additional http headers to be sent for each request
+                description: Any additional http headers that will be sent for each request
                 type: object
                 nullable: false
                 maxProperties: 255
@@ -289,12 +299,14 @@ components:
                 description: Kafka topic
                 nullable: false
                 type: string
+                example: "my.kafka.topic"
             required:
               - destination
         expression:
           description: Expression to be evaluated against the inbound event. For custom routes the expression is mandatory
           type: object
           nullable: true
+          example: {"and":[{"or":[{"matches":{"path":"$.a","value":"a"}},{"gte":{"path":"$.b","value":8}}]},{"equal":{"path":"$.b","value":"b"}}]}
       required:
         - type
         - name
