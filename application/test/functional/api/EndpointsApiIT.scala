@@ -26,6 +26,8 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
       assertThat(body, isJson)
       hasJsonPath("$.path", equalTo("demo"))
       hasJsonPath("$.id", equalTo("id"))
+      hasJsonPath("$.backendParallelism", equalTo("4"))
+      hasJsonPath("$.bufferSize", equalTo("50"))
       hasJsonPath("$.routes[*]", equalTo("3"))
       hasJsonPath("$.filters")
     }
@@ -63,6 +65,8 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
       created.routes mustEqual initial.routes
       created.httpBackends should have size 3
       created.httpBackends should contain(BackendFixtures.httpBackendResource)
+      created.backendParallelism.isDefined mustEqual true
+      created.bufferSize.isDefined mustEqual true
     }
 
     scenario("Create endpoint with custom route") {
