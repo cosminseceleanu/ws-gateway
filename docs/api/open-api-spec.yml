@@ -36,8 +36,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Endpoint'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - Endpoints
@@ -51,9 +53,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Endpoint'
         '400':
-          description: Invalid endpoint supplied
+          description: Invalid endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
       requestBody:
         $ref: '#/components/requestBodies/Endpoint'
   /api/internal/endpoints/{endpointId}:
@@ -77,8 +85,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Endpoint'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: Endpoint not found
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     put:
       tags:
         - Endpoints
@@ -101,8 +113,16 @@ paths:
                 $ref: '#/components/schemas/Endpoint'
         '400':
           description: Invalid endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: Internal server error
+          $ref: '#/components/responses/InternalServerError'
       requestBody:
         $ref: '#/components/requestBodies/Endpoint'
     delete:
@@ -121,10 +141,12 @@ paths:
       responses:
         '204':
           description: Successful operation
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: Endpoint not found
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: Internal server error
+          $ref: '#/components/responses/InternalServerError'
   /api/internal/connections/{connectionId}:
     post:
       tags:
@@ -149,8 +171,10 @@ paths:
       responses:
         '204':
           description: successful operation
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: Internal server error
+          $ref: '#/components/responses/InternalServerError'
 externalDocs:
   description: Find out more WSGateway
   url: 'https://github.com/cosminseceleanu/ws-gateway'
@@ -310,7 +334,31 @@ components:
       required:
         - type
         - name
-
+    Error:
+      description: Error response
+      type: object
+      properties:
+        errorType:
+          type: string
+          description: Type of the error
+          example: ConstraintViolation
+          readOnly: true
+        message:
+          type: string
+          description: Message error
+          example: Invalid request body
+          readOnly: true
+        timestamp:
+          type: integer
+          description: Timestamp in milliseconds when error occurred
+          example: 1582454804000
+          readOnly: true
+        errors:
+          description: List of aditional erorr messages(causes)
+          type: array
+          example: ["Property endpoint.path can not be null"]
+          items:
+            type: string
   requestBodies:
     Endpoint:
       content:
@@ -323,3 +371,22 @@ components:
               externalValue: 'https://github.com/cosminseceleanu/ws-gateway/blob/master/docs/endpoint-config-sample.json'
       description: All configuration details used by Gateway for one endpoint
       required: true
+  responses:
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

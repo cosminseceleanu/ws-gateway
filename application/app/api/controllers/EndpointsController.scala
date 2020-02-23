@@ -2,9 +2,9 @@ package api.controllers
 
 import api.rest.assemblers.EndpointAssembler
 import api.rest.resources.EndpointResource
-import common.rest.ErrorResource
+import common.rest.errors.ErrorResource
 import domain.exceptions.EndpointNotFoundException
-import domain.services.{EndpointWriter, EndpointDelete, EndpointsProvider}
+import domain.services.{EndpointDelete, EndpointWriter, EndpointsProvider}
 import javax.inject.Inject
 import play.api.libs.json.{JsError, Json, Reads}
 import play.api.mvc._
@@ -30,9 +30,6 @@ class EndpointsController @Inject() (
     endpointsProvider.get(id)
       .map(endpoints => endpointAssembler.toResource(endpoints))
       .map(resources => Ok(Json.toJson(resources)))
-      .recoverWith({
-        case e: EndpointNotFoundException => Future.successful(NotFound(ErrorResource(e.getMessage).toJson()))
-      })
   }
 
   def create(): Action[EndpointResource] = Action(validateJson[EndpointResource]).async { implicit request =>
@@ -49,20 +46,14 @@ class EndpointsController @Inject() (
       .flatMap(e => endpointWriter.update(id, e))
       .map(e => endpointAssembler.toResource(e))
       .map(r => Ok(Json.toJson(r)))
-      .recoverWith({
-        case e: EndpointNotFoundException => Future.successful(NotFound(ErrorResource(e.getMessage).toJson()))
-      })
   }
 
   private def validateJson[A: Reads] = parse.json.validate(
-    _.validate[A].asEither.left.map(e => BadRequest(ErrorResource(JsError(e).toString).toJson()))
+    _.validate[A].asEither.left.map(e => BadRequest("something"))
   )
 
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
     endpointDelete.delete(id)
       .map(_ => NoContent)
-      .recoverWith({
-        case e: EndpointNotFoundException => Future.successful(NotFound(ErrorResource(e.getMessage).toJson()))
-      })
   }
 }
