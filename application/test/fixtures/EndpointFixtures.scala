@@ -27,7 +27,7 @@ object EndpointFixtures {
     val filters = FilterResource(Set("1.1.1.1"), Set("2.2.2.2"), Set("host1"), Set("host2"))
     val routes = defaultRoutes
 
-    EndpointResource(None, "/test", filters, routes, AuthenticationMode.NONE.toString)
+    EndpointResource(None, "/test", None, None, filters, routes, AuthenticationMode.NONE.toString)
   }
 
   def defaultRoutes: Set[RouteResource] = {

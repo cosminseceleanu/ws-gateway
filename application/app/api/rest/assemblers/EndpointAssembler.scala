@@ -14,12 +14,16 @@ class EndpointAssembler @Inject() (filterAssembler: FilterAssembler, routeAssemb
     EndpointConfiguration(
       filterAssembler.toModel(resource.filters),
       routeAssembler.toModelsSet(resource.routes),
-      AuthenticationMode.withName(resource.authenticationMode)
-      ))
+      AuthenticationMode.withName(resource.authenticationMode),
+      resource.bufferSize.getOrElse(EndpointConfiguration.DEFAULT_BUFFER_SIZE),
+      resource.backendParallelism.getOrElse(EndpointConfiguration.DEFAULT_BACKEND_PARALLELISM)
+    ))
 
   override def toResource(model: Endpoint): EndpointResource = EndpointResource(
     Some(model.id),
     model.path,
+    Some(model.backendParallelism),
+    Some(model.bufferSize),
     filterAssembler.toResource(model.filters),
     routeAssembler.toResourcesSet(model.routes),
     model.authenticationMode.toString)
