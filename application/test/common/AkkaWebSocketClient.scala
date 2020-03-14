@@ -5,12 +5,13 @@ import java.util.concurrent.LinkedBlockingDeque
 import akka.Done
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.{HttpHeader, StatusCodes}
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source, SourceQueueWithComplete}
 import akka.stream.{Materializer, OverflowStrategy}
 import play.api.Logger
 
+import scala.collection.immutable
 import scala.concurrent.Future
 
 class AkkaWebSocketClient {
@@ -25,7 +26,9 @@ class AkkaWebSocketClient {
 
   private val messageQueue = new LinkedBlockingDeque[String]()
 
-  def connect(serverUrl: String): Future[(MessageQueue, SourceQueue)] = {
+  def connect(serverUrl: String): Future[(MessageQueue, SourceQueue)] = connectWithHeaders(serverUrl, immutable.Seq.empty[HttpHeader])
+
+  def connectWithHeaders(serverUrl: String, headers: immutable.Seq[HttpHeader]): Future[(MessageQueue, SourceQueue)] = {
     val incoming: Sink[Message, Future[Done]] = Sink.foreach {
       case TextMessage.Strict(s) => messageQueue.offer(s)
       case TextMessage.Streamed(s) => s.runFold("")(_ + _).foreach(messageQueue.offer)
@@ -38,7 +41,8 @@ class AkkaWebSocketClient {
     val (sourceMat, source) = sourceQueue.preMaterialize()
     val flow: Flow[Message, Message, Future[Done]] = Flow.fromSinkAndSourceMat(incoming, source)(Keep.left)
 
-    val (upgradeResponse, closed) = Http().singleWebSocketRequest(WebSocketRequest(serverUrl), flow)
+    val request = new WebSocketRequest(uri = serverUrl, extraHeaders = headers)
+    val (upgradeResponse, closed) = Http().singleWebSocketRequest(request, flow)
     closed.foreach(_ => logger.info("closed websocket connection"))
     upgradeResponse.map { upgrade =>
       if (upgrade.response.status == StatusCodes.SwitchingProtocols) {

@@ -63,11 +63,11 @@ class EndpointConfigurationSpec extends UnitSpec {
 
     "when authentication mode is null" should {
       "should be invalid" in {
-        val configuration = EndpointConfiguration(Set.empty, Set.empty).copy(authenticationMode = None.orNull)
+        val configuration = EndpointConfiguration(Set.empty, Set.empty).copy(authentication = None.orNull)
         val violations = configuration.getViolations(configuration)
 
         violations.size mustEqual 1
-        violations.head.propertyPath mustEqual "authenticationMode"
+        violations.head.propertyPath mustEqual "authentication"
         violations.head.message mustEqual "must not be null"
       }
     }

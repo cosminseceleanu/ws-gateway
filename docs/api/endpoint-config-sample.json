@@ -1,6 +1,11 @@
 {
   "path": "/my-ws-endpoint",
   "authMode": "none",
+  "authentication": {
+    "type": "none",
+    "basic": {"username": "adadasd", "password":  "dasdasd"},
+    "verifyTokenUrl": "http://adasd/dasd"
+  },
   "bufferSize": 1000,
   "backendParallelism": 4,
   "filters": {

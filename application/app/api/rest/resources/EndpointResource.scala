@@ -9,13 +9,13 @@ case class EndpointResource(
                        bufferSize: Option[Int],
                        filters: FilterResource,
                        routes: Set[RouteResource],
-                       authenticationMode: String) {
+                       authentication: AuthenticationResource) {
 
   def httpBackends: List[HttpBackendResource] = routes.toList.flatMap(_.http)
 }
 
 object EndpointResource {
-  implicit def optionFormat[T: Format]: Format[Option[T]] = new Format[Option[T]]{
+  implicit def optionFormat[T: Format]: Format[Option[T]] = new Format[Option[T]] {
     override def reads(json: JsValue): JsResult[Option[T]] = json.validateOpt[T]
 
     override def writes(o: Option[T]): JsValue = o match {

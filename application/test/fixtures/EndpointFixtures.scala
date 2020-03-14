@@ -1,7 +1,7 @@
 package fixtures
 
-import api.rest.resources.{EndpointResource, FilterResource, RouteResource}
-import domain.model.{AuthenticationMode, RouteType}
+import api.rest.resources.{AuthenticationResource, EndpointResource, FilterResource, RouteResource}
+import domain.model.RouteType
 
 object EndpointFixtures {
 
@@ -27,7 +27,7 @@ object EndpointFixtures {
     val filters = FilterResource(Set("1.1.1.1"), Set("2.2.2.2"), Set("host1"), Set("host2"))
     val routes = defaultRoutes
 
-    EndpointResource(None, "/test", None, None, filters, routes, AuthenticationMode.NONE.toString)
+    EndpointResource(None, "/test", None, None, filters, routes, AuthenticationResource.none())
   }
 
   def defaultRoutes: Set[RouteResource] = {
