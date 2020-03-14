@@ -11,5 +11,5 @@ case class WhitelistHosts(
                          ) extends Filter {
   override val name: String = Filter.WHITELIST_HOSTS
   override val value: SetValue = SetValue(whitelist)
-  override val filter: Map[String, String] => Boolean = headers => headers.contains("host") && whitelist.contains(headers("host"))
+  override val filter: Map[String, String] => Boolean = headers => headers.contains("Host") && whitelist.contains(headers("Host"))
 }

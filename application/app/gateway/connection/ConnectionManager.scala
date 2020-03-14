@@ -3,7 +3,7 @@ package gateway.connection
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Flow
 import akka.stream.{Materializer, OverflowStrategy}
-import domain.exceptions.{AccessDeniedException, EndpointNotFoundException}
+import domain.exceptions.{AccessDeniedException, AuthenticationException, EndpointNotFoundException}
 import domain.model.Endpoint
 import domain.services.EndpointsProvider
 import gateway.flow.GatewayFlowFactory
@@ -31,7 +31,8 @@ class ConnectionManager @Inject() (
       .map(endpointRequestPair => doConnect(endpointRequestPair._1, endpointRequestPair._2))
       .recover({
         case _: EndpointNotFoundException => Left(Results.NotFound)
-        case _: AccessDeniedException => Left(Results.Unauthorized)
+        case _: AuthenticationException => Left(Results.Unauthorized)
+        case _: AccessDeniedException => Left(Results.Forbidden)
         case e: Exception =>
           logger.error("Failed while creating WS connection", e)
           Left(Results.InternalServerError)

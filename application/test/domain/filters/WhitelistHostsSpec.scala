@@ -9,14 +9,14 @@ class WhitelistHostsSpec extends UnitSpec {
     val filter = Filter.whitelistHosts(Set(host))
 
     "headers contains a whitelisted host" should  {
-      val headers = Map("host" -> host)
+      val headers = Map("Host" -> host)
       "request is allowed" in {
         filter.isAllowed(headers) mustBe true
       }
     }
 
     "headers does not contain a whitelisted host" should  {
-      val headers = Map("host" -> "example.com")
+      val headers = Map("Host" -> "example.com")
       "request is not allowed" in {
         filter.isAllowed(headers) mustBe false
       }

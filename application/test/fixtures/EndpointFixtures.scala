@@ -8,19 +8,19 @@ object EndpointFixtures {
   def fromPath(path: String): EndpointResource = {
     val default = fullEndpointResource()
 
-    default.copy(path = path)
+    default.copy(path = path, filters = FilterResource())
   }
 
   def withRoutes(routes: Set[RouteResource]): EndpointResource = {
     val default = fullEndpointResource()
 
-    default.copy(routes = routes)
+    default.copy(routes = routes, filters = FilterResource())
   }
 
   def withRoutesAndPath(routes: Set[RouteResource], path: String): EndpointResource = {
     val default = fullEndpointResource()
 
-    default.copy(routes = routes, path = path)
+    default.copy(routes = routes, path = path, filters = FilterResource())
   }
 
   def fullEndpointResource(): EndpointResource = {

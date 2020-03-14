@@ -1,6 +1,6 @@
 package gateway.authentication
 
-import domain.exceptions.AccessDeniedException
+import domain.exceptions.AuthenticationException
 import domain.model.Endpoint
 import gateway.connection.ConnectionFilter
 import javax.inject.{Inject, Singleton}
@@ -20,7 +20,7 @@ class AuthenticationConnectionFilter @Inject() (private val checkers: Set[Authen
       case Some(c) => checkAuth(endpoint, request, c)
       case None =>
         logger.error(s"No auth check was found for endpoint=${endpoint.path}")
-        Future.failed(AccessDeniedException())
+        Future.failed(AuthenticationException())
     }
   }
 
@@ -28,7 +28,7 @@ class AuthenticationConnectionFilter @Inject() (private val checkers: Set[Authen
     c.isAuthenticated(request, endpoint)
       .map(isAuthenticated => {
         if (!isAuthenticated) {
-          throw AccessDeniedException()
+          throw AuthenticationException()
         }
         request
       })
