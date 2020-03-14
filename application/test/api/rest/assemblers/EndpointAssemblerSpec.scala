@@ -26,7 +26,7 @@ class EndpointAssemblerSpec extends UnitSpec {
 
         result.routes must contain(Route.default())
         result.filters must contain(expectedFilter)
-        result.authentication mustEqual(Authentication.None)
+        result.authentication mustEqual(Authentication.None())
         result.id mustEqual("a")
         result.path mustEqual("/a")
         result.backendParallelism mustEqual EndpointConfiguration.DEFAULT_BACKEND_PARALLELISM
