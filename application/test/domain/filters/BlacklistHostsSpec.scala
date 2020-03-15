@@ -9,14 +9,14 @@ class BlacklistHostsSpec extends UnitSpec {
     val filter = Filter.blacklistHosts(Set(host))
 
     "headers contains a blacklisted host" should  {
-      val headers = Map("host" -> host)
+      val headers = Map("Host" -> host)
       "request is not allowed" in {
         filter.isAllowed(headers) mustBe false
       }
     }
 
     "headers does not contain a blacklisted host" should  {
-      val headers = Map("host" -> "example.com")
+      val headers = Map("Host" -> "example.com")
       "request is allowed" in {
         filter.isAllowed(headers) mustBe true
       }

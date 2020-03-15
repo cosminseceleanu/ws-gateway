@@ -10,8 +10,9 @@ import ExecutionContext.Implicits.global
 
 @Singleton
 class EndpointsProvider @Inject() (@Named("endpointRepo") endpointRepository: EndpointRepository) {
-  def getFirstMatch(path: String): Future[Option[Endpoint]] = getAll()
+  def getFirstMatch(path: String): Future[Endpoint] = getAll()
     .map(endpoints => endpoints.find(e => e.matchesPath(path)))
+    .map(getEndpointOrThrow)
 
   def getAll(): Future[Seq[Endpoint]] = endpointRepository.getAll()
 

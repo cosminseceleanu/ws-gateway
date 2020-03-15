@@ -2,11 +2,15 @@ package api.rest.assemblers
 
 import api.rest.resources.EndpointResource
 import common.rest.ResourceAssembler
-import domain.model.{AuthenticationMode, Endpoint, EndpointConfiguration}
+import domain.model.{Endpoint, EndpointConfiguration}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class EndpointAssembler @Inject() (filterAssembler: FilterAssembler, routeAssembler: RouteAssembler) extends ResourceAssembler[Endpoint, EndpointResource] {
+class EndpointAssembler @Inject() (
+                                    filterAssembler: FilterAssembler,
+                                    routeAssembler: RouteAssembler,
+                                    authenticationAssembler: AuthenticationAssembler
+                                  ) extends ResourceAssembler[Endpoint, EndpointResource] {
 
   override def toModel(resource: EndpointResource): Endpoint = Endpoint(
     resource.id.orNull,
@@ -14,7 +18,7 @@ class EndpointAssembler @Inject() (filterAssembler: FilterAssembler, routeAssemb
     EndpointConfiguration(
       filterAssembler.toModel(resource.filters),
       routeAssembler.toModelsSet(resource.routes),
-      AuthenticationMode.withName(resource.authenticationMode),
+      authenticationAssembler.toModel(resource.authentication),
       resource.bufferSize.getOrElse(EndpointConfiguration.DEFAULT_BUFFER_SIZE),
       resource.backendParallelism.getOrElse(EndpointConfiguration.DEFAULT_BACKEND_PARALLELISM)
     ))
@@ -26,5 +30,6 @@ class EndpointAssembler @Inject() (filterAssembler: FilterAssembler, routeAssemb
     Some(model.bufferSize),
     filterAssembler.toResource(model.filters),
     routeAssembler.toResourcesSet(model.routes),
-    model.authenticationMode.toString)
+    authenticationAssembler.toResource(model.authentication)
+    )
 }

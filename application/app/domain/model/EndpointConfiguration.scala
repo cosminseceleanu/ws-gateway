@@ -4,7 +4,6 @@ import java.util
 
 import common.validation.Validatable
 import common.validation.constraints.TraversableSize
-import domain.model.AuthenticationMode.AuthenticationMode
 import domain.model.RouteType.RouteType
 import domain.validation.constraints.ValidRouteConfiguration
 import javax.validation.Valid
@@ -19,7 +18,7 @@ case class EndpointConfiguration(
                                   id: String,
                                   @(NotNull @field) @(TraversableSize @field)(max = 255) filters: Set[Filter],
                                   @(NotNull @field) @(TraversableSize @field)(max = 255) routes: Set[Route],
-                                  @(NotNull @field) authenticationMode: AuthenticationMode,
+                                  @(NotNull @field) @(Valid @field) authentication: Authentication,
                                   @(Min @field)(10) @(Max @field)(10000) @(NotNull @field) bufferSize: Int,
                                   @(Min @field)(1) @(Max @field)(32) @(NotNull @field) backendParallelism: Int,
                                   @(NotNull @field) createdAt: DateTime
@@ -43,27 +42,27 @@ object EndpointConfiguration {
   def apply(filters: Set[Filter], routes: Set[Route]): EndpointConfiguration = {
     new EndpointConfiguration(
       None.orNull, filters, routes,
-      AuthenticationMode.NONE, DEFAULT_BUFFER_SIZE, DEFAULT_BACKEND_PARALLELISM,
+      Authentication.None(), DEFAULT_BUFFER_SIZE, DEFAULT_BACKEND_PARALLELISM,
       DateTime.now()
     )
   }
 
-  def apply(filters: Set[Filter], routes: Set[Route], authenticationMode: AuthenticationMode): EndpointConfiguration = {
+  def apply(filters: Set[Filter], routes: Set[Route], authentication: Authentication): EndpointConfiguration = {
     new EndpointConfiguration(
       None.orNull, filters, routes,
-      authenticationMode, DEFAULT_BUFFER_SIZE, DEFAULT_BACKEND_PARALLELISM,
+      authentication, DEFAULT_BUFFER_SIZE, DEFAULT_BACKEND_PARALLELISM,
       DateTime.now()
     )
   }
 
   def apply(filters: Set[Filter], routes: Set[Route],
-            authenticationMode: AuthenticationMode, bufferSize: Int, backendParallelism: Int): EndpointConfiguration = {
-    new EndpointConfiguration(None.orNull, filters, routes, authenticationMode, bufferSize, backendParallelism, DateTime.now())
+            authentication: Authentication, bufferSize: Int, backendParallelism: Int): EndpointConfiguration = {
+    new EndpointConfiguration(None.orNull, filters, routes, authentication, bufferSize, backendParallelism, DateTime.now())
   }
 
   def apply(id: String, filters: Set[Filter], routes: Set[Route],
-            authenticationMode: AuthenticationMode, bufferSize: Int,
+            authentication: Authentication, bufferSize: Int,
             backendParallelism: Int, createdAt: DateTime): EndpointConfiguration = {
-    new EndpointConfiguration(id, filters, routes, authenticationMode, bufferSize, backendParallelism, createdAt)
+    new EndpointConfiguration(id, filters, routes, authentication, bufferSize, backendParallelism, createdAt)
   }
 }

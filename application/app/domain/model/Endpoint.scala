@@ -2,7 +2,6 @@ package domain.model
 
 import common.validation.Validatable
 import domain.exceptions.RouteNotFoundException
-import domain.model.AuthenticationMode.AuthenticationMode
 import domain.model.RouteType.RouteType
 import javax.validation.Valid
 import javax.validation.constraints.{NotBlank, NotNull, Pattern, Size}
@@ -48,7 +47,7 @@ case class Endpoint(
 
   def routes: Set[Route] = configuration.routes
   def filters: Set[Filter] = configuration.filters
-  def authenticationMode: AuthenticationMode = configuration.authenticationMode
+  def authentication: Authentication = configuration.authentication
 
   def bufferSize: Int = configuration.bufferSize
   def backendParallelism: Int = configuration.backendParallelism
@@ -69,8 +68,8 @@ object Endpoint {
     new Endpoint(id, path, EndpointConfiguration(filters, routes))
   }
 
-  def apply(id: String, path: String, filters: Set[Filter], routes: Set[Route], authenticationMode: AuthenticationMode): Endpoint = {
-    new Endpoint(id, path, EndpointConfiguration(filters, routes, authenticationMode))
+  def apply(id: String, path: String, filters: Set[Filter], routes: Set[Route], authentication: Authentication): Endpoint = {
+    new Endpoint(id, path, EndpointConfiguration(filters, routes, authentication))
   }
 }
 

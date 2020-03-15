@@ -11,7 +11,7 @@ class RouteSpec extends UnitSpec {
 
     "compared with other instance type" should {
       "return false" in {
-        route.canEqual(AuthenticationMode.NONE) mustBe false
+        route.canEqual("dasdasd") mustBe false
       }
     }
 

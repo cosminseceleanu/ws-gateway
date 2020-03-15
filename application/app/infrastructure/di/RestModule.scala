@@ -16,5 +16,6 @@ class RestModule extends AbstractModule with ScalaModule {
     mappersBinder.addBinding.to(classOf[ExpressionNotSupportedExceptionMapper])
     mappersBinder.addBinding.to(classOf[IncorrectBooleanExpressionExceptionMapper])
     mappersBinder.addBinding.to(classOf[IncorrectExpressionExceptionMapper])
+    mappersBinder.addBinding.to(classOf[AuthenticationNotSupportedExceptionMapper])
   }
 }

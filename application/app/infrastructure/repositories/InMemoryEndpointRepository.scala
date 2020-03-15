@@ -2,7 +2,7 @@ package infrastructure.repositories
 
 import java.util.UUID
 
-import domain.model.{AuthenticationMode, Endpoint, Route}
+import domain.model.{Authentication, Endpoint, Route}
 import domain.repositories.EndpointRepository
 import javax.inject.Singleton
 
@@ -17,7 +17,7 @@ class InMemoryEndpointRepository extends EndpointRepository {
     "/demo",
     Set.empty,
     Set(Route.connect(), Route.disconnect(), Route.default()),
-    AuthenticationMode.BASIC
+    Authentication.None()
     )
 
   private val endpoints: mutable.Map[String, Endpoint] = mutable.Map("id" -> defaultEndpoint)
