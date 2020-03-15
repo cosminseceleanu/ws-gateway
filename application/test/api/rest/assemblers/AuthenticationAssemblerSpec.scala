@@ -38,7 +38,7 @@ class AuthenticationAssemblerSpec extends UnitSpec {
         val model = assembler.toModel(resource)
 
         model.isInstanceOf[Authentication.Bearer] shouldBe true
-        model.asInstanceOf[Authentication.Bearer].verifyTokenUrl shouldBe "url"
+        model.asInstanceOf[Authentication.Bearer].authorizationServerUrl shouldBe "url"
       }
     }
 

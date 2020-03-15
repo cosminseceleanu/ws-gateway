@@ -27,7 +27,7 @@ class BearerAuthenticator @Inject()(httpClient: WSClient) extends Authenticator 
   }
 
   private def checkToken(auth: Authentication.Bearer, value: String, endpoint: Endpoint) = {
-    httpClient.url(auth.verifyTokenUrl)
+    httpClient.url(auth.authorizationServerUrl)
       .addHttpHeaders("Content-Type" -> "application/json")
       .withRequestTimeout(Duration(10, SECONDS))
       .post(Json.obj("access_token" -> value.replace("Bearer ", "")))

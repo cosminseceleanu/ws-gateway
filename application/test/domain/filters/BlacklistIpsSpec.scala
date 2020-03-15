@@ -17,7 +17,7 @@ class BlacklistIpsSpec extends UnitSpec {
     }
 
     "headers does not contain a blacklisted ip" should  {
-      val headers = Map(HeaderNames.X_FORWARDED_FOR -> "10.1.1.5")
+      val headers = Map(HeaderNames.X_FORWARDED_FOR -> "127.0.0.5")
       "request is allowed" in {
         filter.isAllowed(headers) mustBe true
       }

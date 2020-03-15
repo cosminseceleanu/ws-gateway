@@ -3,8 +3,9 @@
   "authMode": "none",
   "authentication": {
     "type": "none",
-    "basic": {"username": "adadasd", "password":  "dasdasd"},
-    "verifyTokenUrl": "http://adasd/dasd"
+    "username": "basic_user",
+    "password":  "strongPassword",
+    "authorizationServerUrl": "http://my.auth.com/verify_token"
   },
   "bufferSize": 1000,
   "backendParallelism": 4,

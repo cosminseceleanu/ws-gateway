@@ -19,6 +19,6 @@ object Authentication {
                   ) extends Authentication
 
   case class Bearer(
-                     @(NotNull @field) @(URL @field) @(Size @field)(min = 5, max = 255) verifyTokenUrl: String
+                     @(NotNull @field) @(URL @field) @(Size @field)(min = 5, max = 255) authorizationServerUrl: String
                    ) extends Authentication
 }

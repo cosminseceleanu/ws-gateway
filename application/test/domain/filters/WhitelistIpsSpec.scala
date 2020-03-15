@@ -17,7 +17,7 @@ class WhitelistIpsSpec extends UnitSpec {
     }
 
     "headers does not contain a whitelisted ip" should  {
-      val headers = Map(HeaderNames.X_FORWARDED_FOR -> "10.1.1.5")
+      val headers = Map(HeaderNames.X_FORWARDED_FOR -> "127.0.0.5")
       "request is not allowed" in {
         filter.isAllowed(headers) mustBe false
       }

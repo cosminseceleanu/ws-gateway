@@ -25,7 +25,7 @@ class AuthenticationResourceSpec extends UnitSpec with JsonSupport {
 
     "Bearer Auth" should {
       "all fields are present" in {
-        val expectedJson = "{\"mode\":\"bearer\",\"verifyTokenUrl\":\"http://localhost:8080/verify_token\"}"
+        val expectedJson = "{\"mode\":\"bearer\",\"authorizationServerUrl\":\"http://localhost:8080/verify_token\"}"
         val json = toJson(AuthenticationResource.bearer("http://localhost:8080/verify_token"))
 
         json mustEqual expectedJson

@@ -20,12 +20,12 @@ class AuthenticationIT extends FunctionalSpec with EndpointsClient {
 
   private val wiremockServer = new WireMockServer(options().dynamicPort())
   private var wiremockPort = 0
-  private var verifyTokenUrl = ""
+  private var authorizationServerUrl = ""
 
   override protected def beforeAll(): Unit = {
     wiremockServer.start()
     wiremockPort = wiremockServer.port()
-    verifyTokenUrl = s"http://localhost:$wiremockPort/verify_token"
+    authorizationServerUrl = s"http://localhost:$wiremockPort/verify_token"
   }
 
 
@@ -68,7 +68,7 @@ class AuthenticationIT extends FunctionalSpec with EndpointsClient {
       Given("endpoint who requires bearer authentication")
       val path = "/bearer-auth"
       val endpoint = EndpointFixtures.fromPath(path)
-        .copy(authentication = AuthenticationResource.bearer(verifyTokenUrl))
+        .copy(authentication = AuthenticationResource.bearer(authorizationServerUrl))
       createAndAssert(endpoint)
       wiremockServer.stubFor(
         post(urlPathEqualTo("/verify_token"))
@@ -88,7 +88,7 @@ class AuthenticationIT extends FunctionalSpec with EndpointsClient {
       Given("endpoint who requires bearer authentication")
       val path = "/bearer-auth-access-denied"
       val endpoint = EndpointFixtures.fromPath(path)
-        .copy(authentication = AuthenticationResource.bearer(verifyTokenUrl))
+        .copy(authentication = AuthenticationResource.bearer(authorizationServerUrl))
       createAndAssert(endpoint)
 
       wiremockServer.stubFor(

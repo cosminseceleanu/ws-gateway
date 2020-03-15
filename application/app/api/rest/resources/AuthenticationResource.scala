@@ -6,7 +6,7 @@ case class AuthenticationResource(
                                    mode: String,
                                    username: Option[String],
                                    password: Option[String],
-                                   verifyTokenUrl: Option[String])
+                                   authorizationServerUrl: Option[String])
 
 object AuthenticationResource {
   val MODE_NONE = "none"
@@ -18,8 +18,8 @@ object AuthenticationResource {
     MODE_BASIC, Some(username), Some(password), Option.empty
   )
 
-  def bearer(verifyTokenUrl: String): AuthenticationResource = AuthenticationResource(
-    MODE_BEARER, Option.empty, Option.empty, Some(verifyTokenUrl)
+  def bearer(authorizationServerUrl: String): AuthenticationResource = AuthenticationResource(
+    MODE_BEARER, Option.empty, Option.empty, Some(authorizationServerUrl)
   )
 
   implicit val format: OFormat[AuthenticationResource] = Json.format[AuthenticationResource]

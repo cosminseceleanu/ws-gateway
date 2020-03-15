@@ -45,7 +45,7 @@ class AuthenticationSpec extends UnitSpec {
         val violations = auth.getViolations(auth)
 
         violations.size mustEqual 1
-        violations.head.propertyPath mustEqual "verifyTokenUrl"
+        violations.head.propertyPath mustEqual "authorizationServerUrl"
       }
     }
 
@@ -55,7 +55,7 @@ class AuthenticationSpec extends UnitSpec {
         val violations = auth.getViolations(auth)
 
         violations.size mustEqual 1
-        violations.head.propertyPath mustEqual "verifyTokenUrl"
+        violations.head.propertyPath mustEqual "authorizationServerUrl"
       }
     }
 

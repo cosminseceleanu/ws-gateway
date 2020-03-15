@@ -48,12 +48,12 @@ class CustomFiltersIT extends FunctionalSpec with EndpointsClient {
     Given("endpoint with blacklist IP's filter")
     val path = "/blacklist-ip"
     val endpoint = EndpointFixtures.fromPath(path)
-      .copy(filters = FilterResource().copy(blacklistIps = Set("10.0.1.5")))
+      .copy(filters = FilterResource().copy(blacklistIps = Set("127.0.0.5")))
     createAndAssert(endpoint)
 
     scenario("Request is made from a blacklisted ip") {
       When("Try to connect")
-      val blackIp = RemoteAddress.IP(InetAddress.getByName("10.0.1.5"))
+      val blackIp = RemoteAddress.IP(InetAddress.getByName("127.0.0.5"))
 
       val caught = intercept[WsConnectionException] {
         await(wsClient.connectWithHeaders(

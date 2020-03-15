@@ -13,7 +13,7 @@ class AuthenticationAssembler extends ResourceAssembler[Authentication, Authenti
     resource.mode match {
       case AuthenticationResource.MODE_BASIC => Authentication.Basic(resource.username.orNull, resource.password.orNull)
       case AuthenticationResource.MODE_NONE => Authentication.None()
-      case AuthenticationResource.MODE_BEARER => Authentication.Bearer(resource.verifyTokenUrl.orNull)
+      case AuthenticationResource.MODE_BEARER => Authentication.Bearer(resource.authorizationServerUrl.orNull)
       case _ => throw AuthenticationNotSupportedException(s"Authentication mode ${resource.mode} is not supported")
     }
   }
@@ -21,7 +21,7 @@ class AuthenticationAssembler extends ResourceAssembler[Authentication, Authenti
   override def toResource(model: Authentication): AuthenticationResource = {
     model match {
       case Basic(username, password) => AuthenticationResource.basic(username, password)
-      case Bearer(verifyTokenUrl) => AuthenticationResource.bearer(verifyTokenUrl)
+      case Bearer(authorizationServerUrl) => AuthenticationResource.bearer(authorizationServerUrl)
       case None() => AuthenticationResource.none()
     }
   }
