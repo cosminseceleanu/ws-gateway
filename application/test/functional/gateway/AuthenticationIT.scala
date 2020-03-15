@@ -33,16 +33,16 @@ class AuthenticationIT extends FunctionalSpec with EndpointsClient {
     Given("endpoint who requires basic authentication")
     val path = "/basic-auth"
     val username = "cosmin"
-    val password = "St0nGpa$$"
+    val pass = "St0nGpa$$"
     val endpoint = EndpointFixtures.fromPath(path)
-      .copy(authentication = AuthenticationResource.basic(username, password))
+      .copy(authentication = AuthenticationResource.basic(username, pass))
     createAndAssert(endpoint)
 
     scenario("Authorization header is sent with correct credentials") {
       When("Try to connect")
       val (in, out) = await(wsClient.connectWithHeaders(
         s"$wsHost$path",
-        immutable.Seq(getBasicAuthorizationHeader(username, password))
+        immutable.Seq(getBasicAuthorizationHeader(username, pass))
       ))
 
       Then("Access granted")
