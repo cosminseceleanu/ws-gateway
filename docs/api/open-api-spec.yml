@@ -13,7 +13,7 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
   - description: Local
-    url: http://locahost:9000
+    url: http://localhost:9000
 tags:
   - name: Endpoints
     description: Api's used to manage endpoints

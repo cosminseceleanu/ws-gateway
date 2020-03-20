@@ -1,5 +1,3 @@
-GET     /index                                              api.controllers.HomeController.index
-
 GET     /api/internal/endpoints                             api.controllers.EndpointsController.getAll
 GET     /api/internal/endpoints/:id                         api.controllers.EndpointsController.get(id)
 POST    /api/internal/endpoints                             api.controllers.EndpointsController.create
