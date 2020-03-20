@@ -1,12 +1,30 @@
 name := """application"""
-
+version := "1.0-SNAPSHOT"
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
+val akkaVersion = "2.5.27"
+val akkaClusterVersion = "2.6.4"
+val akkaHTTPVersion = "10.1.11"
+
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-actor"  % akkaVersion,
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+  "com.typesafe.akka" %% "akka-slf4j"  % akkaVersion,
+
+  "com.typesafe.akka" %% "akka-http" % akkaHTTPVersion,
+  "com.typesafe.akka" %% "akka-http-core" % akkaHTTPVersion,
+  "com.typesafe.akka" %% "akka-http-spray-json" % akkaHTTPVersion,
+  "com.typesafe.akka" %% "akka-parsing" % akkaHTTPVersion,
+
+  "com.typesafe.akka" %% "akka-cluster" % akkaClusterVersion,
+  "com.typesafe.akka" %% "akka-cluster-typed" % akkaClusterVersion,
+  "com.typesafe.akka" %% "akka-cluster-tools" % akkaClusterVersion,
+  "com.lightbend.akka.management" %% "akka-management" % "1.0.6"
+)
 
 libraryDependencies += guice
 libraryDependencies += ws
-libraryDependencies += "com.typesafe.akka" %% "akka-cluster" % "2.6.1"
-libraryDependencies += "com.typesafe.akka" %% "akka-cluster-typed" % "2.6.1"
-libraryDependencies += "com.typesafe.akka" %% "akka-cluster-tools" % "2.6.1"
+
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.2.6"
 libraryDependencies += "com.jayway.jsonpath" % "json-path" % "2.4.0"
 
@@ -38,4 +56,3 @@ dependencyOverrides += "org.eclipse.jetty" % "jetty-util" % jettyVersion
 dependencyOverrides += "org.eclipse.jetty.websocket" % "websocket-api" % jettyVersion
 dependencyOverrides += "org.eclipse.jetty.websocket" % "websocket-common" % jettyVersion
 dependencyOverrides += "org.eclipse.jetty.websocket" % "websocket-client" % jettyVersion
-

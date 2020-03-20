@@ -2,3 +2,6 @@
 /target/
 /project/project/
 /project/target/
+deployment/env/*.env
+deployment/gateway/*.zip
+deployment/swagger-ui/*.yml
