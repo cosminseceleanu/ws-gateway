@@ -100,7 +100,7 @@ class EndpointsApiIT extends FunctionalSpec with EndpointsClient {
       created.id != null mustEqual true
       created.routes mustEqual initial.routes
       created.filters mustEqual initial.filters
-      created.authenticationMode mustEqual initial.authenticationMode
+      created.authentication mustEqual initial.authentication
       created.path mustEqual initial.path
     }
 

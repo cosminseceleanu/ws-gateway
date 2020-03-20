@@ -210,12 +210,38 @@ components:
           default: 4
           nullable: false
           example: 4
-        authMode:
-          description: Authentification mode that applies for the given endpoint
-          type: string
+        authentication:
+          description: Authentification details
+          type: object
           nullable: false
-          default: NONE
-          enum: [NONE, BASIC]
+          example: {"mode": "none"}
+          properties:
+            mode:
+              description: Authentication mode
+              type: string
+              enum: [none, basic, bearer]
+              default: none
+              nullable: false
+            username:
+              description: Used only by Basic Authentication
+              nullable: true
+              type: string
+              example: basic_user
+              minimum: 5
+              maximum: 255
+            password:
+              description: Used only by Basic Authentication
+              nullable: true
+              type: string
+              example: aStrongPassword
+              minimum: 5
+              maximum: 255
+            authorizationServerUrl:
+              description: An endpoint to validate that a given token is valid. Used only by Bearer Authentication
+              nullable: true
+              type: string
+              example: http://my.auth.com/verify_token
+              maximum: 255
         filters:
           type: object
           properties:

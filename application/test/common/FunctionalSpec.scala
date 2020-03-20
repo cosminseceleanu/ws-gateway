@@ -1,5 +1,8 @@
 package common
 
+import java.nio.charset.StandardCharsets
+import java.util.Base64
+
 import infrastructure.Environments
 import org.scalatest._
 import org.scalatestplus.play.WsScalaTestClient
@@ -26,4 +29,5 @@ abstract class FunctionalSpec extends FeatureSpec with MustMatchers with OptionV
   def wsConnectionUrl(path: String, connectionId: String): String = s"$wsHost$path?${connectionIdQueryParam(connectionId)}"
   def connectionIdQueryParam(id: String): String = s"connectionId=$id"
 
+  def base64(subject: String) = Base64.getEncoder.encodeToString(subject.getBytes(StandardCharsets.UTF_8))
 }

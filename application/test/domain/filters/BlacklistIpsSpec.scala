@@ -2,6 +2,7 @@ package domain.filters
 
 import common.UnitSpec
 import domain.model.Filter
+import play.mvc.Http.HeaderNames
 
 class BlacklistIpsSpec extends UnitSpec {
   "Blacklist ips filter" when {
@@ -9,14 +10,14 @@ class BlacklistIpsSpec extends UnitSpec {
     val filter = Filter.blacklistIps(Set(ip))
 
     "headers contains a blacklisted ip" should  {
-      val headers = Map("ip" -> ip)
+      val headers = Map(HeaderNames.X_FORWARDED_FOR -> ip)
       "request is not allowed" in {
         filter.isAllowed(headers) mustBe false
       }
     }
 
     "headers does not contain a blacklisted ip" should  {
-      val headers = Map("ip" -> "10.1.1.5")
+      val headers = Map(HeaderNames.X_FORWARDED_FOR -> "127.0.0.5")
       "request is allowed" in {
         filter.isAllowed(headers) mustBe true
       }
