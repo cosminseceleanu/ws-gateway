@@ -1,8 +1,7 @@
 {
   "path": "/my-ws-endpoint",
-  "authMode": "none",
   "authentication": {
-    "type": "none",
+    "mode": "none",
     "username": "basic_user",
     "password":  "strongPassword",
     "authorizationServerUrl": "http://my.auth.com/verify_token"
@@ -15,7 +14,7 @@
   },
   "routes": [
     {
-      "type": "connect",
+      "type": "CONNECT",
       "name": "Connect",
       "http": [
         {
@@ -28,12 +27,12 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.topic"
+          "topic": "service.2.connect.topic"
         }
       ]
     },
     {
-      "type": "disconnect",
+      "type": "DISCONNECT",
       "name": "Disconnect",
       "http": [
         {
@@ -42,12 +41,12 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.disconnect"
+          "topic": "service.2.connect.disconnect"
         }
       ]
     },
     {
-      "type": "error",
+      "type": "ERROR",
       "name": "Error",
       "http": [
         {
@@ -56,12 +55,12 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.error"
+          "topic": "service.2.connect.error"
         }
       ]
     },
     {
-      "type": "default",
+      "type": "DEFAULT",
       "name": "Default",
       "http": [
         {
@@ -70,12 +69,12 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.default"
+          "topic": "service.2.connect.default"
         }
       ]
     },
     {
-      "type": "custom",
+      "type": "CUSTOM",
       "name": "Custom route",
       "expression": {
         "and": [

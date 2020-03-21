@@ -1,6 +1,8 @@
 FROM openjdk:8-jdk
 
 EXPOSE 9000
+EXPOSE 9001
+
 RUN mkdir -p /opt/scala-play/bin
 WORKDIR /opt/scala-play/bin
 
