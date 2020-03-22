@@ -13,7 +13,7 @@
   },
   "routes": [
     {
-      "type": "CONNECT",
+      "type": "connect",
       "name": "Connect",
       "http": [
         {
@@ -31,7 +31,7 @@
       ]
     },
     {
-      "type": "DISCONNECT",
+      "type": "disconnect",
       "name": "Disconnect",
       "http": [
         {
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "type": "DEFAULT",
+      "type": "default",
       "name": "Default",
       "http": [
         {

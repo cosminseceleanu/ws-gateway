@@ -4,7 +4,7 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%date{HH:mm:ss.SSS} %coloredLevel [${HOSTNAME}] [%thread{10}] [%logger{10}] - %message%n%xException{10}</pattern>
+      <pattern>%date [%level] [${HOSTNAME}] [%thread{20}] [%logger{15}] - %message%n%xException{10}</pattern>
     </encoder>
   </appender>
 

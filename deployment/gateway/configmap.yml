@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: gateway-config
 data:
-  cors.allowedOrigins: "*"
+  gateway.playOptions: " -Dconfig.resource=k8s.conf -Dlogger.resource=logback-dev.xml"

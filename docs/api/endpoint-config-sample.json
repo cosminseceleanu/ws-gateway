@@ -14,7 +14,7 @@
   },
   "routes": [
     {
-      "type": "CONNECT",
+      "type": "connect",
       "name": "Connect",
       "http": [
         {
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "type": "DISCONNECT",
+      "type": "disconnect",
       "name": "Disconnect",
       "http": [
         {
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "type": "ERROR",
+      "type": "error",
       "name": "Error",
       "http": [
         {
@@ -60,7 +60,7 @@
       ]
     },
     {
-      "type": "DEFAULT",
+      "type": "default",
       "name": "Default",
       "http": [
         {
@@ -74,7 +74,7 @@
       ]
     },
     {
-      "type": "CUSTOM",
+      "type": "custom",
       "name": "Custom route",
       "expression": {
         "and": [

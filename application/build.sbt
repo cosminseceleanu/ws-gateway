@@ -5,6 +5,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 val akkaVersion = "2.5.27"
 val akkaClusterVersion = "2.6.4"
 val akkaHTTPVersion = "10.1.11"
+val akkaManagementVersion = "1.0.6"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor"  % akkaVersion,
@@ -16,10 +17,17 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-spray-json" % akkaHTTPVersion,
   "com.typesafe.akka" %% "akka-parsing" % akkaHTTPVersion,
 
+  "com.typesafe.akka" %% "akka-discovery" % akkaClusterVersion,
   "com.typesafe.akka" %% "akka-cluster" % akkaClusterVersion,
   "com.typesafe.akka" %% "akka-cluster-typed" % akkaClusterVersion,
   "com.typesafe.akka" %% "akka-cluster-tools" % akkaClusterVersion,
-  "com.lightbend.akka.management" %% "akka-management" % "1.0.6"
+
+  "com.lightbend.akka.management" %% "akka-management" % akkaManagementVersion,
+  "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion,
+  "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % akkaManagementVersion,
+  "com.lightbend.akka.management" %% "akka-management-cluster-http" % akkaManagementVersion excludeAll (
+    ExclusionRule(organization = "com.typesafe.akka")
+  )
 )
 
 libraryDependencies += guice

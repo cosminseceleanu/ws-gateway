@@ -4,11 +4,17 @@ metadata:
   name: gateway-deployment
   labels:
     app: gateway-app
+    version: 1.0.1-alpha
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: gateway-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -18,25 +24,39 @@ spec:
         - name: gateway
           image: ws-gateway:1.0.1-alpha
           imagePullPolicy: Never
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
           readinessProbe:
             httpGet:
               path: /health/ready
               port: management
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             timeoutSeconds: 10
+            periodSeconds: 15
+            failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /health/alive
               port: management
-            initialDelaySeconds: 10
+            initialDelaySeconds: 150
             timeoutSeconds: 2
             periodSeconds: 5
           env:
-            - name: CORS_ALLOWED_ORIGINS
+            - name: PLAY_OPTS
               valueFrom:
                 configMapKeyRef:
                   name: gateway-config
-                  key: cors.allowedOrigins
+                  key: gateway.playOptions
+            - name: AKKA_CLUSTER_BOOTSTRAP_SERVICE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: "metadata.labels['app']"
             - name: APP_SECRET
               valueFrom:
                 secretKeyRef:
@@ -47,15 +67,27 @@ spec:
               containerPort: 9000
             - name: management
               containerPort: 9001
+            - name: remoting
+              containerPort: 2552
+              protocol: TCP
 ---
-apiVersion: v1
-kind: Service
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: gateway-service
-spec:
-  selector:
-    app: gateway-app
-  ports:
-    - port: 9000
-      targetPort: 9000
-  type: LoadBalancer
+  name: pod-reader
+rules:
+  - apiGroups: [""] # "" indicates the core API group
+    resources: ["pods"]
+    verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+subjects:
+  - kind: ServiceAccount
+    name: default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
