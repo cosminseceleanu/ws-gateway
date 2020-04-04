@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway-service
+  name: gateway-core
 spec:
   selector:
-    app: gateway-app
+    app: gateway-core
   ports:
     - name: app
       port: 9000

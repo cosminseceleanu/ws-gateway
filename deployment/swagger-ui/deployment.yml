@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway-swagger-ui-deployment
+  name: gateway-swagger-ui
   labels:
     app: swagger-ui
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: swagger-ui
@@ -37,7 +37,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway-swagger-ui-service
+  name: gateway-swagger-ui
 spec:
   selector:
     app: swagger-ui

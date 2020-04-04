@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway-deployment
+  name: gateway-core
   labels:
-    app: gateway-app
+    app: gateway-core
     version: 1.0.1-alpha
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: gateway-app
+      app: gateway-core
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       labels:
-        app: gateway-app
+        app: gateway-core
     spec:
       containers:
         - name: gateway
@@ -50,7 +50,7 @@ spec:
             - name: PLAY_OPTS
               valueFrom:
                 configMapKeyRef:
-                  name: gateway-config
+                  name: gateway-core-config
                   key: gateway.playOptions
             - name: AKKA_CLUSTER_BOOTSTRAP_SERVICE_NAME
               valueFrom:
@@ -60,7 +60,7 @@ spec:
             - name: APP_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: gateway-secrets
+                  name: gateway-core-secrets
                   key: appSecret
           ports:
             - name: application
