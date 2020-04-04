@@ -18,7 +18,15 @@ class RouteAssembler @Inject() (expressionAssembler: ExpressionAssembler) extend
     val allBackends = httpBackends ++ kafkaBackends + DebugBackend()
     val expression = resource.expression.map(e => expressionAssembler.toModel(e))
 
-    Route(RouteType.withName(resource.routeType), resource.name, allBackends, expression)
+    Route(getRouteType(resource), resource.name, allBackends, expression)
+  }
+
+  private def getRouteType(resource: RouteResource) = {
+    if (resource.routeType == null) {
+      None.orNull
+    } else {
+      RouteType.withName(resource.routeType.toUpperCase)
+    }
   }
 
   override def toResource(model: Route): RouteResource = {

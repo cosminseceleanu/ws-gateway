@@ -14,6 +14,11 @@ info:
 servers:
   - description: Local
     url: http://localhost:9000
+  - url: http://{serverUrl}
+    variables:
+      serverUrl:
+        default: localhost:9000
+        description: Server url
 tags:
   - name: Endpoints
     description: Api's used to manage endpoints

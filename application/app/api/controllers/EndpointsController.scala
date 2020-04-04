@@ -49,7 +49,7 @@ class EndpointsController @Inject() (
   }
 
   private def validateJson[A: Reads] = parse.json.validate(
-    _.validate[A].asEither.left.map(e => BadRequest("something"))
+    _.validate[A].asEither.left.map(e => BadRequest(JsError(e).toString)) //@ToDo - refactor this
   )
 
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
