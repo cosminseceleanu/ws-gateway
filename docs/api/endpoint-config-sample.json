@@ -1,8 +1,7 @@
 {
   "path": "/my-ws-endpoint",
-  "authMode": "none",
   "authentication": {
-    "type": "none",
+    "mode": "none",
     "username": "basic_user",
     "password":  "strongPassword",
     "authorizationServerUrl": "http://my.auth.com/verify_token"
@@ -28,7 +27,7 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.topic"
+          "topic": "service.2.connect.topic"
         }
       ]
     },
@@ -42,7 +41,7 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.disconnect"
+          "topic": "service.2.connect.disconnect"
         }
       ]
     },
@@ -56,7 +55,7 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.error"
+          "topic": "service.2.connect.error"
         }
       ]
     },
@@ -70,7 +69,7 @@
       ],
       "kafka": [
         {
-          "destination": "service.2.connect.default"
+          "topic": "service.2.connect.default"
         }
       ]
     },
