@@ -12,13 +12,14 @@
 
 	<groupId>com.cosmin.wsgateway</groupId>
 	<artifactId>ws-gateway</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${project.version}</version>
 	<name>ws-gateway</name>
 	<description>WebSocket Api Gateway</description>
 
 	<properties>
 		<java.version>11</java.version>
 		<spring-boot.version>2.2.5.RELEASE</spring-boot.version>
+		<spring.version>5.2.5.RELEASE</spring.version>
 		<lombok.version>1.18.12</lombok.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
@@ -26,6 +27,10 @@
 		<jackson.version>2.10.3</jackson.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<hibernate-validator.version>6.1.2.Final</hibernate-validator.version>
+		<json-path.version>2.4.0</json-path.version>
+		<project.version>0.0.1-SNAPSHOT</project.version>
+		<reactor-core.version>3.3.4.RELEASE</reactor-core.version>
+		<junit.version>5.6.1</junit.version>
 	</properties>
 
 	<dependencyManagement>
@@ -41,6 +46,25 @@
 				<artifactId>spring-boot-starter-web</artifactId>
 				<version>${spring-boot.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-webflux</artifactId>
+				<version>${spring-boot.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.projectreactor</groupId>
+				<artifactId>reactor-core</artifactId>
+				<version>${reactor-core.version}</version>
+			</dependency>
+
 
 			<dependency>
 				<groupId>io.vertx</groupId>
@@ -79,6 +103,18 @@
 				<version>${hibernate-validator.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>${json-path.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -100,6 +136,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M4</version>
 			</plugin>
 		</plugins>
 	</build>
