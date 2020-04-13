@@ -2,7 +2,9 @@ package com.cosmin.wsgateway.domain.model.expressions;
 
 
 import com.cosmin.wsgateway.domain.model.Expression;
+import lombok.Builder;
 
+@Builder
 public class Or extends BooleanExpression {
     public Or(Expression<Boolean> left, Expression<Boolean> right) {
         super(left, right);

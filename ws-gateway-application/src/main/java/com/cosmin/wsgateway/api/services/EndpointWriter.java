@@ -1,6 +1,6 @@
-package com.cosmin.wsgateway.application.services;
+package com.cosmin.wsgateway.api.services;
 
-import com.cosmin.wsgateway.application.repositories.EndpointRepository;
+import com.cosmin.wsgateway.api.repositories.EndpointRepository;
 import com.cosmin.wsgateway.domain.model.Endpoint;
 import com.cosmin.wsgateway.domain.model.Route;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,8 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 @Component
-@RequiredArgsConstructor
 @Validated
+@RequiredArgsConstructor
 public class EndpointWriter {
     private final EndpointRepository endpointRepository;
     private final EndpointsProvider endpointsProvider;

@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.application;
+package com.cosmin.wsgateway.api;
 
 import lombok.Builder;
 import lombok.Data;

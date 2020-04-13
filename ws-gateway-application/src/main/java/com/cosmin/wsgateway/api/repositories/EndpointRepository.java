@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.application.repositories;
+package com.cosmin.wsgateway.api.repositories;
 
 import com.cosmin.wsgateway.domain.model.Endpoint;
 import reactor.core.publisher.Flux;

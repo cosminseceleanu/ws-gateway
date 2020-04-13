@@ -1,6 +1,7 @@
 package com.cosmin.wsgateway.domain.model.backends;
 
 import com.cosmin.wsgateway.domain.model.BackendSettings;
+import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.Max;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.Map;
 
 @Value
+@Builder
 public class HttpSettings implements BackendSettings {
     @Size(max = 255)
     private final Map<String, String> additionalHeaders;

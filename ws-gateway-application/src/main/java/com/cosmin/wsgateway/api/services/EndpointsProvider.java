@@ -1,6 +1,6 @@
-package com.cosmin.wsgateway.application.services;
+package com.cosmin.wsgateway.api.services;
 
-import com.cosmin.wsgateway.application.repositories.EndpointRepository;
+import com.cosmin.wsgateway.api.repositories.EndpointRepository;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
 import com.cosmin.wsgateway.domain.model.Endpoint;
 import lombok.RequiredArgsConstructor;
