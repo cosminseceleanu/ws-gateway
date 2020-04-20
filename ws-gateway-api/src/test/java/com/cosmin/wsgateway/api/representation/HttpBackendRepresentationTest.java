@@ -1,10 +1,10 @@
-package com.cosmin.wsgateway.api.rest.representation;
+package com.cosmin.wsgateway.api.representation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import static com.cosmin.wsgateway.api.BackendFixtures.defaultHttpRepresentation;
+import static com.cosmin.wsgateway.api.fixtures.BackendFixtures.defaultHttpRepresentation;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpBackendRepresentationTest {

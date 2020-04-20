@@ -1,6 +1,8 @@
 package com.cosmin.wsgateway.domain.model.expressions;
 
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 public class Equal<R> extends TerminalExpression<Boolean, R> {
     public Equal(String path, R value) {
         super(path, value);

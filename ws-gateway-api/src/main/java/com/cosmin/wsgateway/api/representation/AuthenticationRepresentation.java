@@ -1,7 +1,9 @@
-package com.cosmin.wsgateway.api.rest.representation;
+package com.cosmin.wsgateway.api.representation;
 
 import com.fasterxml.jackson.annotation.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -34,7 +36,7 @@ public interface AuthenticationRepresentation {
 
         private final String value;
 
-        private final Map<String, Mode> valuesByName = Arrays.stream(Mode.values())
+        private final static Map<String, Mode> valuesByName = Arrays.stream(Mode.values())
                 .collect(toMap(Mode::getValue, Function.identity()));
 
         @JsonCreator
@@ -50,15 +52,18 @@ public interface AuthenticationRepresentation {
     }
 
     @Data
+    @NoArgsConstructor
     class None implements AuthenticationRepresentation {
         @JsonProperty("mode")
         @Override
         public Mode mode() {
             return Mode.NONE;
         }
-    };
+    }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     class Basic implements AuthenticationRepresentation {
         private String username;
         private String password;
@@ -68,9 +73,11 @@ public interface AuthenticationRepresentation {
         public Mode mode() {
             return Mode.BASIC;
         }
-    };
+    }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     class Bearer implements AuthenticationRepresentation {
         private String authorizationServerUrl;
 

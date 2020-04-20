@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.api.rest.representation;
+package com.cosmin.wsgateway.api.representation;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.Set;
 public class EndpointRepresentation {
     private String id;
     private String path;
-    private FilterRepresentation filters;
+    private FilterRepresentation filters = new FilterRepresentation();
     private Set<RouteRepresentation> routes;
     private AuthenticationRepresentation authentication;
 }

@@ -1,5 +1,6 @@
-package com.cosmin.wsgateway.api.rest.representation;
+package com.cosmin.wsgateway.api.representation;
 
+import com.cosmin.wsgateway.domain.model.Backend;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -7,21 +8,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class HttpBackendRepresentation implements BackendRepresentation {
-    private String destination;
-    private Integer timeoutInMillis;
-    private Map<String, String> additionalHeaders;
+public class KafkaBackendRepresentation implements BackendRepresentation {
+    private String topic;
 
-    @JsonProperty("type")
     @Override
+    @JsonProperty("type")
     public String type() {
-        return "http";
+        return Backend.Type.KAFKA.name().toLowerCase();
     }
 }

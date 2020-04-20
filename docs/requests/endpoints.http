@@ -1,12 +1,68 @@
-# paste cURL into the file and request will be converted to HTTP Request format.
-# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection) or
-#
-# Following HTTP Request Live Templates are available:
-# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
-# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
-# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
-### Get endpoints
-GET http://localhost:9000/api/endpoints
+### list all
+GET http://localhost:8080/api/internal/endpoints
+
+### Create
+POST http://localhost:8080/api/internal/endpoints
+Content-Type: application/json
+
+{
+  "path": "/my-ws-endpoint",
+  "authentication": {
+    "mode": "basic",
+    "username": "basic_user",
+    "password":  "strongPassword"
+  },
+  "routes": [
+    {
+      "type": "connect",
+      "name": "Connect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/connect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.connect.topic"
+        }
+      ]
+    },
+    {
+      "type": "disconnect",
+      "name": "Disconnect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/disconnect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.diconnect.topic"
+        }
+      ]
+    },
+    {
+      "type": "default",
+      "name": "Default",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/default",
+          "timeoutInMillis": 300
+        }
+      ]
+    }
+  ]
+}
 
 ###
+
 

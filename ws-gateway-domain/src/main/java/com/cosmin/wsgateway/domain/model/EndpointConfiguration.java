@@ -22,7 +22,7 @@ public class EndpointConfiguration {
     @NotNull
     @Size(max = 255)
     @Valid
-    private final Set<Filter<Object>> filters;
+    private final Set<Filter<?>> filters;
 
     @NotNull
     @Size(max = 255)
@@ -34,7 +34,7 @@ public class EndpointConfiguration {
     private final Authentication authentication;
 
     @NotNull
-    private final LocalDateTime createdAt;
+    private final LocalDateTime createdAt = LocalDateTime.now();
 
     public Set<Route> getRoutesByType(Route.Type type) {
         return routes.stream()
@@ -42,7 +42,7 @@ public class EndpointConfiguration {
                 .collect(toUnmodifiableSet());
     }
 
-    public Set<Filter<Object>> getFilters() {
+    public Set<Filter<?>> getFilters() {
         return Collections.unmodifiableSet(filters);
     }
 

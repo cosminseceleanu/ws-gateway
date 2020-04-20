@@ -1,24 +1,22 @@
-package com.cosmin.wsgateway.api.rest.mappers;
+package com.cosmin.wsgateway.api.mappers;
 
+import com.cosmin.wsgateway.api.representation.TerminalExpressionRepresentation;
 import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
 import com.cosmin.wsgateway.domain.model.Expression;
-import com.cosmin.wsgateway.domain.model.expressions.And;
-import com.cosmin.wsgateway.domain.model.expressions.Equal;
-import com.cosmin.wsgateway.domain.model.expressions.Matches;
-import com.cosmin.wsgateway.domain.model.expressions.Or;
+import com.cosmin.wsgateway.domain.model.expressions.TerminalExpression;
+import com.cosmin.wsgateway.domain.model.expressions.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiFunction;
 
 @Component
 @RequiredArgsConstructor
@@ -29,10 +27,8 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
     @Override
     public Expression<Boolean> toModel(Map<String, Object> representation) {
         JsonNode jsonNode = objectMapper.convertValue(representation, JsonNode.class);
-        if (jsonNode instanceof ObjectNode) {
-            return parseJsonValue((ObjectNode) jsonNode, 0);
-        }
-        throw new IncorrectExpressionException("Expression root must be an object");
+
+        return parseJsonValue((ObjectNode) jsonNode, 0);
     }
 
     private Expression<Boolean> parseJsonValue(ObjectNode jsonNode, int nestedLevel) {
@@ -52,11 +48,11 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
         switch (name) {
             case AND:
             case OR:
-                return createBooleanExpression(name, (ObjectNode) head.getValue(), nestedLevel);
+                return createBooleanExpression(name, head.getValue(), nestedLevel);
             case EQUAL:
-                return createExpression(name, jsonNode, Equal.class);
+                return createExpression(name, jsonNode, Equal::new);
             case MATCHES:
-                return createExpression(name, jsonNode, Matches.class);
+                return createExpression(name, jsonNode, (p, v) -> new Matches(p, (String) v));
             default:
                 throw new IncorrectExpressionException(String.format("Expression %s is not supported yet", name));
         }
@@ -70,9 +66,10 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
         return fields;
     }
 
-    private Expression<Boolean> createExpression(Expression.Name name, ObjectNode jsonNode, Class<?> expectedType) {
+    private Expression<Boolean> createExpression(Expression.Name name, ObjectNode jsonNode, BiFunction<String, Object, Expression<Boolean>> createExpr) {
         try {
-            return (Expression<Boolean>) objectMapper.treeToValue(jsonNode, expectedType);
+            TerminalExpressionRepresentation representation = objectMapper.treeToValue(jsonNode.get(name.getValue()), TerminalExpressionRepresentation.class);
+            return createExpr.apply(representation.getPath(), representation.getValue());
         } catch (JsonProcessingException e) {
             log.error("error while reading expression={}", name, e);
             throw new IncorrectExpressionException(e);
@@ -95,12 +92,22 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
             }
             return new Or(left, right);
         } catch (ClassCastException e) {
-            throw new IncorrectExpressionException("Boolean expressions must have exactly child as json objects");
+            throw new IncorrectExpressionException("Boolean expressions must have child as json objects");
         }
     }
 
     @Override
     public Map<String, Object> toRepresentation(Expression<Boolean> domain) {
-        return null;
+        if (domain instanceof TerminalExpression) {
+            return Map.of(domain.name().getValue(), Map.of(
+                    "path", ((TerminalExpression) domain).path(),
+                    "value", ((TerminalExpression) domain).value()
+            ));
+        }
+        BooleanExpression booleanExpression = (BooleanExpression) domain;
+        return Map.of(booleanExpression.name().getValue(), List.of(
+                toRepresentation(booleanExpression.left()),
+                toRepresentation(booleanExpression.right())
+        ));
     }
 }

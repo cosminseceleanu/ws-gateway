@@ -32,15 +32,15 @@ public class Endpoint {
     private final EndpointConfiguration configuration;
 
     public Route getConnectRoute() {
-        return getRoute(CONNECT).orElseThrow(() -> new RouteNotFoundException("CONNECT Route is not defined"));
+        return getRoute(CONNECT).orElseThrow(() -> new RouteNotFoundException("Connect Route is not defined"));
     }
 
     public Route getDisconnectRoute() {
-        return getRoute(DISCONNECT).orElseThrow(() -> new RouteNotFoundException("CONNECT Route is not defined"));
+        return getRoute(DISCONNECT).orElseThrow(() -> new RouteNotFoundException("Disconnect Route is not defined"));
     }
 
     public Route getDefaultRoute() {
-        return getRoute(DEFAULT).orElseThrow(() -> new RouteNotFoundException("CONNECT Route is not defined"));
+        return getRoute(DEFAULT).orElseThrow(() -> new RouteNotFoundException("Default Route is not defined"));
     }
 
     public Boolean hasRoute(Route.Type type) {
@@ -70,7 +70,7 @@ public class Endpoint {
         return configuration.getAuthentication();
     }
 
-    public Set<Filter<Object>> getFilters() {
+    public Set<Filter<?>> getFilters() {
         return configuration.getFilters();
     }
 

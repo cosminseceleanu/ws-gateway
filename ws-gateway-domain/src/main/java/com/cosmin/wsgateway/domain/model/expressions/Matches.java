@@ -1,6 +1,8 @@
 package com.cosmin.wsgateway.domain.model.expressions;
 
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 public class Matches extends TerminalExpression<Boolean, String> {
     public Matches(String path, String value) {
         super(path, value);
@@ -8,7 +10,7 @@ public class Matches extends TerminalExpression<Boolean, String> {
 
     @Override
     public Name name() {
-        return Name.EQUAL;
+        return Name.MATCHES;
     }
 
     @Override

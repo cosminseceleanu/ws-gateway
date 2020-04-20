@@ -2,12 +2,15 @@ package com.cosmin.wsgateway.domain.model.expressions;
 
 import com.cosmin.wsgateway.domain.model.Expression;
 import com.jayway.jsonpath.JsonPath;
+
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
 @RequiredArgsConstructor
-abstract class TerminalExpression<T, R> implements Expression<T> {
+@EqualsAndHashCode
+public abstract class TerminalExpression<T, R> implements Expression<T> {
     @NotNull
     private final String path;
 

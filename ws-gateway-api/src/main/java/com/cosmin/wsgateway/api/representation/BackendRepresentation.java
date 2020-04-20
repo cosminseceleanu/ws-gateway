@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.api.rest.representation;
+package com.cosmin.wsgateway.api.representation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = HttpBackendRepresentation.class, name = "http"),
+        @JsonSubTypes.Type(value = KafkaBackendRepresentation.class, name = "kafka"),
 })
 public interface BackendRepresentation {
     String type();

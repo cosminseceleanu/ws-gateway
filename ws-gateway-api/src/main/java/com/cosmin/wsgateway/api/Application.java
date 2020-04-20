@@ -1,6 +1,6 @@
 package com.cosmin.wsgateway.api;
 
-import com.cosmin.wsgateway.api.configuration.EndpointVerticle;
+import com.cosmin.wsgateway.api.config.EndpointVerticle;
 
 import io.vertx.core.Vertx;
 

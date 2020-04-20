@@ -2,9 +2,10 @@ package com.cosmin.wsgateway.domain.model.expressions;
 
 
 import com.cosmin.wsgateway.domain.model.Expression;
-import lombok.Builder;
 
-@Builder
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
 public class And extends BooleanExpression {
     public And(Expression<Boolean> left, Expression<Boolean> right) {
         super(left, right);

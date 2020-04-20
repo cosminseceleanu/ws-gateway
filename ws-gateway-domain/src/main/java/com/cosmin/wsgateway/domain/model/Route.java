@@ -4,10 +4,9 @@ import com.cosmin.wsgateway.domain.validation.constraints.ExpressionByRouteType;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.With;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collections;
@@ -26,8 +25,7 @@ public class Route {
     }
 
     @NotNull
-    @Min(4)
-    @Max(255)
+    @Size(min = 4, max = 255)
     private final String name;
 
     @NotNull
@@ -36,16 +34,18 @@ public class Route {
     @Size(max = 10)
     @Valid
     @EqualsAndHashCode.Exclude
-    private final Set<Backend<BackendSettings>> backends;
+    @With
+    private final Set<Backend<? extends BackendSettings>> backends;
 
     @EqualsAndHashCode.Exclude
+    @With
     private final Optional<Expression<Boolean>> expression;
 
     public static Route connect() {
         return connect(Collections.emptySet());
     }
 
-    public static Route connect(Set<Backend<BackendSettings>> backends) {
+    public static Route connect(Set<Backend<? extends BackendSettings>> backends) {
         return Route.builder()
                 .type(Type.CONNECT)
                 .name("Connect")
@@ -58,7 +58,7 @@ public class Route {
         return disconnect(Collections.emptySet());
     }
 
-    public static Route disconnect(Set<Backend<BackendSettings>> backends) {
+    public static Route disconnect(Set<Backend<? extends BackendSettings>> backends) {
         return Route.builder()
                 .type(Type.DISCONNECT)
                 .name("Disconnect")
@@ -71,12 +71,25 @@ public class Route {
         return defaultRoute(Collections.emptySet());
     }
 
-    public static Route defaultRoute(Set<Backend<BackendSettings>> backends) {
+    public static Route defaultRoute(Set<Backend<? extends BackendSettings>> backends) {
         return Route.builder()
                 .type(Type.DEFAULT)
-                .name("Default route")
+                .name("Default")
                 .backends(backends)
                 .expression(Optional.empty())
+                .build();
+    }
+
+    public static Route custom(Expression<Boolean> expression) {
+        return custom(Collections.emptySet(), expression);
+    }
+
+    public static Route custom(Set<Backend<? extends BackendSettings>> backends, Expression<Boolean> expression) {
+        return Route.builder()
+                .type(Type.CUSTOM)
+                .name("Custom")
+                .backends(backends)
+                .expression(Optional.of(expression))
                 .build();
     }
 }

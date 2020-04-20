@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.api.configuration;
+package com.cosmin.wsgateway.api.config;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;

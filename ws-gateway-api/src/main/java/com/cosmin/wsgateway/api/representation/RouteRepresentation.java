@@ -1,9 +1,8 @@
-package com.cosmin.wsgateway.api.rest.representation;
+package com.cosmin.wsgateway.api.representation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 
 import java.util.Arrays;
@@ -24,17 +23,21 @@ public class RouteRepresentation {
     private Type type;
     private String name;
     private Set<BackendRepresentation> backends;
-    private JsonNode expression;
+    private Map<String, Object> expression;
 
-    @RequiredArgsConstructor
-    enum Type {
+    public enum Type {
         CONNECT("connect"),
+        CUSTOM("custom"),
         DISCONNECT("disconnect"),
         DEFAULT("default");
 
         private final String value;
 
-        private final Map<String, RouteRepresentation.Type> valuesByName = Arrays.stream(Type.values())
+        Type(String value) {
+            this.value = value;
+        }
+
+        private static final Map<String, RouteRepresentation.Type> valuesByName = Arrays.stream(Type.values())
                 .collect(toMap(Type::getValue, Function.identity()));
 
         @JsonCreator
