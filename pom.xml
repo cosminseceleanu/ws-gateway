@@ -8,7 +8,8 @@
         <module>ws-gateway-api</module>
 		<module>ws-gateway-application</module>
 		<module>ws-gateway-infrastructure</module>
-	</modules>
+        <module>ws-gateway-functional-tests</module>
+    </modules>
 
 	<groupId>com.cosmin.wsgateway</groupId>
 	<artifactId>ws-gateway</artifactId>

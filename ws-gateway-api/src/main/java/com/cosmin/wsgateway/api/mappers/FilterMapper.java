@@ -8,6 +8,7 @@ import com.cosmin.wsgateway.domain.model.filters.WhitelistHosts;
 import com.cosmin.wsgateway.domain.model.filters.WhitelistIps;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +17,9 @@ import java.util.stream.Collectors;
 public class FilterMapper implements RepresentationMapper<FilterRepresentation, Set<Filter<?>>> {
     @Override
     public Set<Filter<?>> toModel(FilterRepresentation representation) {
+        if (representation == null) {
+            return new LinkedHashSet<>();
+        }
         return Set.of(
                 new WhitelistHosts(representation.getWhitelistHosts()),
                 new BlacklistHosts(representation.getBlacklistHosts()),

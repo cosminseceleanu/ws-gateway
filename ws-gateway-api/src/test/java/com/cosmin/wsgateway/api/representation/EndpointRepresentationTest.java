@@ -14,6 +14,6 @@ class EndpointRepresentationTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         EndpointRepresentation representation = objectMapper.readValue(JSON, EndpointRepresentation.class);
-        assertEquals("my-ws-endpoint", representation.getPath());
+        assertEquals("/my-ws-endpoint", representation.getPath());
     }
 }
