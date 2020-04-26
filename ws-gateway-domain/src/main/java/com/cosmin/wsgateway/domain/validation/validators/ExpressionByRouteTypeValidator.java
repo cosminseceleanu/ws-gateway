@@ -1,6 +1,6 @@
 package com.cosmin.wsgateway.domain.validation.validators;
 
-import com.cosmin.wsgateway.domain.model.Route;
+import com.cosmin.wsgateway.domain.Route;
 import com.cosmin.wsgateway.domain.validation.constraints.ExpressionByRouteType;
 
 import javax.validation.ConstraintValidator;

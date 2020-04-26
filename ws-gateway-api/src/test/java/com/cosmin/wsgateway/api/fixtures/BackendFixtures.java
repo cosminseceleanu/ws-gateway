@@ -1,8 +1,8 @@
 package com.cosmin.wsgateway.api.fixtures;
 
 import com.cosmin.wsgateway.api.representation.HttpBackendRepresentation;
-import com.cosmin.wsgateway.domain.model.backends.HttpBackend;
-import com.cosmin.wsgateway.domain.model.backends.HttpSettings;
+import com.cosmin.wsgateway.domain.backends.HttpBackend;
+import com.cosmin.wsgateway.domain.backends.HttpSettings;
 
 import java.util.Map;
 

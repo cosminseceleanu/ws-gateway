@@ -1,7 +1,5 @@
 package com.cosmin.wsgateway.api;
 
-import com.cosmin.wsgateway.api.config.EndpointVerticle;
-
 import io.vertx.core.Vertx;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,18 +8,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.PostConstruct;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.cosmin.wsgateway")
 public class Application {
 
-	@Autowired
-	private EndpointVerticle endpointVerticle;
+    @Autowired
+    private WSServer endpointVerticle;
 
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-  @PostConstruct
-  public void deployVerticle() {
-    Vertx.vertx().deployVerticle(endpointVerticle);
-  }
+    @PostConstruct
+    public void deployVerticle() {
+        Vertx.vertx().deployVerticle(endpointVerticle);
+    }
 }

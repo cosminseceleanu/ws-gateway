@@ -3,11 +3,11 @@ package com.cosmin.wsgateway.api.mappers;
 import com.cosmin.wsgateway.api.fixtures.BackendFixtures;
 import com.cosmin.wsgateway.api.representation.BackendRepresentation;
 import com.cosmin.wsgateway.api.representation.KafkaBackendRepresentation;
-import com.cosmin.wsgateway.domain.model.Backend;
-import com.cosmin.wsgateway.domain.model.BackendSettings;
-import com.cosmin.wsgateway.domain.model.backends.HttpBackend;
-import com.cosmin.wsgateway.domain.model.backends.HttpSettings;
-import com.cosmin.wsgateway.domain.model.backends.KafkaBackend;
+import com.cosmin.wsgateway.domain.Backend;
+import com.cosmin.wsgateway.domain.BackendSettings;
+import com.cosmin.wsgateway.domain.backends.HttpBackend;
+import com.cosmin.wsgateway.domain.backends.HttpSettings;
+import com.cosmin.wsgateway.domain.backends.KafkaBackend;
 import org.junit.jupiter.api.Test;
 
 import static com.cosmin.wsgateway.api.fixtures.BackendFixtures.ADDITIONAL_HEADERS;

@@ -1,11 +1,11 @@
 package com.cosmin.wsgateway.api.mappers;
 
 import com.cosmin.wsgateway.api.representation.FilterRepresentation;
-import com.cosmin.wsgateway.domain.model.Filter;
-import com.cosmin.wsgateway.domain.model.filters.BlacklistHosts;
-import com.cosmin.wsgateway.domain.model.filters.BlacklistIps;
-import com.cosmin.wsgateway.domain.model.filters.WhitelistHosts;
-import com.cosmin.wsgateway.domain.model.filters.WhitelistIps;
+import com.cosmin.wsgateway.domain.Filter;
+import com.cosmin.wsgateway.domain.filters.BlacklistHosts;
+import com.cosmin.wsgateway.domain.filters.BlacklistIps;
+import com.cosmin.wsgateway.domain.filters.WhitelistHosts;
+import com.cosmin.wsgateway.domain.filters.WhitelistIps;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashSet;

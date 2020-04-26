@@ -1,15 +1,14 @@
 package com.cosmin.wsgateway.domain.validation.validators;
 
-import com.cosmin.wsgateway.domain.model.EndpointConfiguration;
-import com.cosmin.wsgateway.domain.model.Route;
-import com.cosmin.wsgateway.domain.validation.constraints.ExpressionByRouteType;
+import com.cosmin.wsgateway.domain.EndpointConfiguration;
+import com.cosmin.wsgateway.domain.Route;
 import com.cosmin.wsgateway.domain.validation.constraints.ValidRouteConfiguration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Set;
 
-import static com.cosmin.wsgateway.domain.model.Route.Type.*;
+import static com.cosmin.wsgateway.domain.Route.Type.*;
 
 public class ValidRouteConfigurationValidator implements ConstraintValidator<ValidRouteConfiguration, EndpointConfiguration> {
 

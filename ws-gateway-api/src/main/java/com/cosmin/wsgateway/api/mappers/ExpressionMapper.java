@@ -2,9 +2,9 @@ package com.cosmin.wsgateway.api.mappers;
 
 import com.cosmin.wsgateway.api.representation.TerminalExpressionRepresentation;
 import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
-import com.cosmin.wsgateway.domain.model.Expression;
-import com.cosmin.wsgateway.domain.model.expressions.TerminalExpression;
-import com.cosmin.wsgateway.domain.model.expressions.*;
+import com.cosmin.wsgateway.domain.Expression;
+import com.cosmin.wsgateway.domain.expressions.TerminalExpression;
+import com.cosmin.wsgateway.domain.expressions.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

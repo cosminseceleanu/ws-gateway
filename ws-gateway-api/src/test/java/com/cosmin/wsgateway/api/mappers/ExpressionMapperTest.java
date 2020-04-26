@@ -2,12 +2,12 @@ package com.cosmin.wsgateway.api.mappers;
 
 import static com.cosmin.wsgateway.api.fixtures.ExpressionFixtures.createBooleanExpression;
 import static com.cosmin.wsgateway.api.fixtures.ExpressionFixtures.createTerminalExpression;
-import static com.cosmin.wsgateway.domain.model.Expression.Name.*;
+import static com.cosmin.wsgateway.domain.Expression.Name.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
-import com.cosmin.wsgateway.domain.model.Expression;
-import com.cosmin.wsgateway.domain.model.expressions.Expressions;
+import com.cosmin.wsgateway.domain.Expression;
+import com.cosmin.wsgateway.domain.expressions.Expressions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.cosmin.wsgateway.api.mappers;
 
 import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
-import com.cosmin.wsgateway.domain.model.Authentication;
+import com.cosmin.wsgateway.domain.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component

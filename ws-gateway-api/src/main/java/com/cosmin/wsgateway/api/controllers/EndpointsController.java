@@ -2,8 +2,8 @@ package com.cosmin.wsgateway.api.controllers;
 
 import com.cosmin.wsgateway.api.mappers.EndpointMapper;
 import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
-import com.cosmin.wsgateway.api.services.EndpointWriter;
-import com.cosmin.wsgateway.api.services.EndpointsProvider;
+import com.cosmin.wsgateway.application.configuration.services.EndpointWriter;
+import com.cosmin.wsgateway.application.configuration.services.EndpointsProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

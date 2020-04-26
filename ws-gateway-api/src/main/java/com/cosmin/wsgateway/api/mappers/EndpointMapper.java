@@ -1,7 +1,7 @@
 package com.cosmin.wsgateway.api.mappers;
 
 import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
-import com.cosmin.wsgateway.domain.model.*;
+import com.cosmin.wsgateway.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

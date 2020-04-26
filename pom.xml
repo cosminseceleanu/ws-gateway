@@ -24,7 +24,7 @@
 		<lombok.version>1.18.12</lombok.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
-		<vertx-web.version>3.8.5</vertx-web.version>
+		<vertx.version>3.8.5</vertx.version>
 		<jackson.version>2.10.3</jackson.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<hibernate-validator.version>6.1.2.Final</hibernate-validator.version>
@@ -72,18 +72,12 @@
 			<dependency>
 				<groupId>io.vertx</groupId>
 				<artifactId>vertx-web</artifactId>
-				<version>${vertx-web.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.vertx</groupId>
-				<artifactId>vertx-reactive-streams</artifactId>
-				<version>${vertx-web.version}</version>
+				<version>${vertx.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
+				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 

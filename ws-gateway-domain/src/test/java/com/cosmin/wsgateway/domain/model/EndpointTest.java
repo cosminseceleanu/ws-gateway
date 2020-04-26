@@ -1,5 +1,8 @@
 package com.cosmin.wsgateway.domain.model;
 
+import com.cosmin.wsgateway.domain.Endpoint;
+import com.cosmin.wsgateway.domain.EndpointConfiguration;
+import com.cosmin.wsgateway.domain.Route;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;

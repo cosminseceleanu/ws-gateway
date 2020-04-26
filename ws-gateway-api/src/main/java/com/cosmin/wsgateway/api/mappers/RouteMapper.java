@@ -1,8 +1,8 @@
 package com.cosmin.wsgateway.api.mappers;
 
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
-import com.cosmin.wsgateway.domain.model.Expression;
-import com.cosmin.wsgateway.domain.model.Route;
+import com.cosmin.wsgateway.domain.Expression;
+import com.cosmin.wsgateway.domain.Route;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
