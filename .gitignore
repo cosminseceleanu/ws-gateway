@@ -2,6 +2,10 @@
 /target/
 /project/project/
 /project/target/
+ws-gateway-*/target/
+ws-gateway-*/target/*.jar
+ws-gateway-*/*.iml
+.mvn/
 deployment/env/*.env
 deployment/gateway/*.zip
 deployment/swagger-ui/*.yml
