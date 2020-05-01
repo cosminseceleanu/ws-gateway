@@ -1,18 +1,17 @@
 package com.cosmin.wsgateway.application.configuration.services;
 
+import static java.util.stream.Collectors.toSet;
+
 import com.cosmin.wsgateway.application.configuration.repositories.EndpointRepository;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.Route;
+import java.util.Map;
+import java.util.Set;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Mono;
-
-import javax.validation.Valid;
-import java.util.Map;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
 
 @Component
 @Validated

@@ -5,18 +5,19 @@ import com.cosmin.wsgateway.domain.BackendSettings;
 import com.cosmin.wsgateway.domain.Event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
 public class DebugConnector implements BackendConnector<BackendSettings.Empty> {
     @Override
     public boolean supports(Backend.Type type) {
-        return true;
+        return Backend.Type.DEBUG.equals(type);
     }
 
     @Override
-    public Result sendEvent(Event event, Backend<BackendSettings.Empty> backend) {
-        log.info("send event={} to backendType={} with destination={}", event, backend.type(), backend.destination());
-        return Result.ofSuccessful(backend, event);
+    public Mono<Event> sendEvent(Event event, Backend<BackendSettings.Empty> backend) {
+        log.debug("[DebugConnector] send event={} to backend with destination={}", event, backend.destination());
+        return Mono.empty();
     }
 }

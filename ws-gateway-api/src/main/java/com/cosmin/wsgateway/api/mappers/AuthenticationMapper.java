@@ -18,7 +18,9 @@ public class AuthenticationMapper implements RepresentationMapper<Authentication
             );
         }
 
-        return new Authentication.Bearer(((AuthenticationRepresentation.Bearer) representation).getAuthorizationServerUrl());
+        return new Authentication.Bearer(
+                ((AuthenticationRepresentation.Bearer) representation).getAuthorizationServerUrl()
+        );
     }
 
     @Override
@@ -30,7 +32,9 @@ public class AuthenticationMapper implements RepresentationMapper<Authentication
             );
         }
         if (domain instanceof Authentication.Bearer) {
-            return new AuthenticationRepresentation.Bearer(((Authentication.Bearer) domain).getAuthorizationServerUrl());
+            return new AuthenticationRepresentation.Bearer(
+                    ((Authentication.Bearer) domain).getAuthorizationServerUrl()
+            );
         }
 
         return new AuthenticationRepresentation.None();

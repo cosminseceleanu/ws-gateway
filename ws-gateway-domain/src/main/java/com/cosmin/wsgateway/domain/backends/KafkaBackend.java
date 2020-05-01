@@ -2,11 +2,10 @@ package com.cosmin.wsgateway.domain.backends;
 
 import com.cosmin.wsgateway.domain.Backend;
 import com.cosmin.wsgateway.domain.BackendSettings;
-import lombok.Builder;
-import lombok.Value;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Value;
 
 @Value
 @Builder

@@ -1,9 +1,10 @@
 package com.cosmin.wsgateway.domain.events;
 
+import com.cosmin.wsgateway.domain.Endpoint;
+import com.cosmin.wsgateway.domain.Route;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-
-import java.util.Map;
 
 @RequiredArgsConstructor
 @ToString
@@ -18,5 +19,10 @@ public class Disconnected implements InboundEvent {
     @Override
     public Object payload() {
         return Map.of("connectionId", connectionId);
+    }
+
+    @Override
+    public Route getRoute(Endpoint endpoint) {
+        return endpoint.getDisconnectRoute();
     }
 }

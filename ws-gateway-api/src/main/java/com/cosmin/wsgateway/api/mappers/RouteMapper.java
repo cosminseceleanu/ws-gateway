@@ -3,14 +3,13 @@ package com.cosmin.wsgateway.api.mappers;
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
 import com.cosmin.wsgateway.domain.Expression;
 import com.cosmin.wsgateway.domain.Route;
+import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor

@@ -8,6 +8,8 @@ public interface Backend<T extends BackendSettings> {
     }
 
     String destination();
+
     T settings();
+
     Type type();
 }

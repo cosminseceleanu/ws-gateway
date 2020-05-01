@@ -1,8 +1,7 @@
 package com.cosmin.wsgateway.application.gateway.connection;
 
-import lombok.Value;
-
 import java.util.Map;
+import lombok.Value;
 
 @Value
 public class ConnectionRequest {

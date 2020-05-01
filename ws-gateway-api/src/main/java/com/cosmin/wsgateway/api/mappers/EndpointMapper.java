@@ -1,11 +1,15 @@
 package com.cosmin.wsgateway.api.mappers;
 
 import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
-import com.cosmin.wsgateway.domain.*;
+import com.cosmin.wsgateway.domain.Authentication;
+import com.cosmin.wsgateway.domain.Endpoint;
+import com.cosmin.wsgateway.domain.EndpointConfiguration;
+import com.cosmin.wsgateway.domain.Filter;
+import com.cosmin.wsgateway.domain.Route;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor

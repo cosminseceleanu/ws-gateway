@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TerminalExpressionRepresentation {
-  private String path;
-  private Object value;
+    private String path;
+    private Object value;
 }

@@ -2,13 +2,13 @@ package com.cosmin.wsgateway.domain.validation.validators;
 
 import com.cosmin.wsgateway.domain.Route;
 import com.cosmin.wsgateway.domain.validation.constraints.ExpressionByRouteType;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class ExpressionByRouteTypeValidator implements ConstraintValidator<ExpressionByRouteType, Route> {
-    private final static String MISSING_EXPRESSION_MESSAGE = "Route expression is mandatory for custom route";
-    private final static String EXPRESSION_SET_FOR_NON_CUSTOM_ROUTE_MESSAGE = "Route expression can be set only custom route";
+    private static final String MISSING_EXPRESSION_MESSAGE = "Route expression is mandatory for custom route";
+    private static final String EXPRESSION_SET_FOR_NON_CUSTOM_ROUTE_MESSAGE =
+            "Route expression can be set only custom route";
 
     @Override
     public boolean isValid(Route value, ConstraintValidatorContext context) {

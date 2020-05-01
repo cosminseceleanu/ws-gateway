@@ -1,11 +1,10 @@
 package com.cosmin.wsgateway.api.representation;
 
+import java.util.Collections;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Collections;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

@@ -1,11 +1,9 @@
 package com.cosmin.wsgateway.domain.filters;
 
 import com.cosmin.wsgateway.domain.Filter;
-
-import lombok.Value;
-
 import java.util.Map;
 import java.util.Set;
+import lombok.Value;
 
 @Value
 public class WhitelistIps implements Filter<Set<String>> {

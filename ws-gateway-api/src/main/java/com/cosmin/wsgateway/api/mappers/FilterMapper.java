@@ -6,12 +6,11 @@ import com.cosmin.wsgateway.domain.filters.BlacklistHosts;
 import com.cosmin.wsgateway.domain.filters.BlacklistIps;
 import com.cosmin.wsgateway.domain.filters.WhitelistHosts;
 import com.cosmin.wsgateway.domain.filters.WhitelistIps;
-import org.springframework.stereotype.Component;
-
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 @Component
 public class FilterMapper implements RepresentationMapper<FilterRepresentation, Set<Filter<?>>> {

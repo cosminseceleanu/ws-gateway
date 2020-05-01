@@ -1,31 +1,35 @@
-package com.cosmin.infrastructure.persistence;
+package com.cosmin.wsgateway.infrastructure.persistence;
 
 import com.cosmin.wsgateway.application.configuration.repositories.EndpointRepository;
 import com.cosmin.wsgateway.domain.Authentication;
+import com.cosmin.wsgateway.domain.Backend;
+import com.cosmin.wsgateway.domain.BackendSettings;
+import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.EndpointConfiguration;
 import com.cosmin.wsgateway.domain.Route;
+import com.cosmin.wsgateway.domain.backends.DebugBackend;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
-import com.cosmin.wsgateway.domain.Endpoint;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public class InMemoryEndpointRepository implements EndpointRepository {
     private final ConcurrentHashMap<String, Endpoint> storage = new ConcurrentHashMap<>();
 
     public InMemoryEndpointRepository() {
+        Set<Backend<? extends BackendSettings>> debugBackend = Collections.singleton(new DebugBackend());
+
         var configuration = EndpointConfiguration.builder()
                 .authentication(new Authentication.None())
                 .filters(Collections.emptySet())
                 .routes(Set.of(
-                        Route.defaultRoute(),
-                        Route.connect(),
-                        Route.disconnect()
+                        Route.defaultRoute(debugBackend),
+                        Route.connect(debugBackend),
+                        Route.disconnect(debugBackend)
                 ))
                 .build();
         Endpoint endpoint = Endpoint.builder()

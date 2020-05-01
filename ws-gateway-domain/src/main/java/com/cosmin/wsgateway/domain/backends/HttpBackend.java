@@ -1,13 +1,12 @@
 package com.cosmin.wsgateway.domain.backends;
 
 import com.cosmin.wsgateway.domain.Backend;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import org.hibernate.validator.constraints.URL;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Value
 @Builder

@@ -1,18 +1,18 @@
 package com.cosmin.wsgateway.domain;
 
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
 import com.cosmin.wsgateway.domain.validation.constraints.ValidRouteConfiguration;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Set;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Value;
 import lombok.With;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Value
 @Builder

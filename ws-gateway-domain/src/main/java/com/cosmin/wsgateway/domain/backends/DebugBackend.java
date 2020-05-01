@@ -6,7 +6,7 @@ import com.cosmin.wsgateway.domain.BackendSettings;
 public class DebugBackend implements Backend<BackendSettings.Empty> {
     @Override
     public String destination() {
-        return "";
+        return "debug";
     }
 
     @Override

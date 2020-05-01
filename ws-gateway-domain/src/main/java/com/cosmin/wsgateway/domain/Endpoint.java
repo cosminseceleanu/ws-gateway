@@ -1,20 +1,21 @@
 package com.cosmin.wsgateway.domain;
 
-import com.cosmin.wsgateway.domain.exceptions.RouteNotFoundException;
-import lombok.Builder;
-import lombok.Value;
-import lombok.With;
+import static com.cosmin.wsgateway.domain.Route.Type.CONNECT;
+import static com.cosmin.wsgateway.domain.Route.Type.CUSTOM;
+import static com.cosmin.wsgateway.domain.Route.Type.DEFAULT;
+import static com.cosmin.wsgateway.domain.Route.Type.DISCONNECT;
 
+import com.cosmin.wsgateway.domain.exceptions.RouteNotFoundException;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
-
-import static com.cosmin.wsgateway.domain.Route.Type.*;
+import lombok.Builder;
+import lombok.Value;
+import lombok.With;
 
 @Value
 @Builder
@@ -24,12 +25,19 @@ public class Endpoint {
 
     @NotNull
     @Size(min = 2, max = 255)
-    @Pattern(regexp="^(?!\\/api\\/internal).*")
+    @Pattern(regexp = "^(?!\\/api\\/internal).*")
     private final String path;
 
     @NotNull
     @Valid
     private final EndpointConfiguration configuration;
+
+    public Optional<Route> findCustomRoute(String json) {
+        return configuration.getRoutesByType(CUSTOM)
+                .stream()
+                .filter(r -> r.appliesTo(json))
+                .findFirst();
+    }
 
     public Route getConnectRoute() {
         return getRoute(CONNECT).orElseThrow(() -> new RouteNotFoundException("Connect Route is not defined"));

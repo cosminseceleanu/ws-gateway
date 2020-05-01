@@ -1,4 +1,4 @@
-package com.cosmin.infrastructure.gateway;
+package com.cosmin.wsgateway.infrastructure.gateway;
 
 import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.domain.exceptions.EventTransformationException;

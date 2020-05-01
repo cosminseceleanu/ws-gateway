@@ -1,22 +1,27 @@
 package com.cosmin.wsgateway.api.mappers;
 
 import com.cosmin.wsgateway.api.representation.TerminalExpressionRepresentation;
-import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
 import com.cosmin.wsgateway.domain.Expression;
+import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
+import com.cosmin.wsgateway.domain.expressions.And;
+import com.cosmin.wsgateway.domain.expressions.BooleanExpression;
+import com.cosmin.wsgateway.domain.expressions.Equal;
+import com.cosmin.wsgateway.domain.expressions.Matches;
+import com.cosmin.wsgateway.domain.expressions.Or;
 import com.cosmin.wsgateway.domain.expressions.TerminalExpression;
-import com.cosmin.wsgateway.domain.expressions.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
-import java.util.function.BiFunction;
 
 @Component
 @RequiredArgsConstructor
@@ -66,9 +71,13 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
         return fields;
     }
 
-    private Expression<Boolean> createExpression(Expression.Name name, ObjectNode jsonNode, BiFunction<String, Object, Expression<Boolean>> createExpr) {
+    private Expression<Boolean> createExpression(
+            Expression.Name name, ObjectNode jsonNode, BiFunction<String, Object, Expression<Boolean>> createExpr
+    ) {
         try {
-            TerminalExpressionRepresentation representation = objectMapper.treeToValue(jsonNode.get(name.getValue()), TerminalExpressionRepresentation.class);
+            TerminalExpressionRepresentation representation = objectMapper.treeToValue(
+                    jsonNode.get(name.getValue()), TerminalExpressionRepresentation.class
+            );
             return createExpr.apply(representation.getPath(), representation.getValue());
         } catch (JsonProcessingException e) {
             log.error("error while reading expression={}", name, e);
@@ -78,11 +87,15 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
 
     private Expression<Boolean> createBooleanExpression(Expression.Name name, JsonNode jsonNode, int nestedLevel) {
         if (!(jsonNode instanceof ArrayNode)) {
-            throw new IncorrectExpressionException(String.format("Boolean expression %s must be array", name.getValue()));
+            throw new IncorrectExpressionException(
+                    String.format("Boolean expression %s must be array", name.getValue())
+            );
         }
         ArrayNode arrayNode = (ArrayNode) jsonNode;
         if (arrayNode.size() != 2) {
-            throw new IncorrectExpressionException(String.format("Boolean expression %s must have exactly 2 child expressions", name.getValue()));
+            throw new IncorrectExpressionException(
+                    String.format("Boolean expression %s must have exactly 2 child expressions", name.getValue())
+            );
         }
         try {
             Expression<Boolean> left = parseJsonValue((ObjectNode) arrayNode.get(0), nestedLevel + 1);

@@ -1,8 +1,6 @@
 package com.cosmin.wsgateway.domain.expressions;
 
-
 import com.cosmin.wsgateway.domain.Expression;
-
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)

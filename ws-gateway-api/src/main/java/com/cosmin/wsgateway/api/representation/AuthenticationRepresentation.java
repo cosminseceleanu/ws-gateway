@@ -1,17 +1,20 @@
 package com.cosmin.wsgateway.api.representation;
 
-import com.fasterxml.jackson.annotation.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import static java.util.stream.Collectors.toMap;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-
-import static java.util.stream.Collectors.toMap;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -36,7 +39,7 @@ public interface AuthenticationRepresentation {
 
         private final String value;
 
-        private final static Map<String, Mode> valuesByName = Arrays.stream(Mode.values())
+        private static final Map<String, Mode> valuesByName = Arrays.stream(Mode.values())
                 .collect(toMap(Mode::getValue, Function.identity()));
 
         @JsonCreator

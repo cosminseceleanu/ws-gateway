@@ -3,14 +3,12 @@ package com.cosmin.wsgateway.domain.validation.validators;
 import com.cosmin.wsgateway.domain.EndpointConfiguration;
 import com.cosmin.wsgateway.domain.Route;
 import com.cosmin.wsgateway.domain.validation.constraints.ValidRouteConfiguration;
-
+import java.util.Set;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Set;
 
-import static com.cosmin.wsgateway.domain.Route.Type.*;
-
-public class ValidRouteConfigurationValidator implements ConstraintValidator<ValidRouteConfiguration, EndpointConfiguration> {
+public class ValidRouteConfigurationValidator implements
+        ConstraintValidator<ValidRouteConfiguration, EndpointConfiguration> {
 
     @Override
     public boolean isValid(EndpointConfiguration value, ConstraintValidatorContext context) {
@@ -18,12 +16,14 @@ public class ValidRouteConfigurationValidator implements ConstraintValidator<Val
             return true;
         }
 
-        return checkRouteNumberByTypes(context, value, CONNECT)
-                && checkRouteNumberByTypes(context, value, DEFAULT)
-                && checkRouteNumberByTypes(context, value, DISCONNECT);
+        return checkRouteNumberByTypes(context, value, Route.Type.CONNECT)
+                && checkRouteNumberByTypes(context, value, Route.Type.DEFAULT)
+                && checkRouteNumberByTypes(context, value, Route.Type.DISCONNECT);
     }
 
-    private Boolean checkRouteNumberByTypes(ConstraintValidatorContext context, EndpointConfiguration configuration, Route.Type type) {
+    private Boolean checkRouteNumberByTypes(
+            ConstraintValidatorContext context, EndpointConfiguration configuration, Route.Type type
+    ) {
         Set<Route> routes = configuration.getRoutesByType(type);
         if (routes.size() > 1) {
             context.disableDefaultConstraintViolation();

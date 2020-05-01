@@ -1,9 +1,7 @@
 package com.cosmin.wsgateway.domain.expressions;
 
 import com.cosmin.wsgateway.domain.Expression;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class Expressions {
     public static Expression<Boolean> and(Expression<Boolean> left, Expression<Boolean> right) {
         return new And(left, right);

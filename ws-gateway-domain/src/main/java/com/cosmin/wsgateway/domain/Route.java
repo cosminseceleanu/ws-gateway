@@ -1,17 +1,16 @@
 package com.cosmin.wsgateway.domain;
 
 import com.cosmin.wsgateway.domain.validation.constraints.ExpressionByRouteType;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
 
 @Value
 @Builder
@@ -40,6 +39,17 @@ public class Route {
     @EqualsAndHashCode.Exclude
     @With
     private final Optional<Expression<Boolean>> expression;
+
+    public boolean appliesTo(String json) {
+        if (type != Type.CUSTOM) {
+            throw new RuntimeException("expression can be evaluated only for custom routes");
+        }
+        if (!expression.isPresent()) {
+            throw new RuntimeException("Custom route must have an expression");
+        }
+
+        return expression.get().evaluate(json);
+    }
 
     public static Route connect() {
         return connect(Collections.emptySet());

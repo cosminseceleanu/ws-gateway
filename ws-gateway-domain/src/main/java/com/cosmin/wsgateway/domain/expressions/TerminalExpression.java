@@ -2,11 +2,9 @@ package com.cosmin.wsgateway.domain.expressions;
 
 import com.cosmin.wsgateway.domain.Expression;
 import com.jayway.jsonpath.JsonPath;
-
+import javax.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-
-import javax.validation.constraints.NotNull;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
