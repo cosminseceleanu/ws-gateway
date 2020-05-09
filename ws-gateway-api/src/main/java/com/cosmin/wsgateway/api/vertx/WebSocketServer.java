@@ -51,7 +51,7 @@ public class WebSocketServer extends AbstractVerticle {
         Promise<Integer> handshakePromise = Promise.promise();
         serverWebSocket.setHandshake(handshakePromise.future());
 
-        var processor = new WebSocketSMessageProcessor();
+        var processor = new WebSocketMessageProcessor();
         Flux<String> inboundMessages = createInboundFlux(processor);
         connectionManager.connect(request)
                 .doOnSuccess(c -> {
@@ -92,7 +92,7 @@ public class WebSocketServer extends AbstractVerticle {
         return map;
     }
 
-    private Flux<String> createInboundFlux(WebSocketSMessageProcessor processor) {
+    private Flux<String> createInboundFlux(WebSocketMessageProcessor processor) {
         return Flux.create(sink -> processor.setListener(new WebSocketMessageListener() {
                 @Override
                 public void onMessage(String message) {
@@ -122,7 +122,7 @@ public class WebSocketServer extends AbstractVerticle {
     }
 
     @Setter
-    private static class WebSocketSMessageProcessor {
+    private static class WebSocketMessageProcessor {
         private WebSocketMessageListener listener;
 
         void onMessage(String message) {

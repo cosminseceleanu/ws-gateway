@@ -13,11 +13,11 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
   - description: Local
-    url: http://localhost:9000
+    url: http://localhost:8080
   - url: http://{serverUrl}
     variables:
       serverUrl:
-        default: localhost:9000
+        default: localhost:8080
         description: Server url
 tags:
   - name: Endpoints
@@ -295,7 +295,6 @@ components:
             $ref: "#/components/schemas/Route"
       required:
         - path
-        - authMode
     Route:
       description: A Route is a way to forward inbound events to a set of backends(REST api's, kafka topics)
       type: object
@@ -303,9 +302,9 @@ components:
         type:
           description: Type of the route
           type: string
-          enum: [CONNECT, DISCONNECT, DEFAULT, CUSTOM]
+          enum: [connect, disconnect, default, custom]
           nullable: false
-          example: CONNECT
+          example: connect
         name:
           description: The name of the route. Within an endpoint pair (name, type) is unique
           type: string
@@ -313,50 +312,46 @@ components:
           minLength: 4
           maxLength: 255
           example: Connect Route
-        http:
-          description: Http backends to forward inbound events for current route. For maxItems=10 all backends are taken into account, regardless of their type
+        backends:
+          description: Set of http and kafka backends to forward inbound events for current route
           type: array
           nullable: false
           maxItems: 10
           items:
             type: object
             properties:
+              type:
+                description: type of the backend
+                type: string
+                enum: [kafka, http]
+                nullable: false
               destination:
-                description: Http url of your API
+                description: Http url of your API. Used only by for http backends
                 type: string
                 nullable: false
                 format: uri
                 example: https:my.rest.api.com
               timeoutInMillis:
-                description: HTTP request timeout in milliseconds
+                description: HTTP request timeout in milliseconds. Used only by for http backends
                 type: integer
                 minimum: 10
                 maximum: 600000
                 default: 200
-                nullable: false
+                nullable: true
               additionalHeaders:
-                description: Any additional http headers that will be sent for each request
+                description: Any additional http headers that will be sent for each request. Used only by for http backends
                 type: object
                 nullable: false
                 maxProperties: 255
                 default: {}
-            required:
-              - destination
-        kafka:
-          description: Kafka topics to forward inbound events for current route
-          type: array
-          nullable: false
-          maxItems: 10
-          items:
-            type: object
-            properties:
-              destination:
-                description: Kafka topic
-                nullable: false
+              topic:
+                description: Kafka topic. Used only by for kafka backends
                 type: string
+                nullable: false
+                format: uri
                 example: "my.kafka.topic"
             required:
-              - destination
+              - type
         expression:
           description: Expression to be evaluated against the inbound event. For custom routes the expression is mandatory
           type: object
@@ -369,6 +364,11 @@ components:
       description: Error response
       type: object
       properties:
+        status:
+          type: string
+          description: Http status code phrase
+          example: Bad Request
+          readOnly: true
         errorType:
           type: string
           description: Type of the error

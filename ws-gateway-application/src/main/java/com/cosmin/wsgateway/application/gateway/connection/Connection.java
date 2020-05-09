@@ -34,8 +34,7 @@ public class Connection {
     private final ConnectorResolver connectorResolver;
     private final ConnectionContext context;
 
-    //@ToDo make it configurable
-    private static final String INBOUND_TOPIC_PATTERN = "inbound.%s";
+    private static final String OUTBOUND_TOPIC_PATTERN = "inbound.%s";
 
     private final Scheduler scheduler = Schedulers.newBoundedElastic(
             Schedulers.DEFAULT_BOUNDED_ELASTIC_SIZE,
@@ -43,22 +42,26 @@ public class Connection {
             "gateway-thread"
     );
 
+    public static String getOutboundTopic(String connectionId) {
+        return String.format(OUTBOUND_TOPIC_PATTERN, connectionId);
+    }
+
     public String getId() {
         return context.getId();
     }
 
     public Flux<String> handle(Flux<String> inbound) {
-        var receivedOutboundEvents = pubSub.subscribe(String.format(INBOUND_TOPIC_PATTERN, context.getId()))
+        var subscription = pubSub.subscribe(String.format(OUTBOUND_TOPIC_PATTERN, context.getId()));
+        var receivedOutboundEvents = subscription.getEvents()
                 .map(msg -> new TopicMessage(context.getId(), transformer.toPayload(msg, Map.class)));
 
         return getInboundEventFlux(inbound)
                 .publishOn(scheduler)
                 .flatMap(this::sendEventToBackends)
                 .ofType(OutboundEvent.class)
+                .doFinally(signalType -> pubSub.unsubscribe(subscription))
                 .mergeWith(receivedOutboundEvents)
-                .doOnNext(e -> {
-                    log.debug("event={} of type={} was successfully processed", e.toString(), e.getClass().getName());
-                })
+                .doOnNext(this::logProcessedEvent)
                 .onErrorContinue(Exception.class, (e, o) -> log.error(e.getMessage(), e))
                 .map(e -> transformer.fromPayload(e.payload()));
     }
@@ -78,6 +81,12 @@ public class Connection {
         return Flux.fromIterable(backends)
                 .map(b -> BackendConnectorPair.of(b, connectorResolver.getConnector(b)))
                 .flatMap(pair -> pair.doSendEvent(inboundEvent), DEFAULT_BACKEND_CONCURRENCY);
+    }
+
+    private void logProcessedEvent(OutboundEvent e) {
+        if (log.isDebugEnabled()) {
+            log.debug("event={} of type={} was successfully processed", e.toString(), e.getClass().getName());
+        }
     }
 
     @RequiredArgsConstructor

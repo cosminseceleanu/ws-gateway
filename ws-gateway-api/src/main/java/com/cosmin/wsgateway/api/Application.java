@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = "com.cosmin.wsgateway")
 public class Application {
     //@ToDo make it configurable
-    private static final int DEFAULT_VERTX_POOL_SIZE = 1;
+    private static final int DEFAULT_VERTX_POOL_SIZE = 2;
 
     @Autowired
     private VerticleFactory verticleFactory;

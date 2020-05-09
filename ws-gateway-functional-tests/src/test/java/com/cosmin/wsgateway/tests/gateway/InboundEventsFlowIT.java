@@ -19,7 +19,7 @@ import java.util.UUID;
 import static com.cosmin.wsgateway.tests.common.EndpointFixtures.createRouteWithHttpBackend;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-public class InboundsEventsFlowIT extends BaseTestIT {
+public class InboundEventsFlowIT extends BaseTestIT {
     public static WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
     private static String backendUrl;
 
@@ -70,6 +70,9 @@ public class InboundsEventsFlowIT extends BaseTestIT {
 
         Then("Http backend for connect and disconnect routes is called with connection events");
         wiremock.verify(1, postRequestedFor(urlPathEqualTo("/connect"))
+                .withHeader("Content-Type", equalToIgnoreCase("application/json"))
+                .withRequestBody(equalTo(expectedPayload)));
+        wiremock.verify(1, postRequestedFor(urlPathEqualTo("/disconnect"))
                 .withHeader("Content-Type", equalToIgnoreCase("application/json"))
                 .withRequestBody(equalTo(expectedPayload)));
     }
