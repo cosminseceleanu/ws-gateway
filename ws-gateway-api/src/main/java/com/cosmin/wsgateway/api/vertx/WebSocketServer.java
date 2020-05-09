@@ -53,7 +53,6 @@ public class WebSocketServer extends AbstractVerticle {
 
         var processor = new WebSocketSMessageProcessor();
         Flux<String> inboundMessages = createInboundFlux(processor);
-        log.debug("try to connect");
         connectionManager.connect(request)
                 .doOnSuccess(c -> {
                     serverWebSocket.textMessageHandler(processor::onMessage);
