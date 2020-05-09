@@ -7,7 +7,6 @@ import com.cosmin.wsgateway.domain.BackendSettings;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.EndpointConfiguration;
 import com.cosmin.wsgateway.domain.Route;
-import com.cosmin.wsgateway.domain.backends.DebugBackend;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
 import java.util.Collections;
 import java.util.Optional;
@@ -21,7 +20,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
     private final ConcurrentHashMap<String, Endpoint> storage = new ConcurrentHashMap<>();
 
     public InMemoryEndpointRepository() {
-        Set<Backend<? extends BackendSettings>> debugBackend = Collections.singleton(new DebugBackend());
+        Set<Backend<? extends BackendSettings>> debugBackend = Collections.emptySet();
 
         var configuration = EndpointConfiguration.builder()
                 .authentication(new Authentication.None())

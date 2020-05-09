@@ -4,14 +4,13 @@ import com.cosmin.wsgateway.domain.Backend;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 import org.hibernate.validator.constraints.URL;
 
 @Value
 @Builder
 public class HttpBackend implements Backend<HttpSettings> {
-    @NonNull
+    @NotNull
     @URL
     private final String destination;
 

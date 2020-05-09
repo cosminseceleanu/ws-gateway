@@ -3,11 +3,13 @@ package com.cosmin.wsgateway.domain;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.hibernate.validator.constraints.URL;
 
 
 public interface Authentication {
+    @EqualsAndHashCode
     class None implements Authentication {
 
     }

@@ -3,13 +3,18 @@ package com.cosmin.wsgateway.api.mappers;
 import static com.cosmin.wsgateway.api.fixtures.ExpressionFixtures.createBooleanExpression;
 import static com.cosmin.wsgateway.api.fixtures.ExpressionFixtures.createTerminalExpression;
 import static com.cosmin.wsgateway.domain.Expression.Name.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
 import com.cosmin.wsgateway.domain.Expression;
 import com.cosmin.wsgateway.domain.expressions.Expressions;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -154,4 +159,15 @@ class ExpressionMapperTest {
 
         assertEquals(expected, result);
     }
+
+    @Test
+    public void testToModel_whenTerminalExpressionIsJsonExpression_thenExceptionIsThrown() {
+        Map<String, Object> expr = Map.of(EQUAL.getValue(), "hello world");
+
+        IncorrectExpressionException thrown = assertThrows(IncorrectExpressionException.class, () -> {
+            subject.toModel(expr);
+        });
+        assertThat(thrown.getCause(), instanceOf(JsonProcessingException.class));
+    }
+
 }

@@ -14,7 +14,7 @@ public class BearerAuthenticator implements Authenticator<Authentication.Bearer>
 
     @Override
     public Mono<Boolean> isAuthenticated(Map<String, String> headers, Authentication.Bearer authentication) {
-        return Optional.of(headers.get("Authorization"))
+        return Optional.ofNullable(headers.get("Authorization"))
                 .map(rawHeader -> rawHeader.replace("Bearer ", ""))
                 .map(token -> httpClient.checkToken(authentication.getAuthorizationServerUrl(), token))
                 .orElse(Mono.just(500))

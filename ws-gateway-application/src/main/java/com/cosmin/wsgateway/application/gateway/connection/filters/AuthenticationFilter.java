@@ -38,7 +38,7 @@ public class AuthenticationFilter implements ConnectionFilter {
         return authenticator.isAuthenticated(request.getHeaders(), endpoint.getAuthentication())
         .map(isAuthenticated -> {
             if (!isAuthenticated) {
-                throw new AuthenticationException();
+                throw new AuthenticationException("Bad Credentials");
             }
             return true;
         });

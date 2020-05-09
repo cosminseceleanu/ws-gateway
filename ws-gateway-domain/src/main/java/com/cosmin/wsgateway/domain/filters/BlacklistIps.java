@@ -7,7 +7,7 @@ import lombok.Value;
 
 @Value
 public class BlacklistIps implements Filter<Set<String>> {
-    private final Set<String> hosts;
+    private final Set<String> ips;
 
     @Override
     public String name() {
@@ -16,11 +16,14 @@ public class BlacklistIps implements Filter<Set<String>> {
 
     @Override
     public Set<String> value() {
-        return hosts;
+        return ips;
     }
 
     @Override
     public boolean isAllowed(Map<String, String> requestHeaders) {
-        return !requestHeaders.containsKey("Host") || !hosts.contains(requestHeaders.get("Host"));
+        if (ips.isEmpty()) {
+            return true;
+        }
+        return !requestHeaders.containsKey("X_FORWARDED_FOR") || !ips.contains(requestHeaders.get("X_FORWARDED_FOR"));
     }
 }

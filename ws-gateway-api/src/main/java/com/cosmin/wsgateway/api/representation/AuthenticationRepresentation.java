@@ -84,6 +84,7 @@ public interface AuthenticationRepresentation {
     class Bearer implements AuthenticationRepresentation {
         private String authorizationServerUrl;
 
+        @JsonProperty("mode")
         @Override
         public Mode mode() {
             return Mode.BEARER;

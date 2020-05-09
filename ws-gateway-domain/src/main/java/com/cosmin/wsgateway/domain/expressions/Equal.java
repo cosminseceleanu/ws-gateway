@@ -15,6 +15,8 @@ public class Equal<R> extends TerminalExpression<Boolean, R> {
 
     @Override
     public Boolean evaluate(String json) {
-        return value() == getValueForPath(json);
+        return getValueForPath(json)
+                .map(jsonValue -> value().equals(jsonValue))
+                .orElse(false);
     }
 }

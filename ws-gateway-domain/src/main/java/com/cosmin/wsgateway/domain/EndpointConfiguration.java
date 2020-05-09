@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;
 
@@ -34,6 +35,7 @@ public class EndpointConfiguration {
     private final Authentication authentication;
 
     @NotNull
+    @EqualsAndHashCode.Exclude
     private final LocalDateTime createdAt = LocalDateTime.now();
 
     public Set<Route> getRoutesByType(Route.Type type) {
@@ -47,6 +49,9 @@ public class EndpointConfiguration {
     }
 
     public Set<Route> getRoutes() {
+        if (routes == null) {
+            return null;
+        }
         return Collections.unmodifiableSet(routes);
     }
 }

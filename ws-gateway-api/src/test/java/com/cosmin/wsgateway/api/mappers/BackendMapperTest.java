@@ -19,7 +19,7 @@ class BackendMapperTest {
     private BackendMapper subject = new BackendMapper();
 
     @Test
-    public void testToModel_httpBackend() {
+    public void testToModel_httpBackendRepresentation_shouldBeMappedToCorrectModel() {
         Backend<? extends BackendSettings> backend = subject.toModel(BackendFixtures.defaultHttpRepresentation());
 
         assertTrue(backend instanceof HttpBackend);
@@ -32,7 +32,7 @@ class BackendMapperTest {
     }
 
     @Test
-    public void testToRepresentation_httpBackend() {
+    public void testToRepresentation_httpBackend_shouldBeMappedToCorrectRepresentation() {
         HttpBackend model = HttpBackend.builder()
                 .destination(HTTP_DESTINATION)
                 .settings(HttpSettings.builder()
@@ -47,7 +47,7 @@ class BackendMapperTest {
     }
 
     @Test
-    public void testToRepresentation_kafkaBackend() {
+    public void testToRepresentation_kafkaBackend_shouldBeMappedToCorrectRepresentation() {
         KafkaBackend model = KafkaBackend.builder()
                 .topic("topic")
                 .build();
@@ -58,7 +58,7 @@ class BackendMapperTest {
     }
 
     @Test
-    public void testToModel_kafkaBackend() {
+    public void testToModel_kafkaBackendRepresentation_shouldBeMappedToCorrectModel() {
         KafkaBackend expected = KafkaBackend.builder()
                 .topic("topic")
                 .build();

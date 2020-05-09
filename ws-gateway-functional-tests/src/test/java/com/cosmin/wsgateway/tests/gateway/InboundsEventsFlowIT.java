@@ -46,7 +46,7 @@ public class InboundsEventsFlowIT extends BaseTestIT {
     }
 
     @Test
-    public void testHttpBackends_whenConnected_thenConnectEventIsSentToBackend() {
+    public void httpBackendIsCalledWithConnectAndDisconnectEvent() {
         Given("An endpoint with http backends and a backend server");
         var connectionId = UUID.randomUUID().toString();
         var expectedPayload = JsonUtils.toJson(Map.of("connectionId", connectionId));
@@ -57,14 +57,46 @@ public class InboundsEventsFlowIT extends BaseTestIT {
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody(expectedPayload)));
+        wiremock.stubFor(post(urlPathEqualTo("/disconnect"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(expectedPayload)));
 
         When("A WS connection is created with the gateway");
-        webSocketClient.connect("/http-backend/test-1", connectionId);
-
+        var connection = webSocketClient.connect("/http-backend/test-1", connectionId);
+        await(Duration.ofMillis(1000));
+        connection.disconnect();
         await(Duration.ofMillis(1000));
 
-        Then("Http backend for connect routes is called with Connect event");
+        Then("Http backend for connect and disconnect routes is called with connection events");
         wiremock.verify(1, postRequestedFor(urlPathEqualTo("/connect"))
+                .withHeader("Content-Type", equalToIgnoreCase("application/json"))
+                .withRequestBody(equalTo(expectedPayload)));
+    }
+
+    @Test
+    public void httpBackendIsCalledWithEventsSentThroughWSConnection() {
+        Given("An endpoint with http backends and a backend server");
+        var connectionId = UUID.randomUUID().toString();
+        var expectedPayload = JsonUtils.toJson(Map.of("foo", "bar"));
+        var endpoint = EndpointFixtures.getRepresentation("/http-backend/test-2", httpRoutes);
+        endpointsClient.createAndAssert(endpoint);
+
+        wiremock.stubFor(post(urlPathEqualTo("/default"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(expectedPayload)));
+
+        When("A WS connection is created and events are sent");
+        var connection = webSocketClient.connect("/http-backend/test-2", connectionId);
+        connection.send(expectedPayload);
+        connection.send(expectedPayload);
+
+
+        await(Duration.ofMillis(1500));
+
+        Then("Http backend is called with user events");
+        wiremock.verify(2, postRequestedFor(urlPathEqualTo("/default"))
                 .withHeader("Content-Type", equalToIgnoreCase("application/json"))
                 .withRequestBody(equalTo(expectedPayload)));
     }

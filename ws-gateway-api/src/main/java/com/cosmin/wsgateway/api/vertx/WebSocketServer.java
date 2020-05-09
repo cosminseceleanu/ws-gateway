@@ -1,15 +1,18 @@
 package com.cosmin.wsgateway.api.vertx;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.cosmin.wsgateway.application.gateway.connection.ConnectionManager;
 import com.cosmin.wsgateway.application.gateway.connection.ConnectionRequest;
+import com.cosmin.wsgateway.application.gateway.exceptions.AccessDeniedException;
 import com.cosmin.wsgateway.application.gateway.exceptions.AuthenticationException;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.ServerWebSocket;
 import java.util.HashMap;
@@ -45,17 +48,19 @@ public class WebSocketServer extends AbstractVerticle {
 
     private void handleWebsocketConnection(ServerWebSocket serverWebSocket) {
         ConnectionRequest request = createConnectionRequest(serverWebSocket);
+        Promise<Integer> handshakePromise = Promise.promise();
+        serverWebSocket.setHandshake(handshakePromise.future());
+
         var processor = new WebSocketSMessageProcessor();
         Flux<String> inboundMessages = createInboundFlux(processor);
-
         connectionManager.connect(request)
                 .doOnSuccess(c -> {
                     serverWebSocket.textMessageHandler(processor::onMessage);
                     serverWebSocket.closeHandler(h -> processor.onClose());
                     log.debug("Accept WS connection={}", c.getId());
-                    serverWebSocket.accept();
+                    handshakePromise.complete(101);
                 })
-                .doOnError(e -> handleConnectionError(serverWebSocket, e))
+                .doOnError(e -> handleConnectionError(e, handshakePromise))
                 .onErrorStop()
                 .flatMapMany(bridge -> bridge.handle(inboundMessages))
                 .subscribe(msg -> {
@@ -101,7 +106,7 @@ public class WebSocketServer extends AbstractVerticle {
             }));
     }
 
-    private void handleConnectionError(ServerWebSocket serverWebSocket, Throwable error) {
+    private void handleConnectionError(Throwable error, Promise<Integer> handshakePromise) {
         int status = INTERNAL_SERVER_ERROR.value();
         if (error instanceof EndpointNotFoundException) {
             status = NOT_FOUND.value();
@@ -109,8 +114,11 @@ public class WebSocketServer extends AbstractVerticle {
         if (error instanceof AuthenticationException) {
             status = UNAUTHORIZED.value();
         }
+        if (error instanceof AccessDeniedException) {
+            status = FORBIDDEN.value();
+        }
         log.error("Reject WS connection with status={}", status, error);
-        serverWebSocket.reject(status);
+        handshakePromise.complete(status);
     }
 
     @Setter

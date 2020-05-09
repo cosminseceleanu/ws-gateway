@@ -5,7 +5,6 @@ import com.cosmin.wsgateway.api.representation.HttpBackendRepresentation;
 import com.cosmin.wsgateway.api.representation.KafkaBackendRepresentation;
 import com.cosmin.wsgateway.domain.Backend;
 import com.cosmin.wsgateway.domain.BackendSettings;
-import com.cosmin.wsgateway.domain.backends.DebugBackend;
 import com.cosmin.wsgateway.domain.backends.HttpBackend;
 import com.cosmin.wsgateway.domain.backends.KafkaBackend;
 import com.cosmin.wsgateway.domain.exceptions.BackendNotSupportedException;
@@ -58,9 +57,6 @@ public class BackendMapper implements RepresentationMapper<BackendRepresentation
         }
         if (domain instanceof KafkaBackend) {
             return kafkaBackendMapper.fromKafkaBackend((KafkaBackend) domain);
-        }
-        if (domain instanceof DebugBackend) {
-            return null;
         }
 
         throw new BackendNotSupportedException(domain.getClass().getName());

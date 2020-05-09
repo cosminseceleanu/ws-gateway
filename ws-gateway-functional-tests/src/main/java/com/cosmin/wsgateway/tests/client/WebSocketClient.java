@@ -5,7 +5,9 @@ import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.net.http.WebSocketHandshakeException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -40,14 +42,26 @@ public class WebSocketClient {
         return connect(path, connectionId);
     }
 
+    public WebSocketConnection connect(String path, Map<String, String> headers) {
+        String connectionId = UUID.randomUUID().toString();
+        return connect(path, connectionId, headers);
+    }
+
     public WebSocketConnection connect(String path, String connectionId) {
+        return connect(path, connectionId, Collections.emptyMap());
+    }
+
+    public WebSocketConnection connect(String path, String connectionId, Map<String, String> headers) {
         var uri = URI.create(String.format("%s:%s%s?cid=%s", host, port, path, connectionId));
         Queue<String> receivedMessages = new ConcurrentLinkedQueue<>();
 
         HttpClient client = HttpClient.newHttpClient();
         try {
-            WebSocket webSocket = client.newWebSocketBuilder()
-                    .buildAsync(uri, new WebSocketListener(receivedMessages))
+            var builder = client.newWebSocketBuilder();
+            for (Map.Entry<String, String> header: headers.entrySet()) {
+                builder = builder.header(header.getKey(), header.getValue());
+            }
+            WebSocket webSocket = builder.buildAsync(uri, new WebSocketListener(receivedMessages))
                     .get(15, TimeUnit.SECONDS);
 
             return new WebSocketConnection(webSocket, receivedMessages);
