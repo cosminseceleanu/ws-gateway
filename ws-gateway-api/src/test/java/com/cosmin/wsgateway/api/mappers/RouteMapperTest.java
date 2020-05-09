@@ -35,7 +35,7 @@ class RouteMapperTest {
     private final Expression<Boolean> defaultExpression = Expressions.matches("*", "$.c");
 
     @Test
-    public void testToModel() {
+    public void testToModel_connectRepresentation_shouldMapAllFieldsToModel() {
         RouteRepresentation initial = RouteFixtures.connectRepresentation();
         doReturn(Set.of(BackendFixtures.defaultHttpBackend())).when(backendMapper).toModels(any());
 
@@ -47,7 +47,7 @@ class RouteMapperTest {
     }
 
     @Test
-    public void testToModel_withExpression() {
+    public void testToModel_representationWithCustomExpression_shouldMapExpressionToRoute() {
         RouteRepresentation initial = RouteFixtures.customRouteRepresentation();
         doReturn(Set.of(BackendFixtures.defaultHttpBackend())).when(backendMapper).toModels(any());
         doReturn(defaultExpression).when(expressionMapper).toModel(any());
@@ -55,11 +55,12 @@ class RouteMapperTest {
         Route result = subject.toModel(initial);
 
         assertEquals(Route.Type.CUSTOM, result.getType());
+        assertEquals(initial.getName(), result.getName());
         assertEquals(defaultExpression, result.getExpression().get());
     }
 
     @Test
-    public void testToRepresentation() {
+    public void testToRepresentation_aRoute_shouldMapAllFieldsToRepresentation() {
         Route route = Route.connect(Set.of(BackendFixtures.defaultHttpBackend()));
         doReturn(Set.of(BackendFixtures.defaultHttpRepresentation())).when(backendMapper).toRepresentations(any());
 
@@ -72,7 +73,7 @@ class RouteMapperTest {
     }
 
     @Test
-    public void testToRepresentation_withExpression() {
+    public void testToRepresentation_aRouteWithExpression_shouldMapAllFieldsToRepresentation() {
         Route route = Route.custom(defaultExpression);
         doReturn(Set.of(BackendFixtures.defaultHttpRepresentation())).when(backendMapper).toRepresentations(any());
         doReturn(Map.of("key", "value")).when(expressionMapper).toRepresentation(defaultExpression);

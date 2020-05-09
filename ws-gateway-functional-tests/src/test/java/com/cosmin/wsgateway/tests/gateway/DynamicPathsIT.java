@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class DynamicPathsIT extends BaseTestIT {
 
     @Test
-    public void testConnect_whenEndpointIsMissing_thenNotFound() {
+    public void failToConnectWhenEndpointIsMissing() {
         var thrown = assertThrows(WebSocketConnectionException.class, () -> {
             webSocketClient.connect("/not-found");
         });
@@ -20,10 +20,17 @@ public class DynamicPathsIT extends BaseTestIT {
     }
 
     @Test
-    public void testConnect_whenEndpointExists_thenConnectionIsAccepted() {
+    public void connectionIsAcceptedIfEndpointMatchesPath() {
         var endpoint = endpointsClient.createAndAssert(EndpointFixtures.getRepresentation("/aa/ddd"));
         var connection = webSocketClient.connect(endpoint.getPath());
         connection.send("{\"foo\": \"bar\"}");
+        connection.send("{\"foo\": \"bar\"}");
+    }
+
+    @Test
+    public void connectionIsAcceptedIfEndpointRegexMatchesPath() {
+        endpointsClient.createAndAssert(EndpointFixtures.getRepresentation("/aa/(.*)"));
+        var connection = webSocketClient.connect("/aa/bb/ccc/ddd");
         connection.send("{\"foo\": \"bar\"}");
     }
 }

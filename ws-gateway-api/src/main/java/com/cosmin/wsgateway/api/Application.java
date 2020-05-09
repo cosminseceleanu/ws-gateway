@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = "com.cosmin.wsgateway")
 public class Application {
     //@ToDo make it configurable
-    private static final int DEFAULT_VERTX_POOL_SIZE = 2;
+    private static final int DEFAULT_VERTX_POOL_SIZE = 1;
 
     @Autowired
     private VerticleFactory verticleFactory;
@@ -26,7 +26,7 @@ public class Application {
     public void startVertx() {
         var deploymentOptions = new DeploymentOptions();
         deploymentOptions.setInstances(DEFAULT_VERTX_POOL_SIZE);
-        VertxOptions vertxOptions = new VertxOptions();
+        var vertxOptions = new VertxOptions();
         vertxOptions.setEventLoopPoolSize(DEFAULT_VERTX_POOL_SIZE);
 
         Vertx.vertx(vertxOptions).deployVerticle(verticleFactory::createWS, deploymentOptions);

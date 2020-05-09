@@ -15,6 +15,8 @@ public class Matches extends TerminalExpression<Boolean, String> {
 
     @Override
     public Boolean evaluate(String json) {
-        return getValueForPath(json).matches(value());
+        return getValueForPath(json)
+                .map(jsonValue -> jsonValue.matches(value()))
+                .orElse(false);
     }
 }

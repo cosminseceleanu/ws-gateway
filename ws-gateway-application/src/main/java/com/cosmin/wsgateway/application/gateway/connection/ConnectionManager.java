@@ -5,6 +5,7 @@ import com.cosmin.wsgateway.application.gateway.connection.filters.ConnectionFil
 import com.cosmin.wsgateway.domain.Endpoint;
 import java.util.List;
 import java.util.function.Function;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,18 +23,24 @@ public class ConnectionManager {
     public Mono<Connection> connect(ConnectionRequest request) {
         return endpointsProvider.getFirstMatch(request.getPath())
                 .flatMap(e -> runConnectionFilters(request, e))
-                .map(endpoint -> connectionFactory.create(endpoint, request));
+                .map(pair -> connectionFactory.create(pair.endpoint, pair.connectionRequest));
     }
 
-    private Mono<Endpoint> runConnectionFilters(ConnectionRequest request, Endpoint endpoint) {
+    private Mono<EndpointConnectionRequestPair> runConnectionFilters(ConnectionRequest request, Endpoint endpoint) {
         return filters.stream()
                 .reduce(Mono.just(request), (acc, filter) -> acc.flatMap(runFilter(endpoint, filter)), (r1, r2) -> r2)
-                .map(connectionRequest -> endpoint);
+                .map(r -> EndpointConnectionRequestPair.of(endpoint, r));
     }
 
     private Function<ConnectionRequest, Mono<? extends ConnectionRequest>> runFilter(
             Endpoint endpoint, ConnectionFilter filter
     ) {
         return connectionRequest -> filter.filter(endpoint, connectionRequest);
+    }
+
+    @AllArgsConstructor(staticName = "of")
+    private static class EndpointConnectionRequestPair {
+        private final Endpoint endpoint;
+        private final ConnectionRequest connectionRequest;
     }
 }

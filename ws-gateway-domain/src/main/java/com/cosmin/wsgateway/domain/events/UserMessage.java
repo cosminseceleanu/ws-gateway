@@ -5,7 +5,7 @@ import com.cosmin.wsgateway.domain.Route;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-@ToString()
+@ToString
 @RequiredArgsConstructor
 public class UserMessage implements InboundEvent {
     private final String connectionId;

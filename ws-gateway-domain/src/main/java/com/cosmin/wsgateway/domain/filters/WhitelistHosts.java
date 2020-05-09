@@ -21,6 +21,9 @@ public class WhitelistHosts implements Filter<Set<String>> {
 
     @Override
     public boolean isAllowed(Map<String, String> requestHeaders) {
-        return !requestHeaders.containsKey("Host") && hosts.contains(requestHeaders.get("Host"));
+        if (hosts.isEmpty()) {
+            return true;
+        }
+        return requestHeaders.containsKey("Host") && hosts.contains(requestHeaders.get("Host"));
     }
 }

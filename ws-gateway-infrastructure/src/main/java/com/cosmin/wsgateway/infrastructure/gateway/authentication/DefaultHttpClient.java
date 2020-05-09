@@ -25,7 +25,7 @@ public class DefaultHttpClient implements HttpClient {
         return webClient.post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new CheckTokenRequest(token), CheckTokenRequest.class)
+                .body(Mono.just(new CheckTokenRequest(token)), CheckTokenRequest.class)
                 .retrieve()
                 .toEntity(String.class)
                 .map(ResponseEntity::getStatusCodeValue);

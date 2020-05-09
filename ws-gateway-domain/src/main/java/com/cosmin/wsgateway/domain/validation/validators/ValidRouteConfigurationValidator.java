@@ -15,6 +15,9 @@ public class ValidRouteConfigurationValidator implements
         if (value == null) {
             return true;
         }
+        if (value.getRoutes() == null) {
+            return true;
+        }
 
         return checkRouteNumberByTypes(context, value, Route.Type.CONNECT)
                 && checkRouteNumberByTypes(context, value, Route.Type.DEFAULT)

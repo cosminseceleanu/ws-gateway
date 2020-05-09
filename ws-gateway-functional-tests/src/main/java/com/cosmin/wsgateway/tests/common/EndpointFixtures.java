@@ -6,8 +6,10 @@ import static com.cosmin.wsgateway.api.representation.RouteRepresentation.Type.D
 
 import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
 import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
+import com.cosmin.wsgateway.api.representation.FilterRepresentation;
 import com.cosmin.wsgateway.api.representation.HttpBackendRepresentation;
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
+import java.util.Collections;
 import java.util.Set;
 
 public final class EndpointFixtures {
@@ -31,10 +33,19 @@ public final class EndpointFixtures {
                 .path(path)
                 .authentication(new AuthenticationRepresentation.None())
                 .routes(Set.of(
-                        createRouteWithHttpBackend("Connect", CONNECT),
-                        createRouteWithHttpBackend("Disconnect", DISCONNECT),
-                        createRouteWithHttpBackend("Default", DEFAULT)
+                        createEmptyRoute("Connect", CONNECT),
+                        createEmptyRoute("Disconnect", DISCONNECT),
+                        createEmptyRoute("Default", DEFAULT)
                 ))
+                .filters(new FilterRepresentation())
+                .build();
+    }
+
+    public static RouteRepresentation createEmptyRoute(String name, RouteRepresentation.Type type) {
+        return RouteRepresentation.builder()
+                .name(name)
+                .type(type)
+                .backends(Collections.emptySet())
                 .build();
     }
 

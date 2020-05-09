@@ -22,8 +22,8 @@ public class FilterMapper implements RepresentationMapper<FilterRepresentation, 
         return Set.of(
                 new WhitelistHosts(representation.getWhitelistHosts()),
                 new BlacklistHosts(representation.getBlacklistHosts()),
-                new WhitelistIps(representation.getBlacklistIps()),
-                new BlacklistIps(representation.getWhitelistIps())
+                new WhitelistIps(representation.getWhitelistIps()),
+                new BlacklistIps(representation.getBlacklistIps())
         );
     }
 
