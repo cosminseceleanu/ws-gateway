@@ -3,30 +3,38 @@
   "authentication": {
     "mode": "none",
     "username": "basic_user",
-    "password":  "strongPassword",
+    "password": "strongPassword",
     "authorizationServerUrl": "http://my.auth.com/verify_token"
   },
-  "bufferSize": 1000,
-  "backendParallelism": 4,
   "filters": {
-    "whitelistIps": ["127.0.0"],
-    "whitelistHosts": ["localhost"]
+    "whitelistIps": [
+      "127.0.0"
+    ],
+    "blacklistIps": [
+      "127.0.0"
+    ],
+    "blacklistHosts": [
+      "host"
+    ],
+    "whitelistHosts": [
+      "localhost"
+    ]
   },
   "routes": [
     {
       "type": "connect",
       "name": "Connect",
-      "http": [
+      "backends": [
         {
-          "destination": "service.1.example.com/connect",
+          "type": "http",
+          "destination": "http://service.1.example.com/connect",
           "timeoutInMillis": 300,
           "additionalHeaders": {
             "X-Debug-Id": "id"
           }
-        }
-      ],
-      "kafka": [
+        },
         {
+          "type": "kafka",
           "topic": "service.2.connect.topic"
         }
       ]
@@ -34,42 +42,29 @@
     {
       "type": "disconnect",
       "name": "Disconnect",
-      "http": [
+      "backends": [
         {
-          "destination": "service.1.example.com/disconnect"
-        }
-      ],
-      "kafka": [
+          "type": "http",
+          "destination": "http://service.1.example.com/disconnect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
         {
-          "topic": "service.2.connect.disconnect"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "Error",
-      "http": [
-        {
-          "destination": "service.4.example.com/error"
-        }
-      ],
-      "kafka": [
-        {
-          "topic": "service.2.connect.error"
+          "type": "kafka",
+          "topic": "service.2.diconnect.topic"
         }
       ]
     },
     {
       "type": "default",
       "name": "Default",
-      "http": [
+      "backends": [
         {
-          "destination": "service.1.example.com/default"
-        }
-      ],
-      "kafka": [
-        {
-          "topic": "service.2.connect.default"
+          "type": "http",
+          "destination": "http://service.1.example.com/default",
+          "timeoutInMillis": 300
         }
       ]
     },
@@ -102,9 +97,11 @@
           }
         ]
       },
-      "http": [
+      "backends": [
         {
-          "destination": "service.1.example.com/custom"
+          "type": "http",
+          "destination": "http://service.1.example.com/custom",
+          "timeoutInMillis": 300
         }
       ]
     }

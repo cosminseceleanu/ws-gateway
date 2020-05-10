@@ -4,9 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.cosmin.wsgateway.api.utils.JsonUtils;
 import org.junit.jupiter.api.Test;
 
-class AuthenticationRepresentationTest extends BaseRepresentationTest {
+class AuthenticationRepresentationTest {
 
     private static final String BEARER_JSON = "{\"authorizationServerUrl\":\"serverUrl\",\"mode\":\"bearer\"}";
 
@@ -14,14 +15,14 @@ class AuthenticationRepresentationTest extends BaseRepresentationTest {
     public void testBearerAuth_serializeToJson_jsonIsValid() {
         var representation = new AuthenticationRepresentation.Bearer("serverUrl");
 
-        var result = toJson(representation);
+        var result = JsonUtils.toJson(representation);
 
         assertEquals(BEARER_JSON, result);
     }
 
     @Test
     public void testBearerAuth_deserializeFromJson_represensationHasFieldsPresent() {
-        var result = fromJson(BEARER_JSON, AuthenticationRepresentation.class);
+        var result = JsonUtils.fromJson(BEARER_JSON, AuthenticationRepresentation.class);
 
         assertThat(result, instanceOf(AuthenticationRepresentation.Bearer.class));
         var bearerAuth = (AuthenticationRepresentation.Bearer) result;

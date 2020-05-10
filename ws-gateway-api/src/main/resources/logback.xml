@@ -5,4 +5,5 @@
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <logger name="com.cosmin.wsgateway.application.gateway" level="DEBUG"/>
     <logger name="com.cosmin.wsgateway.api" level="DEBUG"/>
+    <logger name="org.apache.ignite" level="WARN"/>
 </configuration>

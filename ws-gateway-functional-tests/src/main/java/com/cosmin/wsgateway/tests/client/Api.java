@@ -4,5 +4,6 @@ public interface Api {
     interface Paths {
         String INTERNAL_API_PATH = "/api/internal";
         String ENDPOINTS = INTERNAL_API_PATH + "/endpoints";
+        String CONNECTIONS = INTERNAL_API_PATH + "/connections";
     }
 }

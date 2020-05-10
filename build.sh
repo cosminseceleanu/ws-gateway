@@ -11,14 +11,14 @@ rm -rf deployment/swagger-ui/api-spec.yml
 
 echo "Done building swagger-ui image"
 
-echo "Build gateway project"
-sbt clean
-sbt dist
-
-echo "Build gateway image"
-cp -f application/target/universal/*.zip deployment/gateway/app.zip
-docker build --build-arg APP_VERSION=1.0-SNAPSHOT -t ws-gateway:${VERSION} deployment/gateway
-rm -rf deployment/gateway/app.zip
+#echo "Build gateway project"
+#sbt clean
+#sbt dist
+#
+#echo "Build gateway image"
+#cp -f application/target/universal/*.zip deployment/gateway/app.zip
+#docker build --build-arg APP_VERSION=1.0-SNAPSHOT -t ws-gateway:${VERSION} deployment/gateway
+#rm -rf deployment/gateway/app.zip
 
 echo "Done"
 

@@ -1,12 +1,12 @@
-package com.cosmin.wsgateway.api.representation;
+package com.cosmin.wsgateway.api.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public abstract class BaseRepresentationTest {
+public class JsonUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected String toJson(Object value) {
+    public static String toJson(Object value) {
         try {
             return objectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
@@ -14,7 +14,7 @@ public abstract class BaseRepresentationTest {
         }
     }
 
-    protected <T> T fromJson(String json, Class<T> type) {
+    public static <T> T fromJson(String json, Class<T> type) {
         try {
             return objectMapper.readValue(json, type);
         } catch (JsonProcessingException e) {

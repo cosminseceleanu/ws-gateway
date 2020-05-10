@@ -1,6 +1,7 @@
 package com.cosmin.wsgateway.tests;
 
 import com.cosmin.wsgateway.api.Application;
+import com.cosmin.wsgateway.tests.client.ConnectionsClient;
 import com.cosmin.wsgateway.tests.client.EndpointsClient;
 import com.cosmin.wsgateway.tests.client.WebSocketClient;
 import org.junit.jupiter.api.Assertions;
@@ -26,6 +27,7 @@ public abstract class BaseTestIT {
     protected WebTestClient webClient;
 
     protected EndpointsClient endpointsClient;
+    protected ConnectionsClient connectionsClient;
     protected WebSocketClient webSocketClient;
 
     private final AtomicBoolean isConfigured = new AtomicBoolean();
@@ -36,6 +38,7 @@ public abstract class BaseTestIT {
             return;
         }
         endpointsClient = new EndpointsClient(webClient);
+        connectionsClient = new ConnectionsClient(webClient);
         webSocketClient = new WebSocketClient(8081);
         isConfigured.compareAndSet(false, true);
     }
