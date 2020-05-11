@@ -1,0 +1,14 @@
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "env,health"
+      base-path: /
+
+gateway:
+  kubernetes:
+    namespace: "gateway"
+    serviceName: "gateway"

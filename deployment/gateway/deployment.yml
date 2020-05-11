@@ -4,9 +4,9 @@ metadata:
   name: gateway-core
   labels:
     app: gateway-core
-    version: 1.0.1-alpha
+    version: 1.0.0-alpha
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: gateway-core
@@ -22,53 +22,61 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: ws-gateway:1.0.1-alpha
+          image: ws-gateway:1.0.0-alpha
           imagePullPolicy: Never
           resources:
             requests:
-              memory: "128Mi"
+              memory: "512Mi"
               cpu: "250m"
             limits:
-              memory: "256Mi"
+              memory: "756Mi"
               cpu: "500m"
           readinessProbe:
             httpGet:
-              path: /health/ready
-              port: management
+              path: /health
+              port: api
             initialDelaySeconds: 30
             timeoutSeconds: 10
             periodSeconds: 15
             failureThreshold: 10
           livenessProbe:
             httpGet:
-              path: /health/alive
-              port: management
-            initialDelaySeconds: 150
+              path: /health
+              port: api
+            initialDelaySeconds: 60
             timeoutSeconds: 2
             periodSeconds: 5
           env:
-            - name: PLAY_OPTS
+            - name: APP_OPTS
               valueFrom:
                 configMapKeyRef:
                   name: gateway-core-config
-                  key: gateway.playOptions
-            - name: AKKA_CLUSTER_BOOTSTRAP_SERVICE_NAME
+                  key: gateway.appOptions
+            - name: GATEWAY_KUBERNETES_SERVICENAME
               valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: "metadata.labels['app']"
-            - name: APP_SECRET
+                configMapKeyRef:
+                  name: gateway-core-config
+                  key: gateway.kubernetesService
+            - name: GATEWAY_KUBERNETES_NAMESPACE
               valueFrom:
-                secretKeyRef:
-                  name: gateway-core-secrets
-                  key: appSecret
+                configMapKeyRef:
+                  name: gateway-core-config
+                  key: gateway.kubernetesNamespace
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef:
+                  name: gateway-core-config
+                  key: gateway.javaOpts
           ports:
-            - name: application
-              containerPort: 9000
-            - name: management
-              containerPort: 9001
-            - name: remoting
-              containerPort: 2552
+            - name: api
+              containerPort: 8080
+            - name: websocket
+              containerPort: 8081
+            - name: ignite
+              containerPort: 47100
+              protocol: TCP
+            - name: ignitediscovery
+              containerPort: 47500
               protocol: TCP
 ---
 kind: Role

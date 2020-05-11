@@ -3,4 +3,7 @@ kind: ConfigMap
 metadata:
   name: gateway-core-config
 data:
-  gateway.playOptions: " -Dconfig.resource=k8s.conf -Dlogger.resource=logback-dev.xml"
+  gateway.appOptions: "-Dspring.profile.active=k8s"
+  gateway.kubernetesService: "gateway-core"
+  gateway.kubernetesNamespace: "ns-ws-gateway"
+  gateway.javaOpts: "-Xms64m -Xmx256m"

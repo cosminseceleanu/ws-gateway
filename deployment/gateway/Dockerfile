@@ -1,20 +1,20 @@
-FROM openjdk:8-jdk
+FROM openjdk:11-jdk
 
-EXPOSE 9000
-EXPOSE 9001
+EXPOSE 8080
+EXPOSE 8081
+#ignite
+EXPOSE 47100
+#ignite discovery
+EXPOSE 47500
 
-RUN mkdir -p /opt/scala-play/bin
-WORKDIR /opt/scala-play/bin
+RUN mkdir -p /opt/gateway
+RUN mkdir -p /opt/gateway/target
+WORKDIR /opt/gateway/bin
 
-ARG APP_VERSION
-
-COPY app.zip /opt/scala-play/app.zip
-RUN rm -rf /opt/scala-play/bin/* && \
-    unzip -o /opt/scala-play/app.zip && \
-    mv application-$APP_VERSION app
+COPY gateway.jar ./
 
 ENV JAVA_OPTS=""
-ENV PLAY_OPTS=""
+ENV APP_OPTS=""
 
-CMD app/bin/application -Dplay.http.secret.key=$APP_SECRET $PLAY_OPTS $JAVA_OPTS
+CMD java $JAVA_OPTS $APP_OPTS -jar gateway.jar
 #CMD exec /bin/sh -c "trap : TERM INT; (while true; do sleep 1000; done) & wait"

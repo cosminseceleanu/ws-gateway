@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/ws-gateway.iml" filepath="$PROJECT_DIR$/.idea/ws-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ws-gateway-api/ws-gateway-api.iml" filepath="$PROJECT_DIR$/ws-gateway-api/ws-gateway-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ws-gateway-application/ws-gateway-application.iml" filepath="$PROJECT_DIR$/ws-gateway-application/ws-gateway-application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ws-gateway-domain/ws-gateway-domain.iml" filepath="$PROJECT_DIR$/ws-gateway-domain/ws-gateway-domain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ws-gateway-functional-tests/ws-gateway-functional-tests.iml" filepath="$PROJECT_DIR$/ws-gateway-functional-tests/ws-gateway-functional-tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ws-gateway-infrastructure/ws-gateway-infrastructure.iml" filepath="$PROJECT_DIR$/ws-gateway-infrastructure/ws-gateway-infrastructure.iml" />
+    </modules>
+  </component>
+</project>
