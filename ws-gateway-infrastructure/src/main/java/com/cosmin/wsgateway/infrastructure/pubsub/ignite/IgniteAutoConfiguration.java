@@ -28,7 +28,11 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class IgniteAutoConfiguration {
 
-    public static final int IGNITE_LOCAL_PORT = 47100;
+    private static final int IGNITE_LOCAL_PORT = 47100;
+    private static final int IGNITE_DISCOVERY_PORT = 47500;
+    private static final int SYSTEM_THREAD_POOL_SIZE = 4;
+    private static final int PUBLIC_THREAD_POOL_SIZE = 8;
+    private static final int REBALANCE_THREAD_POOL_SIZE = 2;
 
     @Bean(name = "igniteServer")
     public Ignite igniteConfiguration(IgniteDiscoverySpi discoverySpi) {
@@ -44,6 +48,9 @@ public class IgniteAutoConfiguration {
         igniteConfiguration.setWorkDirectory(workingDir);
         igniteConfiguration.setCommunicationSpi(communicationSpi);
         igniteConfiguration.setDiscoverySpi(discoverySpi);
+        igniteConfiguration.setPublicThreadPoolSize(PUBLIC_THREAD_POOL_SIZE);
+        igniteConfiguration.setRebalanceThreadPoolSize(REBALANCE_THREAD_POOL_SIZE);
+        igniteConfiguration.setSystemThreadPoolSize(SYSTEM_THREAD_POOL_SIZE);
 
         return Ignition.start(igniteConfiguration);
     }
@@ -57,6 +64,7 @@ public class IgniteAutoConfiguration {
 
         var discoverySpi = new TcpDiscoverySpi();
         discoverySpi.setIpFinder(ipFinder);
+        discoverySpi.setLocalPort(IGNITE_DISCOVERY_PORT);
 
         return discoverySpi;
     }
@@ -64,7 +72,10 @@ public class IgniteAutoConfiguration {
     @Bean
     @Profile("!k8s")
     public IgniteDiscoverySpi defaultDiscoverySpi() {
-        return new TcpDiscoverySpi();
+        TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
+        discoverySpi.setLocalPort(IGNITE_DISCOVERY_PORT);
+
+        return discoverySpi;
     }
 
     @Bean

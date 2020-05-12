@@ -19,6 +19,7 @@ servers:
       serverUrl:
         default: localhost:8080
         description: Server url
+
 tags:
   - name: Endpoints
     description: Api's used to manage endpoints
@@ -26,6 +27,25 @@ tags:
       description: Find out more
       url: 'https://github.com/cosminseceleanu/ws-gateway'
 paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Get gateway heatlh
+      operationId: getHealth
+      responses:
+        '200':
+          description: Gateway is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: Gateway is un healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
   /api/internal/endpoints:
     get:
       tags:
@@ -390,6 +410,23 @@ components:
           example: ["Property endpoint.path can not be null"]
           items:
             type: string
+    Health:
+      type: array
+      items:
+        type: object
+        properties:
+          status:
+            type: string
+            enum: [UP, DOWN, UNKNOWN]
+            description: Gateway statys
+            example: UP
+            readOnly: true
+          components:
+            type: array
+            description: Gateway health status by each component
+            items:
+              type: object
+            readOnly: true
   requestBodies:
     Endpoint:
       content:

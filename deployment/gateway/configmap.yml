@@ -6,4 +6,4 @@ data:
   gateway.appOptions: "-Dspring.profile.active=k8s"
   gateway.kubernetesService: "gateway-core"
   gateway.kubernetesNamespace: "ns-ws-gateway"
-  gateway.javaOpts: "-Xms64m -Xmx256m"
+  gateway.javaOpts: "-Xms64m -Xmx256m -XX:MaxDirectMemorySize=64m -XX:+DisableExplicitGC"
