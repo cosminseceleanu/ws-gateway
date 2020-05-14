@@ -19,6 +19,13 @@ class AuthenticationMapperTest {
     }
 
     @Test
+    public void testToModel_representationIsNull_shouldReturnNull() {
+        var result = subject.toModel(null);
+
+        assertNull(result);
+    }
+
+    @Test
     public void testToModel_representationModeIsBasic_shouldReturnCorrectModel() {
         var representation = new AuthenticationRepresentation.Basic("user", "pass");
         var result = subject.toModel(representation);

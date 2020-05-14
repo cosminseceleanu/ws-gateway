@@ -50,16 +50,16 @@ public class EndpointsController {
     @PutMapping("/endpoints/{id}")
     public Mono<EndpointRepresentation> update(
             @PathVariable String id,
-            @NotNull EndpointRepresentation representation
+            @NotNull @RequestBody EndpointRepresentation representation
     ) {
         return Mono.just(representation).map(endpointMapper::toModel)
                 .flatMap(e -> endpointWriter.update(id, e))
                 .map(endpointMapper::toRepresentation);
     }
 
-    @DeleteMapping("/endpoints")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> delete(@PathVariable String id) {
-        return endpointWriter.delete(id).map(e -> null);
+    @DeleteMapping("/endpoints/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Mono<EndpointRepresentation> delete(@PathVariable String id) {
+        return endpointWriter.delete(id).map(endpointMapper::toRepresentation);
     }
 }

@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 public class AuthenticationMapper implements RepresentationMapper<AuthenticationRepresentation, Authentication> {
     @Override
     public Authentication toModel(AuthenticationRepresentation representation) {
+        if (representation == null) {
+            return null;
+        }
         if (representation instanceof AuthenticationRepresentation.None) {
             return new Authentication.None();
         }

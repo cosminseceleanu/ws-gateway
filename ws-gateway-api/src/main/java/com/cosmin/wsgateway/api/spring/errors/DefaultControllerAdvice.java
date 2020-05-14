@@ -1,7 +1,6 @@
 package com.cosmin.wsgateway.api.spring.errors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import com.cosmin.wsgateway.api.representation.ErrorRepresentation;
 import java.util.ArrayList;
@@ -13,20 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class DefaultErrorHandler {
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorRepresentation> handleError(Exception exception) {
-        ErrorRepresentation representation = ErrorRepresentation.builder()
-                .errorType("InternalServerError")
-                .message(exception.getMessage())
-                .timestamp(System.currentTimeMillis())
-                .errors(new ArrayList<>())
-                .status(INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .build();
-
-        return new ResponseEntity<>(representation, INTERNAL_SERVER_ERROR);
-    }
+public class DefaultControllerAdvice {
 
     @ExceptionHandler({ ConstraintViolationException.class })
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException exception) {
