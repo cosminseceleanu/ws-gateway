@@ -18,6 +18,9 @@ public class Application {
     @Autowired
     private VerticleFactory verticleFactory;
 
+    @Autowired
+    private Vertx vertx;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -26,9 +29,6 @@ public class Application {
     public void startVertx() {
         var deploymentOptions = new DeploymentOptions();
         deploymentOptions.setInstances(DEFAULT_VERTX_POOL_SIZE);
-        var vertxOptions = new VertxOptions();
-        vertxOptions.setEventLoopPoolSize(DEFAULT_VERTX_POOL_SIZE);
-
-        Vertx.vertx(vertxOptions).deployVerticle(verticleFactory::createWS, deploymentOptions);
+        vertx.deployVerticle(verticleFactory::createWS, deploymentOptions);
     }
 }

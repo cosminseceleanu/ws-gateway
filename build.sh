@@ -1,24 +1,15 @@
-API_SPECIFICATION=docs/api/open-api-spec.yml
-
 source deployment/env/local.cosmin.env
 
-echo "Build swagger-ui image"
-cp -f $API_SPECIFICATION deployment/swagger-ui/api-spec.yml
+echo "Run tests"
+mvn -s .mvn/settings.xml clean verify
 
-docker build --build-arg API_SPEC_PATH=api-spec.yml -t ws-gateway/swagger-ui:${VERSION} deployment/swagger-ui
+echo "Build jar"
+mvn -s .mvn/settings.xml -pl ws-gateway-api clean package spring-boot:repackage -DskipTests
 
-rm -rf deployment/swagger-ui/api-spec.yml
-
-echo "Done building swagger-ui image"
-
-#echo "Build gateway project"
-#sbt clean
-#sbt dist
-#
-#echo "Build gateway image"
-#cp -f application/target/universal/*.zip deployment/gateway/app.zip
-#docker build --build-arg APP_VERSION=1.0-SNAPSHOT -t ws-gateway:${VERSION} deployment/gateway
-#rm -rf deployment/gateway/app.zip
+echo "Build docker image"
+cp -f ws-gateway-api/target/ws-gateway-api-*.jar deployment/gateway/gateway.jar
+docker build -t ws-gateway:${VERSION} deployment/gateway
+rm -rf deployment/gateway/gateway.jar
 
 echo "Done"
 

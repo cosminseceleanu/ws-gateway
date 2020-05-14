@@ -1,18 +1,11 @@
 version: '3'
 
 services:
-  swagger-ui:
-    image: ws-gateway/swagger-ui:${VERSION}
-    ports:
-      - "8085:8080"
-    environment:
-      SWAGGER_JSON: /swagger/api-spec.yml
 
-#  gateway:
-#    image: ws-gateway:${VERSION}
-#    ports:
-#      - "9000:9000"
-#    environment:
-#      APP_SECRET: QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
-#      JAVA_OPTS: ""
-#      PLAY_OPTS: ""
+  gateway:
+    image: ws-gateway:${VERSION}
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      JAVA_OPTS: ""

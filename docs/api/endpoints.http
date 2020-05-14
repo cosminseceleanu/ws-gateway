@@ -1,0 +1,182 @@
+### List all endoints
+GET http://localhost:8080/api/internal/endpoints
+
+### Create endpoint with custom route - sample 1
+POST http://localhost:8080/api/internal/endpoints
+Content-Type: application/json
+
+{
+  "path": "/my-ws-endpoint",
+  "authentication": {
+    "mode": "none",
+    "username": "basic_user",
+    "password": "strongPassword",
+    "authorizationServerUrl": "http://my.auth.com/verify_token"
+  },
+  "filters": {
+    "whitelistIps": [
+      "127.0.0"
+    ],
+    "blacklistIps": [
+      "127.0.0"
+    ],
+    "blacklistHosts": [
+      "host"
+    ],
+    "whitelistHosts": [
+      "localhost"
+    ]
+  },
+  "routes": [
+    {
+      "type": "connect",
+      "name": "Connect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/connect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.connect.topic"
+        }
+      ]
+    },
+    {
+      "type": "disconnect",
+      "name": "Disconnect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/disconnect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.diconnect.topic"
+        }
+      ]
+    },
+    {
+      "type": "default",
+      "name": "Default",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/default",
+          "timeoutInMillis": 300
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "name": "Custom route",
+      "expression": {
+        "and": [
+          {
+            "or": [
+              {
+                "matches": {
+                  "path": "$.a",
+                  "value": "a"
+                }
+              },
+              {
+                "equal": {
+                  "path": "$.b",
+                  "value": 8
+                }
+              }
+            ]
+          },
+          {
+            "equal": {
+              "path": "$.b",
+              "value": "b"
+            }
+          }
+        ]
+      },
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/custom",
+          "timeoutInMillis": 300
+        }
+      ]
+    }
+  ]
+}
+
+### Create endpoint - sample 2
+POST http://localhost:8080/api/internal/endpoints
+Content-Type: application/json
+
+{
+  "path": "/my-ws-endpoint",
+  "authentication": {
+    "mode": "basic",
+    "username": "basic_user",
+    "password":  "strongPassword"
+  },
+  "routes": [
+    {
+      "type": "connect",
+      "name": "Connect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/connect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.connect.topic"
+        }
+      ]
+    },
+    {
+      "type": "disconnect",
+      "name": "Disconnect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/disconnect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.diconnect.topic"
+        }
+      ]
+    },
+    {
+      "type": "default",
+      "name": "Default",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/default",
+          "timeoutInMillis": 300
+        }
+      ]
+    }
+  ]
+}
+
+###
+
+

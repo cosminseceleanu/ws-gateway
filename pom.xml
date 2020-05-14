@@ -152,6 +152,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.ignite</groupId>
+				<artifactId>ignite-kubernetes</artifactId>
+				<version>${ignite.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
 				<version>${junit.version}</version>
@@ -223,10 +229,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
