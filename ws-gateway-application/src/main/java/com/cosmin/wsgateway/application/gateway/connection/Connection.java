@@ -16,7 +16,6 @@ import com.cosmin.wsgateway.domain.events.OutboundEvent;
 import com.cosmin.wsgateway.domain.events.TopicMessage;
 import com.cosmin.wsgateway.domain.events.UserMessage;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javatuples.Pair;
@@ -140,11 +139,6 @@ public class Connection {
         }
 
         Mono<Event> doSendEvent(InboundEvent inboundEvent) {
-            try {
-                Thread.sleep(ThreadLocalRandom.current().nextInt(800, 820 + 1));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             return connector.sendEvent(inboundEvent, backend);
         }
     }

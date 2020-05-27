@@ -20,7 +20,6 @@ public class IgniteHealthIndicator extends AbstractHealthIndicator {
         } else {
             builder.down();
         }
-        ignite.cluster().localNode().metrics();
         var clusterNodes = cluster.nodes()
                 .stream()
                 .map(ClusterNode::id)
