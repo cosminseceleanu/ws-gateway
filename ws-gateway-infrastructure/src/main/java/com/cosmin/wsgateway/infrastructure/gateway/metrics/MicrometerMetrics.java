@@ -36,29 +36,33 @@ public class MicrometerMetrics implements GatewayMetrics {
     }
 
     @Override
-    public void recordError(Throwable e) {
-        List<Tag> tags = List.of(Tag.of("error.type", e.getClass().getSimpleName()));
+    public void recordError(Throwable e, String connectionId) {
+        List<Tag> tags = List.of(
+                Tag.of("error.type", e.getClass().getSimpleName()),
+                Tag.of("connection", connectionId)
+        );
         registry.counter(GatewayMetrics.METRIC_ERRORS, tags).increment();
     }
 
     @Override
-    public void recordOutboundEventSent(Endpoint endpoint) {
-        registry.counter(GatewayMetrics.METRIC_OUTBOUND_EVENTS_SENT, getEndpointTags(endpoint)).increment();
+    public void recordOutboundEventSent(Endpoint endpoint, String connectionId) {
+        registry.counter(METRIC_OUTBOUND_EVENTS_SENT, getDefaultTags(endpoint, connectionId)).increment();
     }
 
     @Override
-    public void recordOutboundEventReceived(Endpoint endpoint) {
-        registry.counter(GatewayMetrics.METRIC_OUTBOUND_EVENTS_RECEIVED, getEndpointTags(endpoint)).increment();
+    public void recordOutboundEventReceived(Endpoint endpoint, String connectionId) {
+        registry.counter(METRIC_OUTBOUND_EVENTS_RECEIVED, getDefaultTags(endpoint, connectionId)).increment();
     }
 
     @Override
-    public void recordInboundEventReceived(Endpoint endpoint) {
-        registry.counter(GatewayMetrics. METRIC_INBOUND_EVENTS_RECEIVED, getEndpointTags(endpoint)).increment();
+    public void recordInboundEventReceived(Endpoint endpoint, String connectionId) {
+        registry.counter(METRIC_INBOUND_EVENTS_RECEIVED, getDefaultTags(endpoint, connectionId)).increment();
     }
 
     @Override
-    public void recordBackendError(Endpoint endpoint, Backend<?> backend) {
+    public void recordBackendError(Endpoint endpoint, Backend<?> backend, String connectionId) {
         var tags = List.of(
+                Tag.of("connection", connectionId),
                 Tag.of("endpoint.path", String.valueOf(endpoint.getPath())),
                 Tag.of("backend.type", backend.type().name()),
                 Tag.of("backend.destination", backend.destination())
@@ -66,8 +70,11 @@ public class MicrometerMetrics implements GatewayMetrics {
         registry.counter(GatewayMetrics.METRIC_INBOUND_BACKEND_ERROR, tags).increment();
     }
 
-    private List<Tag> getEndpointTags(Endpoint endpoint) {
-        return List.of(Tag.of("endpoint.path", String.valueOf(endpoint.getPath())));
+    private List<Tag> getDefaultTags(Endpoint endpoint, String connectionId) {
+        return List.of(
+                Tag.of("endpoint.path", String.valueOf(endpoint.getPath())),
+                Tag.of("connection", connectionId)
+        );
     }
 
     @Override

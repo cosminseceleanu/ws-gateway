@@ -108,7 +108,7 @@ public class WebSocketServer extends AbstractVerticle {
                                   WebSocketMessageProcessor processor, Connection connection) {
         gatewayMetrics.recordConnection(connection.getEndpoint());
         serverWebSocket.textMessageHandler(msg -> {
-            gatewayMetrics.recordInboundEventReceived(connection.getEndpoint());
+            gatewayMetrics.recordInboundEventReceived(connection.getEndpoint(), connection.getId());
             processor.onMessage(msg);
         });
         serverWebSocket.closeHandler(h -> processor.onClose());

@@ -24,15 +24,15 @@ public interface GatewayMetrics {
 
     void recordConnectionError(int status);
 
-    void recordError(Throwable e);
+    void recordError(Throwable e, String connectionId);
 
-    void recordOutboundEventSent(Endpoint endpoint);
+    void recordOutboundEventSent(Endpoint endpoint, String connectionId);
 
-    void recordOutboundEventReceived(Endpoint endpoint);
+    void recordOutboundEventReceived(Endpoint endpoint, String connectionId);
 
-    void recordInboundEventReceived(Endpoint endpoint);
+    void recordInboundEventReceived(Endpoint endpoint, String connectionId);
 
-    void recordBackendError(Endpoint endpoint, Backend<?> backend);
+    void recordBackendError(Endpoint endpoint, Backend<?> backend, String connectionId);
 
     default Stopwatch startTimer(String metricName, Endpoint endpoint) {
         return startTimer(metricName, endpoint, Collections.emptyMap());

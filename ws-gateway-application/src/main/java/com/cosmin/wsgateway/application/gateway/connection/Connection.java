@@ -69,14 +69,14 @@ public class Connection {
                 .doOnNext(this::logProcessedEvent)
                 .onErrorContinue(Exception.class, this::onError)
                 .map(e -> transformer.fromPayload(e.payload()))
-                .doOnNext(msg -> gatewayMetrics.recordOutboundEventSent(context.getEndpoint()));
+                .doOnNext(msg -> gatewayMetrics.recordOutboundEventSent(context.getEndpoint(), context.getId()));
     }
 
     private Flux<OutboundEvent> createOutboundFlux(PubSub.Subscription subscription) {
         var outboundEvents = subscription.getEvents();
 
         return outboundEvents
-                .doOnNext(n -> gatewayMetrics.recordOutboundEventReceived(context.getEndpoint()))
+                .doOnNext(n -> gatewayMetrics.recordOutboundEventReceived(context.getEndpoint(), context.getId()))
                 .map(msg -> new TopicMessage(context.getId(), transformer.toPayload(msg, Map.class)));
     }
 
@@ -112,7 +112,7 @@ public class Connection {
                 pair.doSendEvent(inboundEvent),
                 getEndpoint(),
                 Map.of("backend.type", pair.backend.type().name(), "backend.destination", pair.backend.destination())
-        ).doOnError(e -> gatewayMetrics.recordBackendError(getEndpoint(), pair.backend));
+        ).doOnError(e -> gatewayMetrics.recordBackendError(getEndpoint(), pair.backend, context.getId()));
     }
 
     private void logProcessedEvent(OutboundEvent e) {
@@ -122,7 +122,7 @@ public class Connection {
     }
 
     private void onError(Throwable e, Object o) {
-        gatewayMetrics.recordError(e);
+        gatewayMetrics.recordError(e, context.getId());
         log.error(e.getMessage(), e);
     }
 
