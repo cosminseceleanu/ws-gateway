@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.api.spring.health;
+package com.cosmin.wsgateway.infrastructure.integrations.ignite;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -7,10 +7,8 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterNode;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Component
 public class IgniteHealthIndicator extends AbstractHealthIndicator {
     private final Ignite ignite;
 

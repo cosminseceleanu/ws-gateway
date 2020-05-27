@@ -1,7 +1,8 @@
-package com.cosmin.wsgateway.infrastructure.pubsub.ignite;
+package com.cosmin.wsgateway.infrastructure.integrations.ignite;
 
 import com.cosmin.wsgateway.application.gateway.GatewayProperties;
 import com.cosmin.wsgateway.application.gateway.PubSub;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.nio.file.Paths;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteMessaging;
@@ -87,5 +88,15 @@ public class IgniteAutoConfiguration {
     @Primary
     public PubSub ignitePubSub(IgniteMessaging igniteMessaging) {
         return new IgnitePubSub(igniteMessaging);
+    }
+
+    @Bean
+    public IgniteHealthIndicator healthIndicator(Ignite ignite) {
+        return new IgniteHealthIndicator(ignite);
+    }
+
+    @Bean
+    public IgniteMetrics metrics(Ignite ignite, MeterRegistry meterRegistry) {
+        return new IgniteMetrics(ignite, meterRegistry);
     }
 }

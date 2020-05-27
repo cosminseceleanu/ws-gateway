@@ -5,6 +5,8 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
+import com.cosmin.wsgateway.application.gateway.connection.Connection;
 import com.cosmin.wsgateway.application.gateway.connection.ConnectionManager;
 import com.cosmin.wsgateway.application.gateway.connection.ConnectionRequest;
 import com.cosmin.wsgateway.application.gateway.exceptions.AccessDeniedException;
@@ -31,6 +33,7 @@ public class WebSocketServer extends AbstractVerticle {
     public static final int DEFAULT_PORT = 8081;
 
     private final ConnectionManager connectionManager;
+    private final GatewayMetrics gatewayMetrics;
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
@@ -54,12 +57,7 @@ public class WebSocketServer extends AbstractVerticle {
         var processor = new WebSocketMessageProcessor();
         Flux<String> inboundMessages = createInboundFlux(processor);
         connectionManager.connect(request)
-                .doOnSuccess(c -> {
-                    serverWebSocket.textMessageHandler(processor::onMessage);
-                    serverWebSocket.closeHandler(h -> processor.onClose());
-                    log.debug("Accept WS connection={}", c.getId());
-                    handshakePromise.complete(101);
-                })
+                .doOnSuccess(c -> acceptConnection(serverWebSocket, handshakePromise, processor, c))
                 .doOnError(e -> handleConnectionError(e, handshakePromise))
                 .onErrorStop()
                 .flatMapMany(bridge -> bridge.handle(inboundMessages))
@@ -106,6 +104,18 @@ public class WebSocketServer extends AbstractVerticle {
             }));
     }
 
+    private void acceptConnection(ServerWebSocket serverWebSocket, Promise<Integer> handshakePromise,
+                                  WebSocketMessageProcessor processor, Connection connection) {
+        gatewayMetrics.recordConnection(connection.getEndpoint());
+        serverWebSocket.textMessageHandler(msg -> {
+            gatewayMetrics.recordInboundEventReceived(connection.getEndpoint(), connection.getId());
+            processor.onMessage(msg);
+        });
+        serverWebSocket.closeHandler(h -> processor.onClose());
+        log.debug("Accept WS connection={}", connection.getId());
+        handshakePromise.complete(101);
+    }
+
     private void handleConnectionError(Throwable error, Promise<Integer> handshakePromise) {
         int status = INTERNAL_SERVER_ERROR.value();
         if (error instanceof EndpointNotFoundException) {
@@ -118,6 +128,7 @@ public class WebSocketServer extends AbstractVerticle {
             status = FORBIDDEN.value();
         }
         log.error("Reject WS connection with status={}", status, error);
+        gatewayMetrics.recordConnectionError(status);
         handshakePromise.complete(status);
     }
 

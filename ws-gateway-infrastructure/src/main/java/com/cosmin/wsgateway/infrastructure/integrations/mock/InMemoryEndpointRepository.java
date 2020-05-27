@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.infrastructure.persistence;
+package com.cosmin.wsgateway.infrastructure.integrations.mock;
 
 import com.cosmin.wsgateway.application.configuration.repositories.EndpointRepository;
 import com.cosmin.wsgateway.domain.Authentication;
