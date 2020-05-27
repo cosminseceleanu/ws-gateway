@@ -64,7 +64,7 @@ class ConnectionManagerTest {
         var request2 = ConnectionRequest.builder().headers(Map.of("k1", "v1", "k2", "v2")).build();
         doReturn(Mono.just(request2)).when(filter2).filter(endpoint, request1);
 
-        var expectedConnection = new Connection(null, null, null, null);
+        var expectedConnection = new Connection(null, null, null, null, null);
         doReturn(expectedConnection).when(connectionFactory).create(endpoint, request2);
 
         subject = new ConnectionManager(endpointsProvider, connectionFactory, List.of(filter1, filter2));

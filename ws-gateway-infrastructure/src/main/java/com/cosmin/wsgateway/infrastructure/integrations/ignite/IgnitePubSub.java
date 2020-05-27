@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.infrastructure.pubsub.ignite;
+package com.cosmin.wsgateway.infrastructure.integrations.ignite;
 
 import com.cosmin.wsgateway.application.gateway.PubSub;
 import java.io.Serializable;

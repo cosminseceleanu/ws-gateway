@@ -115,7 +115,7 @@ Content-Type: application/json
   ]
 }
 
-### Create endpoint - sample 2
+### Create endpoint - sample 2 -basic auth
 POST http://localhost:8080/api/internal/endpoints
 Content-Type: application/json
 
@@ -177,6 +177,65 @@ Content-Type: application/json
   ]
 }
 
-###
+### Create endpoint - sample 3 - no auth
+POST http://localhost:8080/api/internal/endpoints
+Content-Type: application/json
+
+{
+  "path": "/my-ws-endpoint",
+  "authentication": {
+    "mode": "none"
+  },
+  "routes": [
+    {
+      "type": "connect",
+      "name": "Connect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/connect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.connect.topic"
+        }
+      ]
+    },
+    {
+      "type": "disconnect",
+      "name": "Disconnect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/disconnect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.diconnect.topic"
+        }
+      ]
+    },
+    {
+      "type": "default",
+      "name": "Default",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://service.1.example.com/default",
+          "timeoutInMillis": 300
+        }
+      ]
+    }
+  ]
+}
+
 
 

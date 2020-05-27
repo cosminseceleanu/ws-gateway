@@ -5,8 +5,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: "env,health"
+        include: "env,health,metrics,prometheus"
       base-path: /
+  metrics:
+    web:
+      server:
+        request:
+          autotime:
+            percentiles: 0.95, 0.99
+            percentiles-histogram: true
+    export:
+      prometheus:
+        enabled: true
 
 gateway:
   kubernetes:

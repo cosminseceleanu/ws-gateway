@@ -1,5 +1,6 @@
 package com.cosmin.wsgateway.application.gateway.connection;
 
+import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.application.gateway.PubSub;
 import com.cosmin.wsgateway.application.gateway.connector.ConnectorResolver;
@@ -20,6 +21,7 @@ public class ConnectionFactory {
     private final PayloadTransformer transformer;
     private final ConnectorResolver connectorResolver;
     private final Environment environment;
+    private final GatewayMetrics gatewayMetrics;
 
     public Connection create(Endpoint endpoint, ConnectionRequest request) {
         String connectionId = getConnectionId(request);
@@ -28,7 +30,7 @@ public class ConnectionFactory {
                 connectionId, endpoint.getId(), endpoint.getPath()
         );
 
-        return new Connection(pubSub, transformer, connectorResolver, context);
+        return new Connection(pubSub, transformer, connectorResolver, context, gatewayMetrics);
     }
 
     private String getConnectionId(ConnectionRequest request) {

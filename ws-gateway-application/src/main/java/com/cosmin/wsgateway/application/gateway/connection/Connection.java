@@ -1,11 +1,13 @@
 package com.cosmin.wsgateway.application.gateway.connection;
 
+import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.application.gateway.PubSub;
 import com.cosmin.wsgateway.application.gateway.connector.BackendConnector;
 import com.cosmin.wsgateway.application.gateway.connector.ConnectorResolver;
 import com.cosmin.wsgateway.domain.Backend;
 import com.cosmin.wsgateway.domain.BackendSettings;
+import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.Event;
 import com.cosmin.wsgateway.domain.events.Connected;
 import com.cosmin.wsgateway.domain.events.Disconnected;
@@ -14,9 +16,10 @@ import com.cosmin.wsgateway.domain.events.OutboundEvent;
 import com.cosmin.wsgateway.domain.events.TopicMessage;
 import com.cosmin.wsgateway.domain.events.UserMessage;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
+import org.javatuples.Pair;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -28,18 +31,20 @@ import reactor.core.scheduler.Schedulers;
 public class Connection {
     //@ToDo set this value per endpoint
     private static final int DEFAULT_BACKEND_CONCURRENCY = 8;
+    private static final String GATEWAY_POOL_THREAD_NAME = "gateway-thread";
 
     private final PubSub pubSub;
     private final PayloadTransformer transformer;
     private final ConnectorResolver connectorResolver;
     private final ConnectionContext context;
+    private final GatewayMetrics gatewayMetrics;
 
     private static final String OUTBOUND_TOPIC_PATTERN = "inbound.%s";
 
     private final Scheduler scheduler = Schedulers.newBoundedElastic(
             Schedulers.DEFAULT_BOUNDED_ELASTIC_SIZE,
             Schedulers.DEFAULT_BOUNDED_ELASTIC_QUEUESIZE,
-            "gateway-thread"
+            GATEWAY_POOL_THREAD_NAME
     );
 
     public static String getOutboundTopic(String connectionId) {
@@ -50,43 +55,75 @@ public class Connection {
         return context.getId();
     }
 
+    public Endpoint getEndpoint() {
+        return context.getEndpoint();
+    }
+
     public Flux<String> handle(Flux<String> inbound) {
         var subscription = pubSub.subscribe(String.format(OUTBOUND_TOPIC_PATTERN, context.getId()));
-        var receivedOutboundEvents = subscription.getEvents()
-                .map(msg -> new TopicMessage(context.getId(), transformer.toPayload(msg, Map.class)));
+        var receivedOutboundEvents = createOutboundFlux(subscription);
 
-        return getInboundEventFlux(inbound)
-                .publishOn(scheduler)
-                .flatMap(this::sendEventToBackends)
-                .ofType(OutboundEvent.class)
+        return doHandleInboundEvents(inbound)
                 .doFinally(signalType -> pubSub.unsubscribe(subscription))
                 .mergeWith(receivedOutboundEvents)
                 .doOnNext(this::logProcessedEvent)
-                .onErrorContinue(Exception.class, (e, o) -> log.error(e.getMessage(), e))
-                .map(e -> transformer.fromPayload(e.payload()));
+                .onErrorContinue(Exception.class, this::onError)
+                .map(e -> transformer.fromPayload(e.payload()))
+                .doOnNext(msg -> gatewayMetrics.recordOutboundEventSent(context.getEndpoint()));
     }
 
-    private Flux<InboundEvent> getInboundEventFlux(Flux<String> inbound) {
-        return inbound
+    private Flux<OutboundEvent> createOutboundFlux(PubSub.Subscription subscription) {
+        var outboundEvents = subscription.getEvents();
+
+        return outboundEvents
+                .doOnNext(n -> gatewayMetrics.recordOutboundEventReceived(context.getEndpoint()))
+                .map(msg -> new TopicMessage(context.getId(), transformer.toPayload(msg, Map.class)));
+    }
+
+    private Flux<OutboundEvent> doHandleInboundEvents(Flux<String> inbound) {
+        Flux<InboundEvent> inboundEvents = inbound
                 .map(msg -> new UserMessage(context.getId(), transformer.toPayload(msg, Map.class), msg))
                 .ofType(InboundEvent.class)
                 .startWith(new Connected(context.getId()))
                 .concatWithValues(new Disconnected(context.getId()));
+
+        return inboundEvents
+                .publishOn(scheduler)
+                .map(e -> Pair.with(e, gatewayMetrics.startTimer(GatewayMetrics.METRIC_INBOUND_EVENTS, getEndpoint())))
+                .flatMap(pair -> sendInboundEventToBackends(pair.getValue0()).map(e -> Pair.with(e, pair.getValue1())))
+                .doOnNext(pair -> pair.getValue1().stop())
+                .map(Pair::getValue0)
+                .ofType(OutboundEvent.class);
+
     }
 
-    private Publisher<? extends Event> sendEventToBackends(InboundEvent inboundEvent) {
+    private Flux<? extends Event> sendInboundEventToBackends(InboundEvent inboundEvent) {
         var backends = inboundEvent.getRoute(context.getEndpoint()).getBackends();
         log.debug("send event={} to backends={}", inboundEvent, backends);
 
         return Flux.fromIterable(backends)
                 .map(b -> BackendConnectorPair.of(b, connectorResolver.getConnector(b)))
-                .flatMap(pair -> pair.doSendEvent(inboundEvent), DEFAULT_BACKEND_CONCURRENCY);
+                .flatMap(pair -> sendInboundEventToBackend(inboundEvent, pair), DEFAULT_BACKEND_CONCURRENCY);
+    }
+
+    private Mono<Event> sendInboundEventToBackend(InboundEvent inboundEvent, Connection.BackendConnectorPair pair) {
+        return gatewayMetrics.measureMono(
+                GatewayMetrics.METRIC_INBOUND_BACKENDS,
+                pair.doSendEvent(inboundEvent),
+                getEndpoint(),
+                Map.of("backend.type", pair.backend.type().name(), "backend.destination", pair.backend.destination())
+        ).doOnError(e -> gatewayMetrics.recordBackendError(getEndpoint(), pair.backend));
     }
 
     private void logProcessedEvent(OutboundEvent e) {
         if (log.isDebugEnabled()) {
             log.debug("event={} of type={} was successfully processed", e.toString(), e.getClass().getName());
         }
+    }
+
+    private void onError(Throwable e, Object o) {
+        gatewayMetrics.recordError(e);
+        log.error(e.getMessage(), e);
     }
 
     @RequiredArgsConstructor
@@ -103,6 +140,11 @@ public class Connection {
         }
 
         Mono<Event> doSendEvent(InboundEvent inboundEvent) {
+            try {
+                Thread.sleep(ThreadLocalRandom.current().nextInt(800, 820 + 1));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return connector.sendEvent(inboundEvent, backend);
         }
     }

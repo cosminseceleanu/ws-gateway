@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.infrastructure.pubsub;
+package com.cosmin.wsgateway.infrastructure.integrations.mock;
 
 import com.cosmin.wsgateway.application.gateway.PubSub;
 import java.time.Duration;
