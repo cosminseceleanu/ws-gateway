@@ -40,6 +40,7 @@
 		<ignite.version>2.8.0</ignite.version>
 		<micrometer-registry.version>1.5.1</micrometer-registry.version>
 		<javatuples.version>1.2</javatuples.version>
+		<reactor-kafka.version>1.2.2.RELEASE</reactor-kafka.version>
 	</properties>
 
 	<dependencyManagement>
@@ -84,6 +85,12 @@
 				<groupId>io.projectreactor.netty</groupId>
 				<artifactId>reactor-netty</artifactId>
 				<version>${reactor-netty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.projectreactor.kafka</groupId>
+				<artifactId>reactor-kafka</artifactId>
+				<version>${reactor-kafka.version}</version>
 			</dependency>
 
 			<dependency>

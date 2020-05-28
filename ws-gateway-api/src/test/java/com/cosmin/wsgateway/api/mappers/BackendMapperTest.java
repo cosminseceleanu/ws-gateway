@@ -8,6 +8,7 @@ import com.cosmin.wsgateway.domain.BackendSettings;
 import com.cosmin.wsgateway.domain.backends.HttpBackend;
 import com.cosmin.wsgateway.domain.backends.HttpSettings;
 import com.cosmin.wsgateway.domain.backends.KafkaBackend;
+import com.cosmin.wsgateway.domain.backends.KafkaSettings;
 import org.junit.jupiter.api.Test;
 
 import static com.cosmin.wsgateway.api.fixtures.BackendFixtures.ADDITIONAL_HEADERS;
@@ -49,9 +50,14 @@ class BackendMapperTest {
     @Test
     public void testToRepresentation_kafkaBackend_shouldBeMappedToCorrectRepresentation() {
         KafkaBackend model = KafkaBackend.builder()
+                .settings(KafkaSettings.builder().bootstrapServers("servers").build())
                 .topic("topic")
                 .build();
-        KafkaBackendRepresentation expected = KafkaBackendRepresentation.builder().topic("topic").build();
+        KafkaBackendRepresentation expected = KafkaBackendRepresentation
+                .builder()
+                .bootstrapServers("servers")
+                .topic("topic")
+                .build();
         BackendRepresentation result = subject.toRepresentation(model);
 
         assertEquals(expected, result);
@@ -61,8 +67,13 @@ class BackendMapperTest {
     public void testToModel_kafkaBackendRepresentation_shouldBeMappedToCorrectModel() {
         KafkaBackend expected = KafkaBackend.builder()
                 .topic("topic")
+                .settings(KafkaSettings.builder().bootstrapServers("servers").build())
                 .build();
-        KafkaBackendRepresentation initial = KafkaBackendRepresentation.builder().topic("topic").build();
+        KafkaBackendRepresentation initial = KafkaBackendRepresentation
+                .builder()
+                .topic("topic")
+                .bootstrapServers("servers")
+                .build();
         Backend<? extends BackendSettings> result = subject.toModel(initial);
 
         assertEquals(expected, result);

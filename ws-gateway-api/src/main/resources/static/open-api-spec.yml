@@ -1,8 +1,6 @@
 openapi: 3.0.0
 info:
-  description: |
-    WSGateway Api, You find out more on the
-    [Git](https://github.com/cosminseceleanu/ws-gateway) page
+  description: WSGateway Api, You can find out more on the [Git](https://github.com/cosminseceleanu/ws-gateway) page
   version: "1.0.0"
   title: WSGateway Api
   termsOfService: 'https://github.com/cosminseceleanu/ws-gateway'
@@ -370,6 +368,11 @@ components:
                 nullable: false
                 format: uri
                 example: "my.kafka.topic"
+              bootstrapServers:
+                description: List of kafka bootstrap servers - comma separated.Used only by for kafka backends.
+                type: string
+                nullable: false
+                example: "localhost:9092"
             required:
               - type
         expression:

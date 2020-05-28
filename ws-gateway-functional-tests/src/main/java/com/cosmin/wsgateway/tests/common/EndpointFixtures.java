@@ -49,7 +49,7 @@ public final class EndpointFixtures {
                 .build();
     }
 
-    private static RouteRepresentation createRouteWithHttpBackend(String name, RouteRepresentation.Type type) {
+    public static RouteRepresentation createRouteWithHttpBackend(String name, RouteRepresentation.Type type) {
         return createRouteWithHttpBackend(name, type, "http://localhost:8000");
     }
 

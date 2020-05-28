@@ -12,7 +12,9 @@ class KafkaBackendTest extends BaseTest {
 
     @Test
     public void testInvalid_whenTopicIsNull() {
-        var subject = KafkaBackend.builder().build();
+        var subject = KafkaBackend.builder()
+                .settings(new KafkaSettings("servers"))
+                .build();
         var constraints = validator.validate(subject);
 
         assertEquals(1, constraints.size());
@@ -23,12 +25,26 @@ class KafkaBackendTest extends BaseTest {
 
     @Test
     public void testInvalid_whenTopicSizeIsSmallerThanAccepted() {
-        var subject = KafkaBackend.builder().topic("abcd").build();
+        var subject = KafkaBackend.builder()
+                .settings(new KafkaSettings("servers"))
+                .topic("abcd")
+                .build();
         var constraints = validator.validate(subject);
 
         assertEquals(1, constraints.size());
         ConstraintViolation<KafkaBackend> violation = constraints.iterator().next();
         assertEquals("topic", violation.getPropertyPath().toString());
         assertThat(violation.getMessage(), containsString("size"));
+    }
+
+    @Test
+    public void testInvalid_whenSettingsAreInvalid() {
+        var subject = KafkaBackend.builder().topic("abcdfghh").build();
+        var constraints = validator.validate(subject);
+
+        assertEquals(1, constraints.size());
+        ConstraintViolation<KafkaBackend> violation = constraints.iterator().next();
+        assertEquals("settings", violation.getPropertyPath().toString());
+        assertThat(violation.getMessage(), containsString("null"));
     }
 }

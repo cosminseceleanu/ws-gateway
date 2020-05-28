@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KafkaBackendRepresentation implements BackendRepresentation {
     private String topic;
+    private String bootstrapServers;
 
     @Override
     @JsonProperty("type")
