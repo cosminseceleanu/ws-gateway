@@ -61,7 +61,7 @@ class HttpConnectorTest {
 
     @Test
     public void testSendEvent_eventIsSuccessfulSent_shouldReturnInitialEvent() {
-        var event = new Connected("1233455");
+        var event = new Connected("1233456");
         wiremock.stubFor(post(urlPathEqualTo("/test"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -77,7 +77,7 @@ class HttpConnectorTest {
         wiremock.verify(1, postRequestedFor(urlPathEqualTo("/test"))
                 .withHeader("Content-Type", equalToIgnoreCase("application/json"))
                 .withHeader("X-Debug-Id", equalTo("my-debug-id"))
-                .withRequestBody(equalTo("{\"connectionId\":\"1233455\"}")));
+                .withRequestBody(equalTo("{\"connectionId\":\"1233456\"}")));
     }
 
     @Test

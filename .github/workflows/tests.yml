@@ -12,4 +12,4 @@ jobs:
       with:
         java-version: 11
     - name: Run tests
-      run: mvn clean verify
+      run: mvn --no-transfer-progress clean verify
