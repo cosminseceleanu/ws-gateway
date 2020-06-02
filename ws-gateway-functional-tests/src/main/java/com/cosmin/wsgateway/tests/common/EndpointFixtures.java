@@ -8,6 +8,7 @@ import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
 import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
 import com.cosmin.wsgateway.api.representation.FilterRepresentation;
 import com.cosmin.wsgateway.api.representation.HttpBackendRepresentation;
+import com.cosmin.wsgateway.api.representation.KafkaBackendRepresentation;
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
 import java.util.Collections;
 import java.util.Set;
@@ -65,6 +66,20 @@ public final class EndpointFixtures {
                 .type(type)
                 .backends(Set.of(
                         HttpBackendRepresentation.builder().destination(backendUrl).build()
+                )).build();
+    }
+
+    public static RouteRepresentation createRouteWithKafkaBackend(
+            RouteRepresentation.Type type, String topic, String server
+    ) {
+        return RouteRepresentation.builder()
+                .name(type.getValue())
+                .type(type)
+                .backends(Set.of(
+                        KafkaBackendRepresentation.builder()
+                                .topic(topic)
+                                .bootstrapServers(server)
+                                .build()
                 )).build();
     }
 }

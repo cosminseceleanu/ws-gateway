@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="org.eclipse.jetty" level="WARN"/>
+    <logger name="com.github.tomakehurst.wiremock" level="WARN"/>
+</configuration>

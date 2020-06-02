@@ -2,6 +2,7 @@ package com.cosmin.wsgateway.domain;
 
 import com.cosmin.wsgateway.domain.backends.HttpBackend;
 import com.cosmin.wsgateway.domain.backends.HttpSettings;
+import com.cosmin.wsgateway.domain.backends.KafkaSettings;
 import java.util.Collections;
 import java.util.Set;
 
@@ -52,5 +53,13 @@ public class Fixtures {
 
     public static HttpSettings defaultHttpSettings() {
         return HttpSettings.builder().additionalHeaders(Collections.emptyMap()).timeoutInMillis(200).build();
+    }
+
+    public static KafkaSettings defaultKafkaSettings() {
+        return KafkaSettings.builder()
+                .bootstrapServers("server")
+                .acks(KafkaSettings.Ack.NO_ACK)
+                .retriesNr(0)
+                .build();
     }
 }

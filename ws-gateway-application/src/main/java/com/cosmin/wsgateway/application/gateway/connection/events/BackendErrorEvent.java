@@ -2,8 +2,10 @@ package com.cosmin.wsgateway.application.gateway.connection.events;
 
 import com.cosmin.wsgateway.domain.Event;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 @RequiredArgsConstructor(staticName = "of")
+@Value
 public class BackendErrorEvent implements InternalEvents {
     private final Event initialEvent;
     private final Throwable error;

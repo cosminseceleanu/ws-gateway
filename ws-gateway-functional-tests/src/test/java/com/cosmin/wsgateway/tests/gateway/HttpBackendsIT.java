@@ -19,7 +19,7 @@ import java.util.UUID;
 import static com.cosmin.wsgateway.tests.common.EndpointFixtures.createRouteWithHttpBackend;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-public class InboundEventsFlowIT extends BaseTestIT {
+public class HttpBackendsIT extends BaseTestIT {
     public static WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
     private static String backendUrl;
 

@@ -20,4 +20,4 @@ TBD... Work in progress
 ### Utils
     
   - start a kafka consumer: ```/opt/kafka/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic service.2.connect.topic --from-beginning --max-messages 100```
-  - set java 11 version: ```export JAVA_HOME=`/usr/libexec/java_home -v 11``` 
+  - set java 11 version: ```export JAVA_HOME=`/usr/libexec/java_home -v 11` ``` 

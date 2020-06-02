@@ -33,6 +33,8 @@ public class BackendMapper implements RepresentationMapper<BackendRepresentation
     @Mapper
     public interface KafkaBackendMapper {
         @Mapping(target = "settings.bootstrapServers", source = "bootstrapServers")
+        @Mapping(target = "settings.retriesNr", source = "retriesNr")
+        @Mapping(target = "settings.acks", source = "acks")
         KafkaBackend toKafkaBackend(KafkaBackendRepresentation representation);
 
         @InheritInverseConfiguration

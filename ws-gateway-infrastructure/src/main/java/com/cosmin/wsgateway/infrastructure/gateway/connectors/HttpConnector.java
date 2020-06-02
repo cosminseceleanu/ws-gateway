@@ -12,6 +12,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
@@ -34,10 +35,9 @@ public class HttpConnector implements BackendConnector<HttpSettings> {
         return prepareRequest(backend)
                 .body(Mono.just(event.payload()), Object.class)
                 .exchange()
-                .doOnNext(resp -> log.debug(resp.toString()))
+                .flatMap(resp -> resp.toEntity(String.class))
+                .map(r -> handleResponse(event, backend, r))
                 .doOnError(e -> log.error(e.getMessage(), e))
-                .flatMap(resp -> resp.bodyToMono(String.class))
-                .map(r -> event)
                 .onErrorResume(e -> Mono.just(BackendErrorEvent.of(event, e)));
     }
 
@@ -62,5 +62,20 @@ public class HttpConnector implements BackendConnector<HttpSettings> {
         ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
 
         return WebClient.builder().clientConnector(connector).build();
+    }
+
+    private Event handleResponse(Event event, Backend<HttpSettings> backend, ResponseEntity<String> responseEntity) {
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            return event;
+        }
+        log.warn("Invalid status code received from backend={} status={}",
+                backend.destination(),
+                responseEntity.getStatusCodeValue()
+        );
+        return BackendErrorEvent.of(event, new InvalidStatusCodeException(String.format(
+                "Invalid status code from backend=%s expected=20x got=%s",
+                backend.destination(),
+                responseEntity.getStatusCodeValue()
+        )));
     }
 }

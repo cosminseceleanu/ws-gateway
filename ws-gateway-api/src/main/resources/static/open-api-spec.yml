@@ -373,6 +373,20 @@ components:
                 type: string
                 nullable: false
                 example: "localhost:9092"
+              acks:
+                description: The number of acknowledgments the producer requires the leader to have received before considering a request complete. Used only by for kafka backends.
+                type: string
+                enum: [0, 1, all]
+                nullable: true
+                default: 1
+                example: "1"
+              retriesNr:
+                description: Number of retries to resend a record whose send fails with a potentially transient error..Used only by for kafka backends.
+                type: integer
+                minimum: 0
+                maximum: 10
+                default: 1
+                nullable: true
             required:
               - type
         expression:

@@ -13,14 +13,18 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
+import reactor.kafka.sender.SenderRecord;
 
 @Component
 @RequiredArgsConstructor
 public class KafkaConnector implements BackendConnector<KafkaSettings> {
     private final ConcurrentHashMap<Backend<?>, KafkaSender<String, String>> senders = new ConcurrentHashMap<>();
+
+    private final KafkaSenderFactory senderFactory;
 
     private final PayloadTransformer transformer;
 
@@ -35,10 +39,14 @@ public class KafkaConnector implements BackendConnector<KafkaSettings> {
         var record = new ProducerRecord<>(backend.destination(), event.connectionId(), msg);
 
         return getOrCreateSender(backend)
-                .createOutbound()
-                .send(Mono.just(record))
-                .then()
-                .map(r -> event)
+                .send(Flux.just(record).map(r -> SenderRecord.create(r, event.connectionId())))
+                .single()
+                .map(result -> {
+                    if (result.exception() != null) {
+                        return BackendErrorEvent.of(event, result.exception());
+                    }
+                    return event;
+                })
                 .onErrorResume(e -> Mono.just(BackendErrorEvent.of(event, e)));
     }
 
@@ -48,13 +56,15 @@ public class KafkaConnector implements BackendConnector<KafkaSettings> {
         }
         Map<String, Object> props = Map.of(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, backend.settings().getBootstrapServers(),
-                ProducerConfig.CLIENT_ID_CONFIG, "gateway-kafka-connector",
+                ProducerConfig.CLIENT_ID_CONFIG, "gateway-kafka-connector-" + backend.destination(),
+                ProducerConfig.ACKS_CONFIG, backend.settings().getAcks().getKafkaValue(),
+                ProducerConfig.RETRIES_CONFIG, backend.settings().getRetriesNr(),
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class
         );
         SenderOptions<String, String> senderOptions = SenderOptions.create(props);
 
-        var sender = KafkaSender.create(senderOptions);
+        var sender = senderFactory.create(senderOptions);
         senders.put(backend, sender);
 
         return sender;
