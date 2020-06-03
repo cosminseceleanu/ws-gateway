@@ -1,6 +1,7 @@
 package com.cosmin.wsgateway.api.fixtures;
 
 import com.cosmin.wsgateway.api.representation.HttpBackendRepresentation;
+import com.cosmin.wsgateway.api.representation.KafkaBackendRepresentation;
 import com.cosmin.wsgateway.domain.backends.HttpBackend;
 import com.cosmin.wsgateway.domain.backends.HttpSettings;
 
@@ -25,6 +26,14 @@ public final class BackendFixtures {
         return HttpBackend.builder()
                 .destination(HTTP_DESTINATION)
                 .settings(HttpSettings.builder().timeoutInMillis(120).additionalHeaders(ADDITIONAL_HEADERS).build())
+                .build();
+    }
+
+    public static KafkaBackendRepresentation defaultKafkaRepresentation() {
+        return KafkaBackendRepresentation
+                .builder()
+                .bootstrapServers("servers")
+                .topic("topic")
                 .build();
     }
 }

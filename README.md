@@ -16,3 +16,8 @@ TBD... Work in progress
 2. Integration tests
     - Class name [Feature]IT.java
     - Test methods [feature to be tested]
+    
+### Utils
+    
+  - start a kafka consumer: ```/opt/kafka/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic service.2.connect.topic --from-beginning --max-messages 100```
+  - set java 11 version: ```export JAVA_HOME=`/usr/libexec/java_home -v 11` ``` 

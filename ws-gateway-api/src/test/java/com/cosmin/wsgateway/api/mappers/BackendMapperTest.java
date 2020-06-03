@@ -8,6 +8,7 @@ import com.cosmin.wsgateway.domain.BackendSettings;
 import com.cosmin.wsgateway.domain.backends.HttpBackend;
 import com.cosmin.wsgateway.domain.backends.HttpSettings;
 import com.cosmin.wsgateway.domain.backends.KafkaBackend;
+import com.cosmin.wsgateway.domain.backends.KafkaSettings;
 import org.junit.jupiter.api.Test;
 
 import static com.cosmin.wsgateway.api.fixtures.BackendFixtures.ADDITIONAL_HEADERS;
@@ -15,6 +16,23 @@ import static com.cosmin.wsgateway.api.fixtures.BackendFixtures.HTTP_DESTINATION
 import static org.junit.jupiter.api.Assertions.*;
 
 class BackendMapperTest {
+
+    private final KafkaBackend kafkaModel = KafkaBackend.builder()
+            .settings(KafkaSettings.builder()
+                    .bootstrapServers("servers")
+                    .retriesNr(2)
+                    .acks(KafkaSettings.Ack.ALL)
+                    .build())
+            .topic("topic")
+            .build();
+
+    private final KafkaBackendRepresentation kafkaRepresentation = KafkaBackendRepresentation
+            .builder()
+            .bootstrapServers("servers")
+            .topic("topic")
+            .acks(KafkaBackendRepresentation.Ack.ALL)
+            .retriesNr(2)
+            .build();
 
     private BackendMapper subject = new BackendMapper();
 
@@ -48,23 +66,15 @@ class BackendMapperTest {
 
     @Test
     public void testToRepresentation_kafkaBackend_shouldBeMappedToCorrectRepresentation() {
-        KafkaBackend model = KafkaBackend.builder()
-                .topic("topic")
-                .build();
-        KafkaBackendRepresentation expected = KafkaBackendRepresentation.builder().topic("topic").build();
-        BackendRepresentation result = subject.toRepresentation(model);
+        BackendRepresentation result = subject.toRepresentation(kafkaModel);
 
-        assertEquals(expected, result);
+        assertEquals(kafkaRepresentation, result);
     }
 
     @Test
     public void testToModel_kafkaBackendRepresentation_shouldBeMappedToCorrectModel() {
-        KafkaBackend expected = KafkaBackend.builder()
-                .topic("topic")
-                .build();
-        KafkaBackendRepresentation initial = KafkaBackendRepresentation.builder().topic("topic").build();
-        Backend<? extends BackendSettings> result = subject.toModel(initial);
+        Backend<? extends BackendSettings> result = subject.toModel(kafkaRepresentation);
 
-        assertEquals(expected, result);
+        assertEquals(kafkaModel, result);
     }
 }

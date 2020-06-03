@@ -11,14 +11,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
+@ActiveProfiles("tests")
 public abstract class BaseTestIT {
-    private static Logger logger = LoggerFactory.getLogger("FunctionalTests");
+    private static final Logger logger = LoggerFactory.getLogger("FunctionalTests");
 
     @LocalServerPort
     protected int port;

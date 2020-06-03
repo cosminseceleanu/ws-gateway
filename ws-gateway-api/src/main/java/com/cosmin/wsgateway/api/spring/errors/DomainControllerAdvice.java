@@ -3,6 +3,7 @@ package com.cosmin.wsgateway.api.spring.errors;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+import com.cosmin.wsgateway.api.exception.InvalidRequestException;
 import com.cosmin.wsgateway.api.representation.ErrorRepresentation;
 import com.cosmin.wsgateway.domain.exceptions.BackendNotSupportedException;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
@@ -38,5 +39,10 @@ public class DomainControllerAdvice {
     @ExceptionHandler(InvalidRouteException.class)
     public ResponseEntity<ErrorRepresentation> handleInvalidRoute(InvalidRouteException exception) {
         return ErrorRepresentation.of(BAD_REQUEST, "InvalidRoute", exception.getMessage()).toResponse();
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorRepresentation> handleInvalidRequest(InvalidRequestException exception) {
+        return ErrorRepresentation.of(BAD_REQUEST, exception.getErrorType(), exception.getMessage()).toResponse();
     }
 }
