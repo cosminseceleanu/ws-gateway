@@ -20,6 +20,9 @@
 	<properties>
 		<project.version>0.0.1-SNAPSHOT</project.version>
 		<java.version>11</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
 		<spring-boot.version>2.2.5.RELEASE</spring-boot.version>
 		<spring.version>5.2.5.RELEASE</spring.version>
 		<lombok.version>1.18.12</lombok.version>

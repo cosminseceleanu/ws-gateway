@@ -78,6 +78,10 @@ public class Endpoint {
         return configuration.getAuthentication();
     }
 
+    public GeneralSettings getGeneralSettings() {
+        return configuration.getGeneralSettings();
+    }
+
     public Set<Filter<?>> getFilters() {
         return configuration.getFilters();
     }

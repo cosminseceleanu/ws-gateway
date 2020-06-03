@@ -22,6 +22,26 @@ class EndpointConfigurationTest extends BaseTest {
     }
 
     @Test
+    public void testInvalid_whenGeneralSettingsAreNull() {
+        var subject = Fixtures.defaultEndpoint().getConfiguration();
+        subject = subject.withGeneralSettings(null);
+
+        var constraints = validator.validate(subject);
+
+        assertViolationForProperty(constraints, "generalSettings", "null");
+    }
+
+    @Test
+    public void testInvalid_whenGeneralSettingsAreInvalid() {
+        var subject = Fixtures.defaultEndpoint().getConfiguration();
+        subject = subject.withGeneralSettings(GeneralSettings.builder().backendParallelism(100).build());
+
+        var constraints = validator.validate(subject);
+
+        assertViolationForProperty(constraints, "generalSettings.backendParallelism", "must be less than");
+    }
+
+    @Test
     public void testInvalid_whenRoutesAreNull() {
         var subject = Fixtures.defaultEndpoint().getConfiguration();
         subject = subject.withRoutes(null);

@@ -1,12 +1,15 @@
 ### List all endoints
 GET http://localhost:8080/api/internal/endpoints
 
-### Create endpoint with custom route - sample 1
+### Create endpoint with custom route - sample 1 - endpoint will posible details
 POST http://localhost:8080/api/internal/endpoints
 Content-Type: application/json
 
 {
   "path": "/my-ws-endpoint",
+  "settings": {
+    "backendParallelism": "4"
+  },
   "authentication": {
     "mode": "none",
     "username": "basic_user",

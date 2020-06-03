@@ -1,7 +1,7 @@
 package com.cosmin.wsgateway.infrastructure.integrations.ignite;
 
-import com.cosmin.wsgateway.application.gateway.GatewayProperties;
 import com.cosmin.wsgateway.application.gateway.PubSub;
+import com.cosmin.wsgateway.infrastructure.GatewayProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.nio.file.Paths;
 import org.apache.ignite.Ignite;
@@ -12,6 +12,7 @@ import org.apache.ignite.internal.managers.discovery.IgniteDiscoverySpi;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Profile;
  * 10900 # Thin clients port number.
  */
 @Configuration
+@ConditionalOnProperty(prefix = "gateway", name = "pubsub.ignite", matchIfMissing = true)
 public class IgniteAutoConfiguration {
 
     private static final int IGNITE_LOCAL_PORT = 47100;

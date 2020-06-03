@@ -1,6 +1,6 @@
 package com.cosmin.wsgateway.api.spring.health;
 
-import com.cosmin.wsgateway.api.vertx.WebSocketServer;
+import com.cosmin.wsgateway.infrastructure.GatewayProperties;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.net.impl.ServerID;
@@ -14,11 +14,12 @@ import org.springframework.stereotype.Component;
 public class VertxHealthIndicator extends AbstractHealthIndicator {
 
     private final Vertx vertx;
+    private final GatewayProperties gatewayProperties;
 
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
         var httpServer = ((VertxImpl) vertx).sharedHttpServers()
-                .get(new ServerID(WebSocketServer.DEFAULT_PORT, "0.0.0.0"));
+                .get(new ServerID(gatewayProperties.getVertx().getGatewayPort(), "0.0.0.0"));
         if (httpServer == null) {
             builder.unknown();
             return;

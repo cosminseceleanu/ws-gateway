@@ -49,7 +49,7 @@ class HttpBackendTest extends BaseTest {
     public void testInvalid_whenSettingsAreInvalid() {
         var subject = HttpBackend.builder()
                 .destination("http://example.com")
-                .settings(HttpSettings.builder().timeoutInMillis(100).additionalHeaders(null).build())
+                .settings(HttpSettings.builder().readTimeoutInMillis(100).additionalHeaders(null).build())
                 .build();
         var constraints = validator.validate(subject);
 

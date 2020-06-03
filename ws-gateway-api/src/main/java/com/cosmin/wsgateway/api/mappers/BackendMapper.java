@@ -22,7 +22,8 @@ public class BackendMapper implements RepresentationMapper<BackendRepresentation
 
     @Mapper
     public interface HttpBackendMapper {
-        @Mapping(target = "settings.timeoutInMillis", source = "timeoutInMillis")
+        @Mapping(target = "settings.readTimeoutInMillis", source = "readTimeoutInMillis")
+        @Mapping(target = "settings.connectTimeoutInMillis", source = "connectTimeoutInMillis")
         @Mapping(target = "settings.additionalHeaders", source = "additionalHeaders")
         HttpBackend toHttpBackend(HttpBackendRepresentation representation);
 

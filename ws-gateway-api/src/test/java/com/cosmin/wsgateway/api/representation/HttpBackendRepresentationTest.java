@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HttpBackendRepresentationTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private String json = "{\"destination\":\"http://localhost:8080/test\",\"timeoutInMillis\":120,\"additionalHeaders\":{\"key\":\"value\"},\"type\":\"http\"}";
+    private final String json = "{\"destination\":\"http://localhost:8080/test\",\"readTimeoutInMillis\":120,\"connectTimeoutInMillis\":200,\"additionalHeaders\":{\"key\":\"value\"},\"type\":\"http\"}";
 
     @Test
     public void testSerialize() throws JsonProcessingException {

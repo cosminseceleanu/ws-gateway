@@ -17,11 +17,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpBackendRepresentation implements BackendRepresentation {
-    private static Integer DEFAULT_TIMEOUT = 1500;
+    private static Integer DEFAULT_READ_TIMEOUT = 1500;
+    private static Integer DEFAULT_CONNECT_TIMEOUT = 200;
+
     private String destination;
 
     @Builder.Default
-    private Integer timeoutInMillis = DEFAULT_TIMEOUT;
+    private Integer readTimeoutInMillis = DEFAULT_READ_TIMEOUT;
+
+    @Builder.Default
+    private Integer connectTimeoutInMillis = DEFAULT_CONNECT_TIMEOUT;
 
     @Builder.Default
     private Map<String, String> additionalHeaders = new HashMap<>();

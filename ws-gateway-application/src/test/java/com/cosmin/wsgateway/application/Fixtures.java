@@ -36,7 +36,7 @@ public class Fixtures {
     private static Set<Backend<? extends BackendSettings>> getDefaultBackends() {
         return Collections.singleton(
                 HttpBackend.builder().destination("http://example.com").settings(
-                        HttpSettings.builder().additionalHeaders(Collections.emptyMap()).timeoutInMillis(200).build()
+                        HttpSettings.builder().additionalHeaders(Collections.emptyMap()).readTimeoutInMillis(200).build()
                 ).build()
         );
     }

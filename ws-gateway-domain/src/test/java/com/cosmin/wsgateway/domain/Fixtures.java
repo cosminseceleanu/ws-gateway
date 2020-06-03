@@ -18,12 +18,14 @@ public class Fixtures {
         var configuration = EndpointConfiguration.builder()
                 .authentication(new Authentication.None())
                 .filters(Collections.emptySet())
+                .generalSettings(defaultGeneralSettings())
                 .routes(Set.of(
                         getDefaultRoute(),
                         getConnectRoute(),
                         getDisconnectRoute()
                 ))
                 .build();
+
         return Endpoint.builder()
                 .configuration(configuration)
                 .id("id")
@@ -51,8 +53,18 @@ public class Fixtures {
         );
     }
 
+    public static GeneralSettings defaultGeneralSettings() {
+        return GeneralSettings.builder()
+                .backendParallelism(8)
+                .build();
+    }
+
     public static HttpSettings defaultHttpSettings() {
-        return HttpSettings.builder().additionalHeaders(Collections.emptyMap()).timeoutInMillis(200).build();
+        return HttpSettings.builder()
+                .additionalHeaders(Collections.emptyMap())
+                .readTimeoutInMillis(200)
+                .connectTimeoutInMillis(100)
+                .build();
     }
 
     public static KafkaSettings defaultKafkaSettings() {
