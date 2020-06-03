@@ -1,6 +1,6 @@
 package com.cosmin.wsgateway.api.config;
 
-import com.cosmin.wsgateway.application.gateway.GatewayProperties;
+import com.cosmin.wsgateway.infrastructure.GatewayProperties;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import org.springframework.boot.context.properties.ConfigurationProperties;

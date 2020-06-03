@@ -1,7 +1,9 @@
 package com.cosmin.wsgateway.api.representation;
 
+import com.cosmin.wsgateway.domain.GeneralSettings;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +19,9 @@ import lombok.NoArgsConstructor;
 public class EndpointRepresentation {
     private String id;
     private String path;
+
+    @JsonProperty("settings")
+    private GeneralSettings generalSettings;
     private FilterRepresentation filters = new FilterRepresentation();
     private Set<RouteRepresentation> routes;
     private AuthenticationRepresentation authentication;

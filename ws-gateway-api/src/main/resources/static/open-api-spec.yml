@@ -217,22 +217,19 @@ components:
           maxLength: 255
           nullable: false
           example: /ws/chat
-        bufferSize:
-          description: The WS connection buffer size for the incoming events
-          type: integer
-          minimum: 10
-          maximum: 10000
-          default: 50
+        settings:
+          description: General settings used used by the gateway
+          type: object
           nullable: false
-          example: 50
-        backendParallelism:
-          description: Parallelism used to send inbound events to backends
-          type: integer
-          minimum: 1
-          maximum: 32
-          default: 4
-          nullable: false
-          example: 4
+          properties:
+            backendParallelism:
+              description: Parallelism used to send inbound events to backends
+              type: integer
+              minimum: 1
+              maximum: 32
+              default: 8
+              nullable: false
+              example: 8
         authentication:
           description: Authentification details
           type: object
@@ -349,8 +346,15 @@ components:
                 nullable: false
                 format: uri
                 example: https:my.rest.api.com
-              timeoutInMillis:
-                description: HTTP request timeout in milliseconds. Used only by for http backends
+              readTimeoutInMillis:
+                description: HTTP request read timeout in milliseconds. Used only by for http backends
+                type: integer
+                minimum: 10
+                maximum: 600000
+                default: 1500
+                nullable: true
+              connectTimeoutInMillis:
+                description: HTTP request connect timeout in milliseconds. Used only by for http backends
                 type: integer
                 minimum: 10
                 maximum: 600000

@@ -12,6 +12,7 @@ import com.cosmin.wsgateway.application.gateway.connection.ConnectionRequest;
 import com.cosmin.wsgateway.application.gateway.exceptions.AccessDeniedException;
 import com.cosmin.wsgateway.application.gateway.exceptions.AuthenticationException;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
+import com.cosmin.wsgateway.infrastructure.GatewayProperties;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -30,17 +31,16 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class WebSocketServer extends AbstractVerticle {
 
-    public static final int DEFAULT_PORT = 8081;
-
     private final ConnectionManager connectionManager;
     private final GatewayMetrics gatewayMetrics;
+    private final GatewayProperties gatewayProperties;
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         HttpServer server = vertx.createHttpServer();
         server.webSocketHandler(this::handleWebsocketConnection);
 
-        server.listen(DEFAULT_PORT, res -> {
+        server.listen(gatewayProperties.getVertx().getGatewayPort(), res -> {
             if (res.succeeded()) {
                 log.info("Web Socket verticle has successfully started!");
             } else {

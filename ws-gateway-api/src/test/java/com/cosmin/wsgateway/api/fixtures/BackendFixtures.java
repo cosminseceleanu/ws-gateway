@@ -17,7 +17,7 @@ public final class BackendFixtures {
     public static HttpBackendRepresentation defaultHttpRepresentation() {
         return HttpBackendRepresentation.builder()
                 .destination(HTTP_DESTINATION)
-                .timeoutInMillis(120)
+                .readTimeoutInMillis(120)
                 .additionalHeaders(ADDITIONAL_HEADERS)
                 .build();
     }
@@ -25,7 +25,7 @@ public final class BackendFixtures {
     public static HttpBackend defaultHttpBackend() {
         return HttpBackend.builder()
                 .destination(HTTP_DESTINATION)
-                .settings(HttpSettings.builder().timeoutInMillis(120).additionalHeaders(ADDITIONAL_HEADERS).build())
+                .settings(HttpSettings.builder().readTimeoutInMillis(120).additionalHeaders(ADDITIONAL_HEADERS).build())
                 .build();
     }
 

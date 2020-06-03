@@ -28,8 +28,6 @@ import reactor.core.scheduler.Schedulers;
 @Slf4j
 @RequiredArgsConstructor
 public class Connection {
-    //@ToDo set this value per endpoint
-    private static final int DEFAULT_BACKEND_CONCURRENCY = 8;
     private static final String GATEWAY_POOL_THREAD_NAME = "gateway-thread";
 
     private final PubSub pubSub;
@@ -102,7 +100,10 @@ public class Connection {
 
         return Flux.fromIterable(backends)
                 .map(b -> BackendConnectorPair.of(b, connectorResolver.getConnector(b)))
-                .flatMap(pair -> sendInboundEventToBackend(inboundEvent, pair), DEFAULT_BACKEND_CONCURRENCY);
+                .flatMap(pair ->
+                        sendInboundEventToBackend(inboundEvent, pair),
+                        getEndpoint().getGeneralSettings().getBackendParallelism()
+                );
     }
 
     private Mono<Event> sendInboundEventToBackend(InboundEvent inboundEvent, Connection.BackendConnectorPair pair) {

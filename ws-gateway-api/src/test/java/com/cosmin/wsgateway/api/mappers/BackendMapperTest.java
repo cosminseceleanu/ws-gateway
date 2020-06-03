@@ -45,7 +45,7 @@ class BackendMapperTest {
         assertNotNull(backend);
         assertEquals(HTTP_DESTINATION, httpBackend.getDestination());
         assertNotNull(backend.settings());
-        assertEquals(120, httpBackend.getSettings().getTimeoutInMillis());
+        assertEquals(120, httpBackend.getSettings().getReadTimeoutInMillis());
         assertEquals(ADDITIONAL_HEADERS, httpBackend.getSettings().getAdditionalHeaders());
     }
 
@@ -54,7 +54,8 @@ class BackendMapperTest {
         HttpBackend model = HttpBackend.builder()
                 .destination(HTTP_DESTINATION)
                 .settings(HttpSettings.builder()
-                        .timeoutInMillis(120)
+                        .readTimeoutInMillis(120)
+                        .connectTimeoutInMillis(200)
                         .additionalHeaders(ADDITIONAL_HEADERS)
                         .build())
                 .build();

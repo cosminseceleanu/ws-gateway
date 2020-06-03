@@ -36,7 +36,7 @@ class HttpConnectorTest {
                     .additionalHeaders(Map.of(
                             "X-Debug-Id", "my-debug-id"
                     ))
-                    .timeoutInMillis(200)
+                    .readTimeoutInMillis(200)
                     .build())
             .build();
 

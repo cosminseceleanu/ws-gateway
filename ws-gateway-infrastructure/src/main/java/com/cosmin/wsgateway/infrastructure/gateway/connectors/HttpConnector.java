@@ -9,6 +9,7 @@ import com.cosmin.wsgateway.domain.Event;
 import com.cosmin.wsgateway.domain.backends.HttpSettings;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -25,6 +26,8 @@ import reactor.netty.http.client.HttpClient;
 @RequiredArgsConstructor
 @Slf4j
 public class HttpConnector implements BackendConnector<HttpSettings> {
+    private final ConcurrentHashMap<HttpSettings, WebClient> webClients = new ConcurrentHashMap<>();
+
     @Override
     public boolean supports(Backend.Type type) {
         return Backend.Type.HTTP.equals(type);
@@ -49,19 +52,28 @@ public class HttpConnector implements BackendConnector<HttpSettings> {
                 .headers(httpHeaders -> backend.settings().getAdditionalHeaders().forEach(httpHeaders::add));
     }
 
-    //@ToDo -> maybe caching this webclient
     private WebClient createWebClient(HttpSettings httpSettings) {
+        if (webClients.containsKey(httpSettings)) {
+            return webClients.get(httpSettings);
+        }
         HttpClient httpClient = HttpClient.create()
                 .tcpConfiguration(tcpClient -> {
-                    // @ToDo add connect timeout to endpoint configuration
-                    tcpClient = tcpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000);
+                    tcpClient = tcpClient.option(
+                            ChannelOption.CONNECT_TIMEOUT_MILLIS,
+                            httpSettings.getConnectTimeoutInMillis()
+                    );
                     tcpClient = tcpClient.doOnConnected(conn -> conn
-                            .addHandlerLast(new ReadTimeoutHandler(httpSettings.getTimeoutInMillis(), MILLISECONDS)));
+                            .addHandlerLast(new ReadTimeoutHandler(
+                                    httpSettings.getReadTimeoutInMillis(),
+                                    MILLISECONDS
+                            )));
                     return tcpClient;
                 });
         ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
+        var client = WebClient.builder().clientConnector(connector).build();
+        webClients.put(httpSettings, client);
 
-        return WebClient.builder().clientConnector(connector).build();
+        return client;
     }
 
     private Event handleResponse(Event event, Backend<HttpSettings> backend, ResponseEntity<String> responseEntity) {

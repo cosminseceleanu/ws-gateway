@@ -34,6 +34,10 @@ public class EndpointConfiguration {
     @Valid
     private final Authentication authentication;
 
+    @Valid
+    @NotNull
+    private final GeneralSettings generalSettings;
+
     @NotNull
     @EqualsAndHashCode.Exclude
     private final LocalDateTime createdAt = LocalDateTime.now();

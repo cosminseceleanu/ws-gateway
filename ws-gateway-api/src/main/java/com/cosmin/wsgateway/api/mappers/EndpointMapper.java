@@ -5,6 +5,7 @@ import com.cosmin.wsgateway.domain.Authentication;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.EndpointConfiguration;
 import com.cosmin.wsgateway.domain.Filter;
+import com.cosmin.wsgateway.domain.GeneralSettings;
 import com.cosmin.wsgateway.domain.Route;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,10 @@ public class EndpointMapper implements RepresentationMapper<EndpointRepresentati
 
         EndpointConfiguration configuration = EndpointConfiguration.builder()
                 .authentication(authentication)
+                .generalSettings(GeneralSettings
+                        .builder()
+                        .backendParallelism(representation.getGeneralSettings().getBackendParallelism())
+                        .build())
                 .filters(filters)
                 .routes(routes)
                 .build();

@@ -19,5 +19,10 @@ public class HttpSettings implements BackendSettings {
     @Min(10)
     @Max(600000)
     @NotNull
-    private final Integer timeoutInMillis;
+    private final Integer readTimeoutInMillis;
+
+    @Min(10)
+    @Max(600000)
+    @NotNull
+    private final Integer connectTimeoutInMillis;
 }

@@ -1,6 +1,7 @@
 package com.cosmin.wsgateway.api;
 
 import com.cosmin.wsgateway.api.vertx.VerticleFactory;
+import com.cosmin.wsgateway.infrastructure.GatewayProperties;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import javax.annotation.PostConstruct;
@@ -14,14 +15,15 @@ import reactor.core.scheduler.Schedulers;
 @SpringBootApplication(scanBasePackages = "com.cosmin.wsgateway")
 @EnableScheduling
 public class Application {
-    //@ToDo make it configurable
-    private static final int DEFAULT_VERTX_POOL_SIZE = 2;
 
     @Autowired
     private VerticleFactory verticleFactory;
 
     @Autowired
     private Vertx vertx;
+
+    @Autowired
+    private GatewayProperties gatewayProperties;
 
     public static void main(String[] args) {
         Schedulers.enableMetrics();
@@ -31,7 +33,7 @@ public class Application {
     @PostConstruct
     public void startVertx() {
         var deploymentOptions = new DeploymentOptions();
-        deploymentOptions.setInstances(DEFAULT_VERTX_POOL_SIZE);
+        deploymentOptions.setInstances(gatewayProperties.getVertx().getGatewayVerticleInstances());
         vertx.deployVerticle(verticleFactory::createWS, deploymentOptions);
     }
 }
