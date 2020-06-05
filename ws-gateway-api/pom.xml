@@ -119,7 +119,7 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <mainClass>com.cosmin.wsgateway.api.Application</mainClass>
+                            <mainClass>com.cosmin.wsgateway.requests.Application</mainClass>
                         </configuration>
                     </execution>
                 </executions>
