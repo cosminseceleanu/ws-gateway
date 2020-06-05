@@ -1,5 +1,5 @@
 * [Introduction](/)
 * [Deployment](deployment/)
 * [Performance](performance/)
-* [Rest Api Reference](http://localhost:8080/)
+* [Rest Api Reference](https://cosminseceleanu.github.io/ws-gateway/rest-api-reference)
 * [Contributing](contributing/)
