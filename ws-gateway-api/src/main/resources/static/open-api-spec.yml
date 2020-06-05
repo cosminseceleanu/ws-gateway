@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  description: WSGateway Api, You can find out more on the [Git](https://github.com/cosminseceleanu/ws-gateway) page
+  description: WSGateway configuration REST Api Spec
   version: "1.0.0"
-  title: WSGateway Api
+  title: WSGateway REST Api
   termsOfService: 'https://github.com/cosminseceleanu/ws-gateway'
   contact:
-    email: ToBeDefined@email.com
+    email: coosmin26@yahoo.com
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
@@ -17,13 +17,48 @@ servers:
       serverUrl:
         default: localhost:8080
         description: Server url
-
+externalDocs:
+  description: WSGateway Docs
+  url: 'https://cosminseceleanu.github.io/ws-gateway'
 tags:
   - name: Endpoints
-    description: Api's used to manage endpoints
-    externalDocs:
-      description: Find out more
-      url: 'https://github.com/cosminseceleanu/ws-gateway'
+    description: Api's used to configure gateway endpoints !!!!
+  - name: Health
+    description: Health check api's
+  - name: Connections
+    description: Api's used for various operations on active web socket connections
+  - name: endpoint_model
+    x-displayName: The Endpoint Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Endpoint" />
+  - name: route_model
+    x-displayName: The Route Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Route" />
+  - name: health_model
+    x-displayName: The Health Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Health" />
+  - name: error_model
+    x-displayName: The Error Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Error" />
+x-tagGroups:
+  - name: Endpoint Configuration
+    tags:
+      - Endpoints
+  - name: Gateway Connections
+    tags:
+      - Connections
+  - name: Health
+    tags:
+      - Health
+  - name: Models
+    tags:
+      - endpoint_model
+      - route_model
+      - error_model
+      - health_model
 paths:
   /health:
     get:
@@ -76,7 +111,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Endpoint'
         '400':
-          description: Invalid endpoint
+          description: Bad Request
           content:
             application/json:
               schema:
@@ -198,9 +233,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
-externalDocs:
-  description: Find out more WSGateway
-  url: 'https://github.com/cosminseceleanu/ws-gateway'
 components:
   schemas:
     Endpoint:
@@ -418,7 +450,7 @@ components:
         message:
           type: string
           description: Message error
-          example: Invalid request body
+          example: Some Exception Mesage
           readOnly: true
         timestamp:
           type: integer
