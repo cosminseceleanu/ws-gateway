@@ -1,10 +1,10 @@
-# WSGateway - Specs Draft
+# WSGateway - Specs Draft v2
 
 ## Overview
 
 What is an API Gateway? An API Gateway is the component that takes all the incoming requests from clients and forwards them to the appropriate microservice.
 
-Historically, building WebSocket APIs required setting up fleets of hosts that were responsible for managing the persistent connections that underlie the WebSocket protocol. Now, with WS API Gateway, this is no longer necessary. API Gateway handles the connections between the client and service. It lets you build your business logic using HTTP-based or Kafka based backends.
+Historically, building WebSocket APIs required setting up fleets of hosts that were responsible for managing the persistent connections that underlie the WebSocket protocol. Now, with WS API Gateway, this is no longer necessary. API Gateway handles the web socket connections between with clients and let you to build your business logic using HTTP-based or Kafka based microservices/services.
 
 For more about API Gateways check [here](https://microservices.io/patterns/apigateway.html)  
 
