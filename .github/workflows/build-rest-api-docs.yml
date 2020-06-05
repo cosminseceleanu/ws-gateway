@@ -1,7 +1,7 @@
 name: Build REST Api docs
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
     - name: Setup node.js and npm
       uses: actions/setup-node@v1
       with:
@@ -18,11 +20,17 @@ jobs:
       run: npm install redoc-cli@0.9.8 -g
     - name: bundle open api spec
       run: redoc-cli bundle ws-gateway-api/src/main/resources/static/open-api-spec.yml -o docs/rest-api-reference.html
-    - name: Commit report
+    - name: Check for modified files
+      id: git-check
+      run: |
+        git add docs/rest-api-reference.html
+        echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+    - name: Commit changes
+      if: steps.git-check.outputs.modified == 'true'
       run: |
         git config --global user.name 'Gateway CI_CD'
         git config --global user.email 'gateway-ci-cd@users.noreply.github.com'
-        git remote set-url origin https://x-access-token:${{ secrets.CI_CD_GITHUB_TOKEN }}@github.com/cosminseceleanu/ws-gateway
+        git remote set-url origin https://x-access-token:${{ secrets.CI_CD_GITHUB_TOKEN }}@github.com/${{ github.repository }}
         git add docs/rest-api-reference.html
         git commit -am "Update REST Api docs"
         git push
