@@ -22,25 +22,25 @@ externalDocs:
   url: 'https://cosminseceleanu.github.io/ws-gateway'
 tags:
   - name: Endpoints
-    description: Api's used to configure gateway endpoints !!!!
+    description: Api's used to configure gateway endpoints
   - name: Health
     description: Health check api's
   - name: Connections
     description: Api's used for various operations on active web socket connections
   - name: endpoint_model
-    x-displayName: The Endpoint Model
+    x-displayName: Endpoint Model
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Endpoint" />
   - name: route_model
-    x-displayName: The Route Model
+    x-displayName: Route Model
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Route" />
   - name: health_model
-    x-displayName: The Health Model
+    x-displayName: Health Model
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Health" />
   - name: error_model
-    x-displayName: The Error Model
+    x-displayName: Error Model
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Error" />
 x-tagGroups:
