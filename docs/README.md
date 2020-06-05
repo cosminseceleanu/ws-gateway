@@ -9,7 +9,7 @@ Historically, building WebSocket APIs required setting up fleets of hosts that w
 For more about API Gateways check [here](https://microservices.io/patterns/apigateway.html)  
 
 ## WSGateway Arhitecture
-![arhitecure](images/ws-gateway.png)
+![arhitecure](_statics/images/ws-gateway.png)
 
 ## Functional Requirements
 
@@ -38,7 +38,7 @@ For more about API Gateways check [here](https://microservices.io/patterns/apiga
 2. Endpoint: an endpoint is used to gather multiple microservices to a single connection   
 3. Route: a route describe how an event should be handled. An endpoint is composed by multiple routes and by default one endpoint will have 4 routes: connect route, disconnect route, error route and default route. Users will be able to create new custom routes based on event payload using different custom defined json paths.
 
-#### Event Flow Sequence ![flow-sequence](images/event-flow-sequence.png)
+#### Event Flow Sequence ![flow-sequence](_statics/images/event-flow-sequence.png)
 
 #### Similar Solutions
 - [AWS Gateway](https://aws.amazon.com/blogs/compute/announcing-websocket-apis-in-amazon-api-gateway/)
