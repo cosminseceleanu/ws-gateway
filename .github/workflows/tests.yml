@@ -18,4 +18,4 @@ jobs:
     - name: Run All Tests
       run: mvn --no-transfer-progress clean verify
     - name: Run Tests for Apache Ignite integration
-      run: mvn -pl ws-gateway-functional-tests test -Dgroups=pubsub -Dspring.profiles.active=ignite,tests
+      run: mvn --no-transfer-progress clean test -Dgroups=pubsub -Dspring.profiles.active=ignite,tests
