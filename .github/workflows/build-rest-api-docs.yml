@@ -1,9 +1,12 @@
 name: Build REST Api docs
 
 on:
-  push:
+  pull_request:
     branches:
       - master
+    paths:
+      - 'docs/**'
+      - 'ws-gateway-api/src/main/resources/static/*.yml'
 
 jobs:
   ApiDocs:
@@ -29,7 +32,7 @@ jobs:
       if: steps.git-check.outputs.modified == 'true'
       run: |
         git config --global user.name 'cosminseceleanu'
-        git config --global user.email 'gateway-ci-cd@users.noreply.github.com'
+        git config --global user.email 'coosmin26@yahoo.com'
         git remote set-url origin https://x-access-token:${{ secrets.CI_CD_GITHUB_TOKEN }}@github.com/${{ github.repository }}
         git add docs/rest-api-reference.html
         git commit -am "Update REST Api docs"

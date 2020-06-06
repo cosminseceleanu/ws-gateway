@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   description: WSGateway configuration REST Api Spec
-  version: "1.0.0"
+  version: "1.0.0.alpha"
   title: WSGateway REST Api
   termsOfService: 'https://github.com/cosminseceleanu/ws-gateway'
   contact:
@@ -13,6 +13,7 @@ servers:
   - description: Local
     url: http://localhost:8080
   - url: http://{serverUrl}
+    description: Your server url
     variables:
       serverUrl:
         default: localhost:8080

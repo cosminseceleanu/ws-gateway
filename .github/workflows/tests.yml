@@ -4,7 +4,8 @@ on:
   pull_request:
     branches:
       - master
-
+    paths-ignore:
+      - 'docs/**'
 jobs:
   Tests:
     runs-on: ubuntu-latest
