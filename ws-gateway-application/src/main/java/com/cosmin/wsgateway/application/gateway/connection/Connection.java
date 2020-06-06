@@ -73,6 +73,7 @@ public class Connection {
         var outboundEvents = subscription.getEvents();
 
         return outboundEvents
+                .publishOn(scheduler)
                 .doOnNext(n -> gatewayMetrics.recordOutboundEventReceived(context.getEndpoint(), context.getId()))
                 .map(msg -> new TopicMessage(context.getId(), transformer.toPayload(msg, Map.class)));
     }

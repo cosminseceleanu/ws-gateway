@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 public class EndpointFilters implements ConnectionFilter {
     @Override
     public Mono<ConnectionRequest> filter(Endpoint endpoint, ConnectionRequest request) {
+        log.debug("check filters={} for endpoint={}", endpoint.getFilters(), endpoint.getPath());
         for (Filter<?> filter : endpoint.getFilters()) {
             if (!filter.isAllowed(request.getHeaders())) {
                 log.info("Filter {} doesnt allow connection for headers={}", filter.name(), request.getHeaders());

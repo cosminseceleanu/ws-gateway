@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -18,7 +20,7 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
-@ActiveProfiles("tests")
+@EmbeddedKafka(partitions = 1)
 public abstract class BaseTestIT {
     private static final Logger logger = LoggerFactory.getLogger("FunctionalTests");
 
@@ -27,6 +29,9 @@ public abstract class BaseTestIT {
 
     @Autowired
     protected WebTestClient webClient;
+
+    @Autowired
+    protected EmbeddedKafkaBroker embeddedKafkaBroker;
 
     protected EndpointsClient endpointsClient;
     protected ConnectionsClient connectionsClient;

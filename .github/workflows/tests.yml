@@ -15,5 +15,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Run tests
+    - name: Run All Tests
       run: mvn --no-transfer-progress clean verify
+    - name: Run Tests for Apache Ignite integration
+      run: mvn -pl ws-gateway-functional-tests test -Dgroups=pubsub -Dspring.profiles.active=ignite,tests

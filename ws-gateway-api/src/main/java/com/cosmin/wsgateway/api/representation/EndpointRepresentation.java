@@ -1,6 +1,5 @@
 package com.cosmin.wsgateway.api.representation;
 
-import com.cosmin.wsgateway.domain.GeneralSettings;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,7 +20,7 @@ public class EndpointRepresentation {
     private String path;
 
     @JsonProperty("settings")
-    private GeneralSettings generalSettings;
+    private GeneralSettingsRepresentation generalSettings = new GeneralSettingsRepresentation();
     private FilterRepresentation filters = new FilterRepresentation();
     private Set<RouteRepresentation> routes;
     private AuthenticationRepresentation authentication;

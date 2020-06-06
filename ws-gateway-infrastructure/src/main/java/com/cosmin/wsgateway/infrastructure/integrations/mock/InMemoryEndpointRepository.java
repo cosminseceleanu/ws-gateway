@@ -6,6 +6,7 @@ import com.cosmin.wsgateway.domain.Backend;
 import com.cosmin.wsgateway.domain.BackendSettings;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.EndpointConfiguration;
+import com.cosmin.wsgateway.domain.GeneralSettings;
 import com.cosmin.wsgateway.domain.Route;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
 import java.util.Collections;
@@ -30,6 +31,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
                         Route.connect(debugBackend),
                         Route.disconnect(debugBackend)
                 ))
+                .generalSettings(GeneralSettings.defaultSettings())
                 .build();
         Endpoint endpoint = Endpoint.builder()
                 .configuration(configuration)

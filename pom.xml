@@ -45,6 +45,8 @@
 		<javatuples.version>1.2</javatuples.version>
 		<reactor-kafka.version>1.2.2.RELEASE</reactor-kafka.version>
 		<wiremock.version>2.26.3</wiremock.version>
+		<hazelcast.version>4.0.1</hazelcast.version>
+		<hazelcast-kubernetes-version>2.0.1</hazelcast-kubernetes-version>
 	</properties>
 
 	<dependencyManagement>
@@ -189,6 +191,18 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast</artifactId>
+				<version>${hazelcast.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast-kubernetes</artifactId>
+				<version>${hazelcast-kubernetes-version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
 				<version>${junit.version}</version>
@@ -273,6 +287,10 @@
 				<version>3.0.0-M4</version>
 				<configuration>
 					<argLine>@{argLine}</argLine>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*IT.java</include>
+					</includes>
 				</configuration>
 			</plugin>
 			<plugin>

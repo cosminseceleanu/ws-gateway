@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cosmin.wsgateway.tests.BaseTestIT;
+import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
 import java.time.Duration;
@@ -11,6 +12,8 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
+@Tags.Gateway
+@Tags.PubSub
 public class OutboundEventsFlowIT extends BaseTestIT {
     @Test
     public void gatewayClientReceivesEventsSentViaConnectionsApi() {

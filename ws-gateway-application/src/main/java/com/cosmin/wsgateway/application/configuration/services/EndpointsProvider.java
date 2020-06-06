@@ -5,12 +5,14 @@ import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EndpointsProvider {
     private final EndpointRepository endpointRepository;
 

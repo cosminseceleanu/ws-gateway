@@ -4,12 +4,14 @@ import com.cosmin.wsgateway.application.gateway.PubSub;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(prefix = "gateway", name = "pubsub.mocked")
 public class MockedPubSub implements PubSub {
     @Override
     public Subscription subscribe(String topic) {
