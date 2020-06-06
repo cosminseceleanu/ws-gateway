@@ -1,4 +1,4 @@
 gateway:
   pubsub:
-    ignite: false
-    hazelcast: true
+    ignite: true
+    hazelcast: false
