@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.cosmin.wsgateway.tests.BaseTestIT;
+import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.client.WebSocketConnectionException;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+@Tags.Gateway
 public class FiltersIT extends BaseTestIT {
 
     public static final String HEADER_X_FORWARDED_FOR = "X_FORWARDED_FOR";
@@ -62,7 +64,7 @@ public class FiltersIT extends BaseTestIT {
     @Test
     public void connectionFromABlacklistedIpIsRejected() {
         Given("an endpoint with blacklist ip filter");
-        var endpoint = EndpointFixtures.getRepresentation("/black-list");
+        var endpoint = EndpointFixtures.getRepresentation("/ip-black-list");
         endpoint.getFilters().setBlacklistIps(Set.of("127.0.0.1"));
         endpointsClient.createAndAssert(endpoint);
 
@@ -78,7 +80,7 @@ public class FiltersIT extends BaseTestIT {
     @Test
     public void connectionFromAnIpThatIsNotWhitelistedIsRejected() {
         Given("an endpoint with whitelist ip filter");
-        var endpoint = EndpointFixtures.getRepresentation("/host-whitelist");
+        var endpoint = EndpointFixtures.getRepresentation("/ip-whitelist-1");
         endpoint.getFilters().setWhitelistIps(Set.of("145.4.5.7", "164.0.0.233"));
         endpointsClient.createAndAssert(endpoint);
 
@@ -92,9 +94,9 @@ public class FiltersIT extends BaseTestIT {
     }
 
     @Test
-    public void onlyConnectionFromIpHostIsAccepted() {
+    public void onlyConnectionFromWhitelistedIpIsAccepted() {
         Given("an endpoint with whitelist ip filter");
-        var endpoint = EndpointFixtures.getRepresentation("/host-whitelist-2");
+        var endpoint = EndpointFixtures.getRepresentation("/ip-whitelist-2");
         endpoint.getFilters().setWhitelistIps(Set.of("145.4.5.7"));
         endpointsClient.createAndAssert(endpoint);
 

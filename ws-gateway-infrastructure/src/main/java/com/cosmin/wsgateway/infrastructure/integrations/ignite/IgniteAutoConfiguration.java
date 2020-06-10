@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Profile;
  * 10900 # Thin clients port number.
  */
 @Configuration
-@ConditionalOnProperty(prefix = "gateway", name = "pubsub.ignite", matchIfMissing = true)
-public class IgniteAutoConfiguration {
+@ConditionalOnProperty(prefix = "gateway", name = "pubsub.ignite")
+class IgniteAutoConfiguration {
 
     private static final int IGNITE_LOCAL_PORT = 47100;
     private static final int IGNITE_DISCOVERY_PORT = 47500;
@@ -87,7 +87,6 @@ public class IgniteAutoConfiguration {
     }
 
     @Bean
-    @Primary
     public PubSub ignitePubSub(IgniteMessaging igniteMessaging) {
         return new IgnitePubSub(igniteMessaging);
     }

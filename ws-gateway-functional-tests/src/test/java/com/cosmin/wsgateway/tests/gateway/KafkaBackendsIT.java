@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
+import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
 import com.cosmin.wsgateway.tests.utils.KafkaUtils;
@@ -13,15 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 
-@EmbeddedKafka(partitions = 1)
+@Tags.Gateway
 public class KafkaBackendsIT extends BaseTestIT {
-
-    @Autowired
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @Test
     public void kafkaBackendReceivesConnectAndDisconnectEvent() {
@@ -82,6 +77,7 @@ public class KafkaBackendsIT extends BaseTestIT {
 
     private Set<RouteRepresentation> getRoutes(String connectTopic, String disconnectTopic, String defaultTopic) {
         String brokers = embeddedKafkaBroker.getBrokersAsString();
+        Given("kafka brokers=" + brokers);
 
         return Set.of(
                 createRouteWithKafkaBackend(RouteRepresentation.Type.CONNECT, connectTopic, brokers),

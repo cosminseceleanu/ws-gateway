@@ -9,7 +9,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 
 @RequiredArgsConstructor
-public class IgniteHealthIndicator extends AbstractHealthIndicator {
+class IgniteHealthIndicator extends AbstractHealthIndicator {
     private final Ignite ignite;
 
     @Override

@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Slf4j
-public class IgnitePubSub implements PubSub {
+class IgnitePubSub implements PubSub {
     private final IgniteMessaging igniteMessaging;
 
     @Override

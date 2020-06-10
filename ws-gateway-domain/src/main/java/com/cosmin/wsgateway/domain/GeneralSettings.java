@@ -13,4 +13,10 @@ public class GeneralSettings {
     @Min(1)
     @Max(32)
     private final Integer backendParallelism;
+
+    public static GeneralSettings defaultSettings() {
+        return GeneralSettings.builder()
+                .backendParallelism(8)
+                .build();
+    }
 }

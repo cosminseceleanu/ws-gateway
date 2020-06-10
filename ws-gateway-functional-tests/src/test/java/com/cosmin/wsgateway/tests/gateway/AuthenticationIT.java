@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
+import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.client.WebSocketConnectionException;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+@Tags.Gateway
 public class AuthenticationIT extends BaseTestIT {
     public static WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
     private static String wiremockUrl;

@@ -8,7 +8,7 @@ import org.apache.ignite.cluster.ClusterMetrics;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @RequiredArgsConstructor
-public class IgniteMetrics {
+class IgniteMetrics {
     public static final String METRIC_NAME = "apache.ignite";
     private final Ignite ignite;
     private final MeterRegistry meterRegistry;

@@ -1,3 +1,7 @@
 spring:
   profiles:
     active: tests
+gateway:
+  pubsub:
+    ignite: false
+    hazelcast: true

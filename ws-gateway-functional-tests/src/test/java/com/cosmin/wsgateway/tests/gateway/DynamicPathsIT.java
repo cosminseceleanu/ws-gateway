@@ -1,6 +1,7 @@
 package com.cosmin.wsgateway.tests.gateway;
 
 import com.cosmin.wsgateway.tests.BaseTestIT;
+import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.client.WebSocketConnectionException;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Tags.Gateway
 public class DynamicPathsIT extends BaseTestIT {
 
     @Test

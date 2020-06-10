@@ -5,6 +5,7 @@ import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
 import com.cosmin.wsgateway.api.representation.ErrorRepresentation;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.tests.BaseTestIT;
+import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Tags.API
 public class EndpointApiIT extends BaseTestIT {
 
     public static final String ERROR_TYPE_ENDPOINT_NOT_FOUND = "EndpointNotFound";
