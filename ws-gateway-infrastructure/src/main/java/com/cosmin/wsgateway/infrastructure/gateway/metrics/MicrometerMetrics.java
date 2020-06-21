@@ -30,6 +30,11 @@ public class MicrometerMetrics implements GatewayMetrics {
     }
 
     @Override
+    public void recordDisconnect(Endpoint endpoint) {
+        activeConnectionsGauge.getAndDecrement();
+    }
+
+    @Override
     public void recordConnectionError(int status) {
         List<Tag> tags = List.of(Tag.of("response.status", String.valueOf(status)));
         registry.counter(GatewayMetrics.METRIC_CONNECTION_ERRORS, tags).increment();

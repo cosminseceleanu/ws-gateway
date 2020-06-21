@@ -125,11 +125,11 @@ POST http://localhost:8080/api/internal/endpoints
 Content-Type: application/json
 
 {
-  "path": "/my-ws-endpoint",
+  "path": "/basic",
   "authentication": {
     "mode": "basic",
     "username": "basic_user",
-    "password":  "strongPassword"
+    "password": "strongPassword"
   },
   "routes": [
     {

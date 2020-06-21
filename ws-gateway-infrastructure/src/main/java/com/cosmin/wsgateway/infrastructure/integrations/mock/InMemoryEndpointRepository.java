@@ -6,7 +6,10 @@ import com.cosmin.wsgateway.domain.Backend;
 import com.cosmin.wsgateway.domain.BackendSettings;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.EndpointConfiguration;
+import com.cosmin.wsgateway.domain.GeneralSettings;
 import com.cosmin.wsgateway.domain.Route;
+import com.cosmin.wsgateway.domain.backends.HttpBackend;
+import com.cosmin.wsgateway.domain.backends.HttpSettings;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
 import java.util.Collections;
 import java.util.Optional;
@@ -20,7 +23,16 @@ public class InMemoryEndpointRepository implements EndpointRepository {
     private final ConcurrentHashMap<String, Endpoint> storage = new ConcurrentHashMap<>();
 
     public InMemoryEndpointRepository() {
-        Set<Backend<? extends BackendSettings>> debugBackend = Collections.emptySet();
+        Set<Backend<? extends BackendSettings>> debugBackend = Collections.singleton(
+                HttpBackend.builder()
+                        .destination("http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/events/default")
+                        .settings(HttpSettings.builder()
+                                .connectTimeoutInMillis(300)
+                                .readTimeoutInMillis(1500)
+                                .additionalHeaders(Collections.emptyMap())
+                                .build())
+                .build()
+        );
 
         var configuration = EndpointConfiguration.builder()
                 .authentication(new Authentication.None())
@@ -30,6 +42,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
                         Route.connect(debugBackend),
                         Route.disconnect(debugBackend)
                 ))
+                .generalSettings(GeneralSettings.builder().backendParallelism(4).build())
                 .build();
         Endpoint endpoint = Endpoint.builder()
                 .configuration(configuration)

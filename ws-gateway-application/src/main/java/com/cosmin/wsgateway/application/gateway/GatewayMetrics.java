@@ -22,6 +22,8 @@ public interface GatewayMetrics {
 
     void recordConnection(Endpoint endpoint);
 
+    void recordDisconnect(Endpoint endpoint);
+
     void recordConnectionError(int status);
 
     void recordError(Throwable e, String connectionId);

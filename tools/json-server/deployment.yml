@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-mock-backend
+  labels:
+    app: gateway-mock-backend
+    version: 1.0.0-alpha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-mock-backend
+  template:
+    metadata:
+      labels:
+        app: gateway-mock-backend
+    spec:
+      containers:
+        - name: json-server
+          image: ws-gateway/json-server:1.0.0
+          imagePullPolicy: Never
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          ports:
+            - name: api
+              containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-mock-backend
+spec:
+  selector:
+    app: gateway-mock-backend
+  ports:
+    - name: api
+      port: 8083
+      targetPort: 3000
+  type: LoadBalancer
+

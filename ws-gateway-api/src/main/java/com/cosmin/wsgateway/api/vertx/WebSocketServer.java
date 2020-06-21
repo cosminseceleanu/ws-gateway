@@ -111,7 +111,10 @@ public class WebSocketServer extends AbstractVerticle {
             gatewayMetrics.recordInboundEventReceived(connection.getEndpoint(), connection.getId());
             processor.onMessage(msg);
         });
-        serverWebSocket.closeHandler(h -> processor.onClose());
+        serverWebSocket.closeHandler(h -> {
+            gatewayMetrics.recordDisconnect(connection.getEndpoint());
+            processor.onClose();
+        });
         log.debug("Accept WS connection={}", connection.getId());
         handshakePromise.complete(101);
     }
