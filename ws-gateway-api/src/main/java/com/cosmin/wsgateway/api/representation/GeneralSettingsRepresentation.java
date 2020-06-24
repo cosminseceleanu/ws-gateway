@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.api;
+package com.cosmin.wsgateway.api.representation;
 
 import lombok.Data;
 

@@ -37,5 +37,7 @@ public class GatewayProperties {
     @Data
     public static class PubSub {
         private Boolean ignite = true;
+        private Boolean hazelcast = false;
+        private Boolean mocked = false;
     }
 }

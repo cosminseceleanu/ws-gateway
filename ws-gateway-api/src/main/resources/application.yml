@@ -22,3 +22,6 @@ gateway:
   kubernetes:
     namespace: "gateway"
     serviceName: "gateway"
+  pubsub:
+    ignite: false
+    hazelcast: true

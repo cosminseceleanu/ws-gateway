@@ -42,7 +42,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
                         Route.connect(debugBackend),
                         Route.disconnect(debugBackend)
                 ))
-                .generalSettings(GeneralSettings.builder().backendParallelism(4).build())
+                .generalSettings(GeneralSettings.defaultSettings())
                 .build();
         Endpoint endpoint = Endpoint.builder()
                 .configuration(configuration)

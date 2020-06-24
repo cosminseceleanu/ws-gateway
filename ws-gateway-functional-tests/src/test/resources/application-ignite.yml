@@ -1,0 +1,4 @@
+gateway:
+  pubsub:
+    ignite: true
+    hazelcast: false

@@ -2,6 +2,7 @@ package com.cosmin.wsgateway.tests.gateway;
 
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
+import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import static com.cosmin.wsgateway.tests.common.EndpointFixtures.createRouteWithHttpBackend;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
+@Tags.Gateway
 public class HttpBackendsIT extends BaseTestIT {
     public static WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
     private static String backendUrl;

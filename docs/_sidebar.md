@@ -1,4 +1,6 @@
 * [Introduction](/)
+* [Gateway Overview](/)
+* [Configuration](/)
 * [Deployment](deployment/)
 * [Performance](performance/)
 * [Rest Api Reference](https://cosminseceleanu.github.io/ws-gateway/rest-api-reference)

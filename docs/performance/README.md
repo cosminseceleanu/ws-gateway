@@ -1,3 +1,3 @@
 ## Gateway Performance
 
-To be continue..
+To be continued...
