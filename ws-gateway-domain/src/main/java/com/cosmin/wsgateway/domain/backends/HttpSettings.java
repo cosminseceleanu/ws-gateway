@@ -25,4 +25,12 @@ public class HttpSettings implements BackendSettings {
     @Max(600000)
     @NotNull
     private final Integer connectTimeoutInMillis;
+
+    public static HttpSettings defaultSettings() {
+        return HttpSettings.builder()
+                .additionalHeaders(Map.of())
+                .readTimeoutInMillis(1500)
+                .readTimeoutInMillis(200)
+                .build();
+    }
 }

@@ -1,0 +1,119 @@
+### List all endoints
+GET http://api.gateway.info/api/internal/endpoints
+
+### Create endpoint - only http
+POST http://api.gateway.info/api/internal/endpoints
+Content-Type: application/json
+
+{
+  "path": "/test-1",
+  "authentication": {
+    "mode": "none"
+  },
+  "routes": [
+    {
+      "type": "connect",
+      "name": "Connect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/events/connected",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        }
+      ]
+    },
+    {
+      "type": "disconnect",
+      "name": "Disconnect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/events/disconnected",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        }
+      ]
+    },
+    {
+      "type": "default",
+      "name": "Default",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/events/default",
+          "timeoutInMillis": 300
+        }
+      ]
+    }
+  ]
+}
+
+### Create endpoint - http + kafka
+POST http://api.gateway.info/api/internal/endpoints
+Content-Type: application/json
+
+{
+  "path": "/test-1",
+  "authentication": {
+    "mode": "none"
+  },
+  "routes": [
+    {
+      "type": "connect",
+      "name": "Connect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/connect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.connect.topic",
+          "bootstrapServers": "localhost:9092"
+        }
+      ]
+    },
+    {
+      "type": "disconnect",
+      "name": "Disconnect",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/disconnect",
+          "timeoutInMillis": 300,
+          "additionalHeaders": {
+            "X-Debug-Id": "id"
+          }
+        },
+        {
+          "type": "kafka",
+          "topic": "service.2.disconnect.topic",
+          "bootstrapServers": "localhost:9092"
+        }
+      ]
+    },
+    {
+      "type": "default",
+      "name": "Default",
+      "backends": [
+        {
+          "type": "http",
+          "destination": "http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/default",
+          "timeoutInMillis": 300
+        }
+      ]
+    }
+  ]
+}
+
+
+

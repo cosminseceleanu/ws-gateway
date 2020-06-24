@@ -228,8 +228,10 @@ paths:
             schema:
               type: object
       responses:
-        '204':
+        '202':
           description: successful operation
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -502,6 +504,12 @@ components:
             $ref: '#/components/schemas/Error'
     NotFound:
       description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Bad Request
       content:
         application/json:
           schema:

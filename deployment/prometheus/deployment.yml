@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-prometheus
+  labels:
+    app: gateway-prometheus
+    version: 1.0.0-alpha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-prometheus
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: gateway-prometheus
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: prometheus
+      serviceAccountName: prometheus
+      containers:
+        - name: gateway
+          image: prom/prometheus:v2.19.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+            - name: default
+              containerPort: 9090
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/prometheus
