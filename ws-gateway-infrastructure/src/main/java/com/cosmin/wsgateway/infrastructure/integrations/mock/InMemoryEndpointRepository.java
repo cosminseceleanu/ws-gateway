@@ -26,11 +26,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
         Set<Backend<? extends BackendSettings>> debugBackend = Collections.singleton(
                 HttpBackend.builder()
                         .destination("http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/events/default")
-                        .settings(HttpSettings.builder()
-                                .connectTimeoutInMillis(300)
-                                .readTimeoutInMillis(1500)
-                                .additionalHeaders(Collections.emptyMap())
-                                .build())
+                        .settings(HttpSettings.defaultSettings())
                 .build()
         );
 

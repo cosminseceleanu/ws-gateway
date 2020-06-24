@@ -32,7 +32,7 @@ public class OutboundEventsFlowIT extends BaseTestIT {
         connectionsClient.sendOutbound(connectionId, event2);
 
         Then("Gateway client receives msgs via api");
-        await(Duration.ofMillis(6000));
+        await(Duration.ofMillis(9000));
 
         assertEquals(2, connection.getReceivedMessages().size());
         assertTrue(connection.getReceivedMessages().contains(event1));
