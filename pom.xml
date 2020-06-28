@@ -47,6 +47,8 @@
 		<wiremock.version>2.26.3</wiremock.version>
 		<hazelcast.version>4.0.1</hazelcast.version>
 		<hazelcast-kubernetes-version>2.0.1</hazelcast-kubernetes-version>
+		<logback.contrib.version>0.1.5</logback.contrib.version>
+		<logback-classic.version>1.2.3</logback-classic.version>
 	</properties>
 
 	<dependencyManagement>
@@ -200,6 +202,24 @@
 				<groupId>com.hazelcast</groupId>
 				<artifactId>hazelcast-kubernetes</artifactId>
 				<version>${hazelcast-kubernetes-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback-classic.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback.contrib</groupId>
+				<artifactId>logback-jackson</artifactId>
+				<version>${logback.contrib.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback.contrib</groupId>
+				<artifactId>logback-json-classic</artifactId>
+				<version>${logback.contrib.version}</version>
 			</dependency>
 
 			<dependency>

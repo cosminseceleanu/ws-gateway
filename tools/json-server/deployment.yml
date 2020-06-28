@@ -5,6 +5,8 @@ metadata:
   labels:
     app: gateway-mock-backend
     version: 1.0.0-alpha
+  annotations:
+    fluentbit.io/parser: syslog
 spec:
   replicas: 1
   selector:
