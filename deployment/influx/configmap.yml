@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-influxdb
+data:
+  logsDbName: "gateway_logs"
+  authEnabled: "true"

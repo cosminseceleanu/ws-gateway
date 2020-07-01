@@ -2,3 +2,5 @@ gateway:
   pubsub:
     ignite: true
     hazelcast: false
+  persistence:
+    mocked: true

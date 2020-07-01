@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-loki
+spec:
+  selector:
+    app: gateway-loki
+  ports:
+    - name: default
+      port: 3100
+      targetPort: 3100
+  type: LoadBalancer

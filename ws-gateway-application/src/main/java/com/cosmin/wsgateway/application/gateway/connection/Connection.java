@@ -1,5 +1,7 @@
 package com.cosmin.wsgateway.application.gateway.connection;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+
 import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.application.gateway.PubSub;
@@ -97,7 +99,7 @@ public class Connection {
 
     private Flux<? extends Event> sendInboundEventToBackends(InboundEvent inboundEvent) {
         var backends = inboundEvent.getRoute(context.getEndpoint()).getBackends();
-        log.debug("send event={} to backends={}", inboundEvent, backends);
+        log.debug("send {} to {}", keyValue("event", inboundEvent), keyValue("backends", backends));
 
         return Flux.fromIterable(backends)
                 .map(b -> BackendConnectorPair.of(b, connectorResolver.getConnector(b)))
@@ -118,7 +120,10 @@ public class Connection {
 
     private void logProcessedEvent(OutboundEvent e) {
         if (log.isDebugEnabled()) {
-            log.debug("event={} of type={} was successfully processed", e.toString(), e.getClass().getName());
+            log.debug("{} of {} was successfully processed",
+                    keyValue("event", e.toString()),
+                    keyValue("type", e.getClass().getName())
+            );
         }
     }
 

@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: loki-ingress
+spec:
+  rules:
+    - host: loki.gateway.info
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gateway-loki
+              servicePort: 3100

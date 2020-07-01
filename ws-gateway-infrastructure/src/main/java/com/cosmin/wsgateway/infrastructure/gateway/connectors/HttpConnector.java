@@ -1,6 +1,7 @@
 package com.cosmin.wsgateway.infrastructure.gateway.connectors;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 import com.cosmin.wsgateway.application.gateway.connection.events.BackendErrorEvent;
 import com.cosmin.wsgateway.application.gateway.connector.BackendConnector;
@@ -80,9 +81,9 @@ public class HttpConnector implements BackendConnector<HttpSettings> {
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             return event;
         }
-        log.warn("Invalid status code received from backend={} status={}",
-                backend.destination(),
-                responseEntity.getStatusCodeValue()
+        log.warn("Invalid status code received from {} {}",
+                keyValue("backend", backend.destination()),
+                keyValue("status", responseEntity.getStatusCodeValue())
         );
         return BackendErrorEvent.of(event, new InvalidStatusCodeException(String.format(
                 "Invalid status code from backend=%s expected=20x got=%s",

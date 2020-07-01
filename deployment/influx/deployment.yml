@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-influxdb
+  labels:
+    app: gateway-influxdb
+    version: 1.0.0-alpha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-influxdb
+  template:
+    metadata:
+      labels:
+        app: gateway-influxdb
+    spec:
+      restartPolicy: Always
+      volumes:
+        - name: var-lib-influxdb
+          persistentVolumeClaim:
+            claimName: gateway-influxdb
+      containers:
+        - name: influxdb
+          image: influxdb:1.8
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          ports:
+            - name: default
+              containerPort: 8086
+          volumeMounts:
+            - mountPath: /var/lib/influxdb
+              name: var-lib-influxdb
+          env:
+            - name: INFLUXDB_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: gateway-influxdb
+                  key: logsDbName
+            - name: INFLUXDB_HTTP_AUTH_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: gateway-influxdb
+                  key: authEnabled
+            - name: INFLUXDB_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-influxdb
+                  key: adminUser
+            - name: INFLUXDB_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-influxdb
+                  key: adminPassword
+            - name: INFLUXDB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-influxdb
+                  key: dbUser
+            - name: INFLUXDB_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-influxdb
+                  key: dbUserPassword

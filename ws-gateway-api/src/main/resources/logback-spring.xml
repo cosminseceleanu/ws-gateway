@@ -2,15 +2,37 @@
 <configuration>
     <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%25thread]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+<!--    <include resource="org/springframework/boot/logging/logback/base.xml"/>-->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
     <logger name="com.cosmin.wsgateway.application.gateway" level="DEBUG"/>
     <logger name="com.cosmin.wsgateway.api" level="DEBUG"/>
     <logger name="org.apache.ignite" level="WARN"/>
+    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug"/>
 
     <springProfile name="prod">
         <logger name="com.cosmin.wsgateway.application.gateway" level="INFO"/>
         <logger name="com.cosmin.wsgateway.api" level="INFO"/>
         <logger name="org.apache.ignite" level="WARN"/>
+    </springProfile>
+
+    <springProfile name="k8s">
+        <logger name="com.cosmin.wsgateway" level="INFO"/>
+        <logger name="org.apache.ignite" level="WARN"/>
+
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                    <shortenedClassNameLength>20</shortenedClassNameLength>
+                    <exclude>sun\.reflect\..*\.invoke.*</exclude>
+                    <exclude>net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
+                <includeMdc>true</includeMdc>
+            </encoder>
+        </appender>
     </springProfile>
 
     <springProfile name="tests">
@@ -23,5 +45,9 @@
         <logger name="com.cosmin.wsgateway.application.gateway" level="DEBUG"/>
         <logger name="com.cosmin.wsgateway.api" level="DEBUG"/>
     </springProfile>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
 
 </configuration>

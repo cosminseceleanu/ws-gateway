@@ -1,5 +1,7 @@
 package com.cosmin.wsgateway.application.gateway.connection;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+
 import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.application.gateway.PubSub;
@@ -26,8 +28,10 @@ public class ConnectionFactory {
     public Connection create(Endpoint endpoint, ConnectionRequest request) {
         String connectionId = getConnectionId(request);
         var context = ConnectionContext.newInstance(connectionId, endpoint);
-        log.debug("A new WS was created! connection={} for endpointId={} path={}",
-                connectionId, endpoint.getId(), endpoint.getPath()
+        log.debug("A new WS was created! {} for {} {}",
+                keyValue("connectionId", connectionId),
+                keyValue("endpointId", endpoint.getId()),
+                keyValue("path", endpoint.getPath())
         );
 
         return new Connection(pubSub, transformer, connectorResolver, context, gatewayMetrics);

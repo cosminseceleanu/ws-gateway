@@ -10,31 +10,45 @@ spec:
   selector:
     matchLabels:
       app: gateway-grafana
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 25%
-      maxSurge: 1
   template:
     metadata:
       labels:
         app: gateway-grafana
     spec:
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: gateway-grafana
+        - name: provisioning
+          configMap:
+            name: grafana
       containers:
-        - name: gateway
+        - name: grafana
           image: grafana/grafana:7.0.3-ubuntu
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "250m"
+              memory: "64Mi"
+              cpu: "100m"
             limits:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "128Mi"
+              cpu: "200m"
           ports:
             - name: default
               containerPort: 3000
+          volumeMounts:
+            - name: storage
+              mountPath: /var/lib/grafana
+            - name: provisioning
+              mountPath: /etc/grafana/provisioning
           env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: gateway
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana
+                  key: adminPassword
             - name: GF_INSTALL_PLUGINS
               valueFrom:
                 configMapKeyRef:

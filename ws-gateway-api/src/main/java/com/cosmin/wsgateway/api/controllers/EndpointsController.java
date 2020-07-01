@@ -6,6 +6,7 @@ import com.cosmin.wsgateway.application.configuration.services.EndpointWriter;
 import com.cosmin.wsgateway.application.configuration.services.EndpointsProvider;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/internal")
 @RequiredArgsConstructor
+@Slf4j
 public class EndpointsController {
 
     private final EndpointMapper endpointMapper;
@@ -30,6 +32,7 @@ public class EndpointsController {
 
     @GetMapping("/endpoints")
     public Flux<EndpointRepresentation> getAll() {
+        log.info("Get all endpoints");
         return endpointsProvider.getAll()
                 .map(endpointMapper::toRepresentation);
     }

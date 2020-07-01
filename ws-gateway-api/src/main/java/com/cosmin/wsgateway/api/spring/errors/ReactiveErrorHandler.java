@@ -2,6 +2,7 @@ package com.cosmin.wsgateway.api.spring.errors;
 
 
 import com.cosmin.wsgateway.api.representation.ErrorRepresentation;
+import com.cosmin.wsgateway.api.utils.HttpLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,6 @@ public class ReactiveErrorHandler implements ErrorWebExceptionHandler {
 
     @Override
     public Mono<Void> handle(ServerWebExchange serverWebExchange, Throwable throwable) {
-        log.error("Handle api error", throwable);
         return findErrorResponse(throwable)
                 .flatMap(entity -> setHttpResponse(serverWebExchange, entity));
     }
@@ -48,7 +48,8 @@ public class ReactiveErrorHandler implements ErrorWebExceptionHandler {
         try {
             final DataBuffer buffer = response.bufferFactory()
                     .wrap(objectMapper.writeValueAsBytes(entity.getBody()));
-            return response.writeWith(Mono.just(buffer))
+            return response.writeWith(Mono.just(buffer)
+                    .map(b -> HttpLogger.logResponse(b, response, serverWebExchange.getRequest())))
                     .doOnError(error -> DataBufferUtils.release(buffer));
         } catch (final JsonProcessingException ex) {
             return Mono.error(ex);

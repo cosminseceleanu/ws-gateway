@@ -15,6 +15,8 @@ public class GatewayProperties {
 
     private PubSub pubsub = new PubSub();
 
+    private Persistence persistence = new Persistence();
+
     @Data
     @NoArgsConstructor
     public static class Kubernetes {
@@ -39,5 +41,10 @@ public class GatewayProperties {
         private Boolean ignite = true;
         private Boolean hazelcast = false;
         private Boolean mocked = false;
+    }
+
+    @Data
+    public static class Persistence {
+        private Boolean mocked = true;
     }
 }

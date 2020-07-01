@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-loki
+  labels:
+    app: gateway-loki
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3100"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-loki
+  template:
+    metadata:
+      labels:
+        app: gateway-loki
+    spec:
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: gateway-loki
+        - name: config
+          configMap:
+            name: gateway-loki
+      containers:
+        - name: gateway-loki
+          image: grafana/loki:1.5.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          ports:
+            - name: default
+              containerPort: 3100
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: default
+            initialDelaySeconds: 45
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: default
+            initialDelaySeconds: 45
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki/
+            - name: storage
+              mountPath: "/data"
