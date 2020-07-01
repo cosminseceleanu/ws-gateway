@@ -1,20 +1,30 @@
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: pod-reader
-rules:
-  - apiGroups: [""] # "" indicates the core API group
-    resources: ["pods"]
-    verbs: ["get", "watch", "list"]
+  name: pubsub-discovery
+  namespace: ns-ws-gateway
 ---
-kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
 metadata:
-  name: read-pods
+  name: pubsub-discovery
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - endpoints
+      - nodes
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pubsub-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pubsub-discovery
 subjects:
   - kind: ServiceAccount
-    name: default
-roleRef:
-  kind: Role
-  name: pod-reader
-  apiGroup: rbac.authorization.k8s.io
+    name: pubsub-discovery
+    namespace: ns-ws-gateway

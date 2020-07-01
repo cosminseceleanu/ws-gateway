@@ -1,4 +1,14 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -38,7 +48,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Rate of outbound events sent to the user",
       "fieldConfig": {
         "defaults": {
@@ -133,7 +143,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Rate of received outbound events",
       "fieldConfig": {
         "defaults": {
@@ -243,7 +253,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Avg events sent by connection",
       "fieldConfig": {
         "defaults": {
@@ -363,7 +373,7 @@
       "type": "row"
     },
     {
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Active Web Socket connections",
       "fieldConfig": {
         "defaults": {
@@ -630,7 +640,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Top errors count by response status",
       "fieldConfig": {
         "defaults": {
@@ -739,7 +749,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Rate of inbound events across all endpoints",
       "fieldConfig": {
         "defaults": {
@@ -834,7 +844,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Top endpoints by number of incoming inbound events",
       "fieldConfig": {
         "defaults": {
@@ -946,7 +956,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Count of inbound events sent per backend type",
       "fieldConfig": {
         "defaults": {
@@ -1059,7 +1069,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Duration for processing inbound events",
       "fieldConfig": {
         "defaults": {
@@ -1163,7 +1173,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Duration for sending inbound events to backends",
       "fieldConfig": {
         "defaults": {
@@ -1267,7 +1277,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus - Local",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Top backends by events they got",
       "fieldConfig": {
         "defaults": {
@@ -1390,7 +1400,7 @@
             "$__all"
           ]
         },
-        "datasource": "Prometheus - Local",
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "jvm_memory_used_bytes",
         "hide": 0,
         "includeAll": true,

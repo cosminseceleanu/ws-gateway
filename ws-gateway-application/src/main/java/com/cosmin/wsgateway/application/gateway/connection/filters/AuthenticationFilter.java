@@ -1,5 +1,7 @@
 package com.cosmin.wsgateway.application.gateway.connection.filters;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+
 import com.cosmin.wsgateway.application.gateway.authentication.Authenticator;
 import com.cosmin.wsgateway.application.gateway.connection.ConnectionRequest;
 import com.cosmin.wsgateway.application.gateway.exceptions.AuthenticationException;
@@ -20,8 +22,9 @@ public class AuthenticationFilter implements ConnectionFilter {
 
     @Override
     public Mono<ConnectionRequest> filter(Endpoint endpoint, ConnectionRequest request) {
-        log.info("Check auth for endpointPath={} with auth={}",
-                endpoint.getPath(), endpoint.getAuthentication().getClass().getName()
+        log.info("Check auth for {} with {}",
+                keyValue("path", endpoint.getPath()),
+                keyValue("auth", endpoint.getAuthentication().getClass().getName())
         );
 
         return checkers.stream()

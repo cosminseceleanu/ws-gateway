@@ -4,3 +4,12 @@ metadata:
   name: grafana
 data:
   plugins: "grafana-clock-panel,grafana-simple-json-datasource"
+
+  datasources.yml: |
+    apiVersion: 1
+
+    datasources:
+    - name: Loki Default
+      url: http://loki.gateway.info
+    - name: Prometheus Default
+      url: http://gateway-prometheus.ns-gateway-monitoring.svc.cluster.local:9090

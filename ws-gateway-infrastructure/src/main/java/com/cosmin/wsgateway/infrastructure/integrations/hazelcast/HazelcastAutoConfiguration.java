@@ -35,7 +35,11 @@ public class HazelcastAutoConfiguration {
     @Bean
     @Profile("k8s")
     public Config getK8sConfig(GatewayProperties gatewayProperties) {
-        Config config = getConfig();
+        Config config = new Config();
+        config.getNetworkConfig()
+                .setPortAutoIncrement(false)
+                .setPort(PORT);
+        config.setClusterName(CLUSTER_NAME);
         config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         config.getNetworkConfig().getJoin().getKubernetesConfig().setEnabled(true)
                 .setProperty("namespace", gatewayProperties.getKubernetes().getNamespace())
@@ -46,7 +50,7 @@ public class HazelcastAutoConfiguration {
 
     @Bean
     @Profile("!k8s")
-    public Config getConfig() {
+    public Config getDefaultConfig() {
         Config config = new Config();
         config.getNetworkConfig()
                 .setPortAutoIncrement(false)

@@ -1,3 +1,11 @@
+spring:
+  sleuth:
+    messaging:
+      kafka:
+        enabled: false
+        streams:
+          enabled: false
+
 management:
   endpoint:
     health:
@@ -25,3 +33,6 @@ gateway:
   pubsub:
     ignite: false
     hazelcast: true
+    mocked: false
+  persistence:
+    mocked: true

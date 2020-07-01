@@ -1,5 +1,6 @@
 package com.cosmin.wsgateway.api.vertx;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -42,7 +43,7 @@ public class WebSocketServer extends AbstractVerticle {
 
         server.listen(gatewayProperties.getVertx().getGatewayPort(), res -> {
             if (res.succeeded()) {
-                log.info("Web Socket verticle has successfully started!");
+                log.info("Web Socket verticle has successfully started !!!");
             } else {
                 log.error("Web Socket verticle did not started!");
             }
@@ -62,7 +63,9 @@ public class WebSocketServer extends AbstractVerticle {
                 .onErrorStop()
                 .flatMapMany(bridge -> bridge.handle(inboundMessages))
                 .subscribe(msg -> {
-                    log.trace("Send msg={} to user", msg);
+                    if (log.isTraceEnabled()) {
+                        log.trace("Send {} to user", keyValue("msg", msg));
+                    }
                     serverWebSocket.writeTextMessage(msg);
                 });
     }
@@ -115,7 +118,7 @@ public class WebSocketServer extends AbstractVerticle {
             gatewayMetrics.recordDisconnect(connection.getEndpoint());
             processor.onClose();
         });
-        log.debug("Accept WS connection={}", connection.getId());
+        log.debug("Accept WS {}", keyValue("connection", connection.getId()));
         handshakePromise.complete(101);
     }
 
@@ -130,7 +133,7 @@ public class WebSocketServer extends AbstractVerticle {
         if (error instanceof AccessDeniedException) {
             status = FORBIDDEN.value();
         }
-        log.error("Reject WS connection with status={}", status, error);
+        log.error("Reject WS connection with {}", keyValue("status", status), error);
         gatewayMetrics.recordConnectionError(status);
         handshakePromise.complete(status);
     }

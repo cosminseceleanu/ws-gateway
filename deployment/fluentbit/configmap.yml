@@ -84,6 +84,13 @@ data:
         Match            *
         Remove_wildcard  kubernetes_
 
+    [FILTER]
+        Name record_modifier
+        Match *
+        Remove_key kubernetes.annotations
+        Remove_key @version
+        Remove_key @timestamp
+
   output-influxdb.conf: |
     [OUTPUT]
         Name          influxdb

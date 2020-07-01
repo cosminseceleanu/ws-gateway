@@ -1,5 +1,7 @@
 package com.cosmin.wsgateway.api.mappers;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+
 import com.cosmin.wsgateway.api.representation.TerminalExpressionRepresentation;
 import com.cosmin.wsgateway.domain.Expression;
 import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
@@ -80,7 +82,7 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
             );
             return createExpr.apply(representation.getPath(), representation.getValue());
         } catch (JsonProcessingException e) {
-            log.error("error while reading expression={}", name, e);
+            log.error("error while reading {}", keyValue("expression", name));
             throw new IncorrectExpressionException(e);
         }
     }

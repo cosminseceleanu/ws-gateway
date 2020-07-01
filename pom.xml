@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>pom</packaging>
+
 	<modules>
 		<module>ws-gateway-domain</module>
         <module>ws-gateway-api</module>
@@ -25,6 +26,8 @@
 
 		<spring-boot.version>2.2.5.RELEASE</spring-boot.version>
 		<spring.version>5.2.5.RELEASE</spring.version>
+		<spring-cloud.version>2.1.7.RELEASE</spring-cloud.version>
+
 		<lombok.version>1.18.12</lombok.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
@@ -47,12 +50,18 @@
 		<wiremock.version>2.26.3</wiremock.version>
 		<hazelcast.version>4.0.1</hazelcast.version>
 		<hazelcast-kubernetes-version>2.0.1</hazelcast-kubernetes-version>
-		<logback.contrib.version>0.1.5</logback.contrib.version>
 		<logback-classic.version>1.2.3</logback-classic.version>
+		<logstash-logback-encoder.version>6.4</logstash-logback-encoder.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-sleuth</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-actuator</artifactId>
@@ -205,21 +214,15 @@
 			</dependency>
 
 			<dependency>
+				<groupId>net.logstash.logback</groupId>
+				<artifactId>logstash-logback-encoder</artifactId>
+				<version>${logstash-logback-encoder.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback-classic.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>ch.qos.logback.contrib</groupId>
-				<artifactId>logback-jackson</artifactId>
-				<version>${logback.contrib.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>ch.qos.logback.contrib</groupId>
-				<artifactId>logback-json-classic</artifactId>
-				<version>${logback.contrib.version}</version>
 			</dependency>
 
 			<dependency>

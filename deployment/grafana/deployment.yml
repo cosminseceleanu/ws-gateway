@@ -15,6 +15,13 @@ spec:
       labels:
         app: gateway-grafana
     spec:
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: gateway-grafana
+        - name: provisioning
+          configMap:
+            name: grafana
       containers:
         - name: grafana
           image: grafana/grafana:7.0.3-ubuntu
@@ -29,8 +36,19 @@ spec:
           ports:
             - name: default
               containerPort: 3000
+          volumeMounts:
+            - name: storage
+              mountPath: /var/lib/grafana
+            - name: provisioning
+              mountPath: /etc/grafana/provisioning
           env:
-#            - GF_SECURITY_ADMIN_USER
+            - name: GF_SECURITY_ADMIN_USER
+              value: gateway
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana
+                  key: adminPassword
             - name: GF_INSTALL_PLUGINS
               valueFrom:
                 configMapKeyRef:

@@ -21,6 +21,9 @@ spec:
         app: gateway-prometheus
     spec:
       volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: gateway-prometheus
         - name: config-volume
           configMap:
             name: prometheus
@@ -42,3 +45,5 @@ spec:
           volumeMounts:
           - name: config-volume
             mountPath: /etc/prometheus
+          - name: storage
+            mountPath: /prometheus

@@ -16,9 +16,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Component
+@ConditionalOnProperty(prefix = "gateway", name = "persistence.mocked")
 public class InMemoryEndpointRepository implements EndpointRepository {
     private final ConcurrentHashMap<String, Endpoint> storage = new ConcurrentHashMap<>();
 

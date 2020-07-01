@@ -9,6 +9,7 @@
     <logger name="com.cosmin.wsgateway.application.gateway" level="DEBUG"/>
     <logger name="com.cosmin.wsgateway.api" level="DEBUG"/>
     <logger name="org.apache.ignite" level="WARN"/>
+    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug"/>
 
     <springProfile name="prod">
         <logger name="com.cosmin.wsgateway.application.gateway" level="INFO"/>
@@ -17,8 +18,18 @@
     </springProfile>
 
     <springProfile name="k8s">
+        <logger name="com.cosmin.wsgateway" level="INFO"/>
+        <logger name="org.apache.ignite" level="WARN"/>
+
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                    <shortenedClassNameLength>20</shortenedClassNameLength>
+                    <exclude>sun\.reflect\..*\.invoke.*</exclude>
+                    <exclude>net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
                 <includeMdc>true</includeMdc>
             </encoder>
         </appender>

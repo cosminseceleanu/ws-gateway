@@ -24,6 +24,7 @@ spec:
         prometheus.io/port: "8080"
         prometheus.io/path: "/prometheus"
     spec:
+      serviceAccountName: pubsub-discovery
       containers:
         - name: gateway
           image: ws-gateway:1.0.0-alpha
