@@ -52,6 +52,7 @@
 		<hazelcast-kubernetes-version>2.0.1</hazelcast-kubernetes-version>
 		<logback-classic.version>1.2.3</logback-classic.version>
 		<logstash-logback-encoder.version>6.4</logstash-logback-encoder.version>
+		<awaitility.version>4.0.3</awaitility.version>
 	</properties>
 
 	<dependencyManagement>
@@ -264,6 +265,13 @@
 				<groupId>com.github.tomakehurst</groupId>
 				<artifactId>wiremock-jre8</artifactId>
 				<version>${wiremock.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.awaitility</groupId>
+				<artifactId>awaitility</artifactId>
+				<version>${awaitility.version}</version>
 				<scope>test</scope>
 			</dependency>
 

@@ -265,6 +265,22 @@ components:
               default: 8
               nullable: false
               example: 8
+            heartbeatIntervalInSeconds:
+              description: Interval in seconds at which Websocket ping frames are sent
+              type: integer
+              minimum: 5
+              maximum: 60
+              default: 15
+              nullable: false
+              example: 15
+            heartbeatMaxMissingPingFrames:
+              description: Maximum number of Ping frames sent without receiving a Pong frame or any other message before connection is closed
+              type: integer
+              minimum: 1
+              maximum: 10
+              default: 3
+              nullable: false
+              example: 3
         authentication:
           description: Authentification details
           type: object

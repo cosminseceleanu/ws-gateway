@@ -1,5 +1,6 @@
 package com.cosmin.wsgateway.tests.gateway;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -7,9 +8,12 @@ import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
+import com.cosmin.wsgateway.tests.utils.Conditions;
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
+import org.awaitility.Awaitility;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 @Tags.Gateway
@@ -32,9 +36,10 @@ public class OutboundEventsFlowIT extends BaseTestIT {
         connectionsClient.sendOutbound(connectionId, event2);
 
         Then("Gateway client receives msgs via api");
-        await(Duration.ofMillis(9000));
+        Awaitility.await("should receive 2 messages")
+                .atMost(Duration.ofSeconds(15))
+                .until(Conditions.receivedMessages(connection), is(2));
 
-        assertEquals(2, connection.getReceivedMessages().size());
         assertTrue(connection.getReceivedMessages().contains(event1));
         assertTrue(connection.getReceivedMessages().contains(event2));
     }

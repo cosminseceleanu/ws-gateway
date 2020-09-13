@@ -10,6 +10,7 @@ import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.connection.Connection;
 import com.cosmin.wsgateway.application.gateway.connection.ConnectionManager;
 import com.cosmin.wsgateway.application.gateway.connection.ConnectionRequest;
+import com.cosmin.wsgateway.application.gateway.connection.Message;
 import com.cosmin.wsgateway.application.gateway.exceptions.AccessDeniedException;
 import com.cosmin.wsgateway.application.gateway.exceptions.AuthenticationException;
 import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
@@ -17,6 +18,7 @@ import com.cosmin.wsgateway.infrastructure.GatewayProperties;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.ServerWebSocket;
 import java.util.HashMap;
@@ -56,18 +58,8 @@ public class WebSocketServer extends AbstractVerticle {
         serverWebSocket.setHandshake(handshakePromise.future());
 
         var processor = new WebSocketMessageProcessor();
-        Flux<String> inboundMessages = createInboundFlux(processor);
-        connectionManager.connect(request)
-                .doOnSuccess(c -> acceptConnection(serverWebSocket, handshakePromise, processor, c))
-                .doOnError(e -> handleConnectionError(e, handshakePromise))
-                .onErrorStop()
-                .flatMapMany(bridge -> bridge.handle(inboundMessages))
-                .subscribe(msg -> {
-                    if (log.isTraceEnabled()) {
-                        log.trace("Send {} to user", keyValue("msg", msg));
-                    }
-                    serverWebSocket.writeTextMessage(msg);
-                });
+        Flux<Message> inboundMessages = createInboundFlux(processor);
+        doConnect(serverWebSocket, request, handshakePromise, processor, inboundMessages);
     }
 
     private ConnectionRequest createConnectionRequest(ServerWebSocket serverWebSocket) {
@@ -93,10 +85,10 @@ public class WebSocketServer extends AbstractVerticle {
         return map;
     }
 
-    private Flux<String> createInboundFlux(WebSocketMessageProcessor processor) {
+    private Flux<Message> createInboundFlux(WebSocketMessageProcessor processor) {
         return Flux.create(sink -> processor.setListener(new WebSocketMessageListener() {
                 @Override
-                public void onMessage(String message) {
+                public void onMessage(Message message) {
                     sink.next(message);
                 }
 
@@ -107,18 +99,34 @@ public class WebSocketServer extends AbstractVerticle {
             }));
     }
 
+    private void doConnect(ServerWebSocket serverWebSocket, ConnectionRequest request,
+                           Promise<Integer> handshakePromise, WebSocketMessageProcessor processor,
+                           Flux<Message> inboundMessages
+    ) {
+        connectionManager.connect(request)
+                .doOnSuccess(c -> acceptConnection(serverWebSocket, handshakePromise, processor, c))
+                .doOnError(e -> handleConnectionError(e, handshakePromise))
+                .onErrorStop()
+                .flatMapMany(bridge -> bridge.handle(inboundMessages))
+                .subscribe(msg -> writeMessage(serverWebSocket, msg));
+    }
+
     private void acceptConnection(ServerWebSocket serverWebSocket, Promise<Integer> handshakePromise,
                                   WebSocketMessageProcessor processor, Connection connection) {
         gatewayMetrics.recordConnection(connection.getEndpoint());
         serverWebSocket.textMessageHandler(msg -> {
             gatewayMetrics.recordInboundEventReceived(connection.getEndpoint(), connection.getId());
-            processor.onMessage(msg);
+            processor.onMessage(Message.text(msg));
         });
         serverWebSocket.closeHandler(h -> {
             gatewayMetrics.recordDisconnect(connection.getEndpoint());
             processor.onClose();
         });
-        log.debug("Accept WS {}", keyValue("connection", connection.getId()));
+        serverWebSocket.pongHandler(b -> {
+            log.trace("Received pong message {}", keyValue("connectionId", connection.getId()));
+            processor.onMessage(Message.pong());
+        });
+        log.info("Accept gateway WS {}", keyValue("connectionId", connection.getId()));
         handshakePromise.complete(101);
     }
 
@@ -133,16 +141,29 @@ public class WebSocketServer extends AbstractVerticle {
         if (error instanceof AccessDeniedException) {
             status = FORBIDDEN.value();
         }
-        log.error("Reject WS connection with {}", keyValue("status", status), error);
+        log.error("Reject gateway WS connection with {}", keyValue("status", status), error);
         gatewayMetrics.recordConnectionError(status);
         handshakePromise.complete(status);
+    }
+
+    private void writeMessage(ServerWebSocket serverWebSocket, Message msg) {
+        if (log.isTraceEnabled()) {
+            log.trace("Send {} to user", keyValue("msg", msg));
+        }
+        if (msg.isPing()) {
+            serverWebSocket.writePing(Buffer.buffer(msg.getPayload()));
+        } else if (msg.isPoisonPill()) {
+            serverWebSocket.close((short) 409, msg.getPayload());
+        } else {
+            serverWebSocket.writeTextMessage(msg.getPayload());
+        }
     }
 
     @Setter
     private static class WebSocketMessageProcessor {
         private WebSocketMessageListener listener;
 
-        void onMessage(String message) {
+        void onMessage(Message message) {
             listener.onMessage(message);
         }
 
@@ -152,7 +173,7 @@ public class WebSocketServer extends AbstractVerticle {
     }
 
     private interface WebSocketMessageListener {
-        void onMessage(String message);
+        void onMessage(Message message);
 
         void onClose();
     }

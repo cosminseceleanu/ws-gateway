@@ -86,6 +86,14 @@ public class Endpoint {
         return configuration.getFilters();
     }
 
+    public Integer getHeartbeatIntervalInSeconds() {
+        return configuration.getGeneralSettings().getHeartbeatIntervalInSeconds();
+    }
+
+    public Integer getHeartbeatMaxMissingPingFrames() {
+        return configuration.getGeneralSettings().getHeartbeatMaxMissingPingFrames();
+    }
+
     public Boolean matchesPath(String targetPath) {
         return targetPath.matches(path);
     }

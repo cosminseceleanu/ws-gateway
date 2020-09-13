@@ -18,7 +18,7 @@ public class Fixtures {
         var configuration = EndpointConfiguration.builder()
                 .authentication(new Authentication.None())
                 .filters(Collections.emptySet())
-                .generalSettings(defaultGeneralSettings())
+                .generalSettings(GeneralSettings.defaultSettings())
                 .routes(Set.of(
                         getDefaultRoute(),
                         getConnectRoute(),
@@ -51,12 +51,6 @@ public class Fixtures {
                         defaultHttpSettings()
                 ).build()
         );
-    }
-
-    public static GeneralSettings defaultGeneralSettings() {
-        return GeneralSettings.builder()
-                .backendParallelism(8)
-                .build();
     }
 
     public static HttpSettings defaultHttpSettings() {

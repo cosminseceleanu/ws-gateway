@@ -5,8 +5,10 @@ import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
+import com.cosmin.wsgateway.tests.utils.Conditions;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,13 +21,15 @@ import java.util.UUID;
 
 import static com.cosmin.wsgateway.tests.common.EndpointFixtures.createRouteWithHttpBackend;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 
 @Tags.Gateway
 public class HttpBackendsIT extends BaseTestIT {
     public static WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
     private static String backendUrl;
 
-    private Set<RouteRepresentation> httpRoutes = Set.of(
+    private final Set<RouteRepresentation> httpRoutes = Set.of(
             createRouteWithHttpBackend(RouteRepresentation.Type.CONNECT, backendUrl + "/connect"),
             createRouteWithHttpBackend(RouteRepresentation.Type.DEFAULT, backendUrl + "/default"),
             createRouteWithHttpBackend(RouteRepresentation.Type.DISCONNECT, backendUrl + "/disconnect")
@@ -66,9 +70,10 @@ public class HttpBackendsIT extends BaseTestIT {
 
         When("A WS connection is created with the gateway");
         var connection = webSocketClient.connect("/http-backend/test-1", connectionId);
-        await(Duration.ofMillis(1000));
         connection.disconnect();
-        await(Duration.ofMillis(1000));
+        Awaitility.await("backends should receive messages")
+                .atMost(Duration.ofSeconds(6))
+                .until(Conditions.receivedRequest(wiremock), is(2));
 
         Then("Http backend for connect and disconnect routes is called with connection events");
         wiremock.verify(1, postRequestedFor(urlPathEqualTo("/connect"))
@@ -98,7 +103,9 @@ public class HttpBackendsIT extends BaseTestIT {
         connection.send(expectedPayload);
 
 
-        await(Duration.ofMillis(1500));
+        Awaitility.await("backends should receive messages")
+                .atMost(Duration.ofSeconds(15))
+                .until(Conditions.receivedRequest(wiremock), greaterThan(2));
 
         Then("Http backend is called with user events");
         wiremock.verify(2, postRequestedFor(urlPathEqualTo("/default"))
