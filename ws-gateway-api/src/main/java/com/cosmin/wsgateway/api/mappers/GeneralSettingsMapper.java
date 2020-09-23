@@ -24,7 +24,7 @@ public class GeneralSettingsMapper implements RepresentationMapper<GeneralSettin
     @Override
     public GeneralSettings toModel(GeneralSettingsRepresentation representation) {
         if (representation == null) {
-            return GeneralSettings.defaultSettings();
+            return GeneralSettings.ofDefaults();
         }
 
         return mapper.toSettings(representation);

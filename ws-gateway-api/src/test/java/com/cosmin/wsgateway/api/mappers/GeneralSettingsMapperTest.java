@@ -30,14 +30,14 @@ class GeneralSettingsMapperTest {
     public void testToModel_nullRepresentation_shouldReturnDefaultModel() {
         var result = subject.toModel(null);
 
-        var expected = GeneralSettings.defaultSettings();
+        var expected = GeneralSettings.ofDefaults();
 
         assertEquals(expected, result);
     }
 
     @Test
     public void testToRepresentation_defaultModel_shouldReturnRepresentation() {
-        var result = subject.toRepresentation(GeneralSettings.defaultSettings());
+        var result = subject.toRepresentation(GeneralSettings.ofDefaults());
 
         var expected = GeneralSettingsRepresentation.builder()
                 .backendParallelism(GeneralSettingsRepresentation.DEFAULT_BACKEND_PARALLELISM)

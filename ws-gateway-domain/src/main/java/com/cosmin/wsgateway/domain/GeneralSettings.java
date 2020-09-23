@@ -9,6 +9,11 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class GeneralSettings {
+
+    private static final int DEFAULT_BACKEND_PARALLELISM = 8;
+    private static final int DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS = 15;
+    private static final int DEFAULT_HEARTBEAT_MAX_MISSING_PING_FRAMES = 3;
+
     @NotNull
     @Min(1)
     @Max(32)
@@ -24,11 +29,11 @@ public class GeneralSettings {
     @NotNull
     private Integer heartbeatMaxMissingPingFrames;
 
-    public static GeneralSettings defaultSettings() {
+    public static GeneralSettings ofDefaults() {
         return GeneralSettings.builder()
-                .backendParallelism(8)
-                .heartbeatIntervalInSeconds(15)
-                .heartbeatMaxMissingPingFrames(3)
+                .backendParallelism(DEFAULT_BACKEND_PARALLELISM)
+                .heartbeatIntervalInSeconds(DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS)
+                .heartbeatMaxMissingPingFrames(DEFAULT_HEARTBEAT_MAX_MISSING_PING_FRAMES)
                 .build();
     }
 }

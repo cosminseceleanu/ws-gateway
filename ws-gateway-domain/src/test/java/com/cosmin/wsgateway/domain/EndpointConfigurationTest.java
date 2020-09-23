@@ -34,7 +34,7 @@ class EndpointConfigurationTest extends BaseTest {
     @Test
     public void testInvalid_whenGeneralSettingsAreInvalid() {
         var subject = Fixtures.defaultEndpoint().getConfiguration();
-        subject = subject.withGeneralSettings(GeneralSettings.defaultSettings().toBuilder().backendParallelism(100).build());
+        subject = subject.withGeneralSettings(GeneralSettings.ofDefaults().toBuilder().backendParallelism(100).build());
 
         var constraints = validator.validate(subject);
 

@@ -18,7 +18,7 @@ public class Fixtures {
         var configuration = EndpointConfiguration.builder()
                 .authentication(new Authentication.None())
                 .filters(Collections.emptySet())
-                .generalSettings(GeneralSettings.defaultSettings())
+                .generalSettings(GeneralSettings.ofDefaults())
                 .routes(Set.of(
                         getDefaultRoute(),
                         getConnectRoute(),

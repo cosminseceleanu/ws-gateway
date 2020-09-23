@@ -17,8 +17,7 @@ public class TransformMessageStage implements Function<Flux<Message>, Flux<Inbou
 
     @Override
     public Flux<InboundEvent> apply(Flux<Message> messageFlux) {
-        return messageFlux.filter(Predicate.not(Message::isHeartbeat))
-                .map(Message::getPayload)
+        return messageFlux.map(Message::getPayload)
                 .map(msg -> new UserMessage(connectionId, transformer.toPayload(msg, Map.class), msg))
                 .ofType(InboundEvent.class);
     }

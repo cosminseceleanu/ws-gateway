@@ -32,4 +32,11 @@ public class HttpBackend implements Backend<HttpSettings> {
     public Type type() {
         return Type.HTTP;
     }
+
+    public static Backend<HttpSettings> ofDefaults(String endpoint) {
+        return HttpBackend.builder()
+                .settings(HttpSettings.ofDefaults())
+                .destination(endpoint)
+                .build();
+    }
 }

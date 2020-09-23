@@ -3,11 +3,13 @@ package com.cosmin.wsgateway.domain.events;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.Route;
 import java.util.Map;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @RequiredArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class Connected implements InboundEvent {
     private final String connectionId;
 

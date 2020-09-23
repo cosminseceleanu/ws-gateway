@@ -12,6 +12,9 @@ import lombok.Value;
 @Value
 @Builder
 public class KafkaSettings implements BackendSettings {
+    private static final int DEFAULT_RETRIES_NR = 1;
+    private static final Ack DEFAULT_ACK = Ack.LEADER;
+
     @NotNull
     private final String bootstrapServers;
 
@@ -30,5 +33,13 @@ public class KafkaSettings implements BackendSettings {
         ALL("all");
 
         private final String kafkaValue;
+    }
+
+    public static KafkaSettings ofDefaults(String bootstrapServers) {
+        return KafkaSettings.builder()
+                .acks(DEFAULT_ACK)
+                .bootstrapServers(bootstrapServers)
+                .retriesNr(DEFAULT_RETRIES_NR)
+                .build();
     }
 }

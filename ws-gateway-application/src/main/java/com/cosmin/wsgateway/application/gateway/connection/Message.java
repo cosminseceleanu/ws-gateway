@@ -3,10 +3,12 @@ package com.cosmin.wsgateway.application.gateway.connection;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class Message {
     private final String payload;
     private final Type type;
@@ -40,6 +42,10 @@ public class Message {
 
     public boolean isPing() {
         return type == Type.PING;
+    }
+
+    public boolean isText() {
+        return type == Type.TEXT;
     }
 
     public boolean isPong() {

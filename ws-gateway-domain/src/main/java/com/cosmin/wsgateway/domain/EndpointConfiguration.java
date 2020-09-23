@@ -42,6 +42,15 @@ public class EndpointConfiguration {
     @EqualsAndHashCode.Exclude
     private final LocalDateTime createdAt = LocalDateTime.now();
 
+    public static EndpointConfiguration ofRoutes(Set<Route> routes) {
+        return EndpointConfiguration.builder()
+                .authentication(new Authentication.None())
+                .generalSettings(GeneralSettings.ofDefaults())
+                .filters(Collections.emptySet())
+                .routes(routes)
+                .build();
+    }
+
     public Set<Route> getRoutesByType(Route.Type type) {
         return routes.stream()
                 .filter(r -> r.getType().equals(type))

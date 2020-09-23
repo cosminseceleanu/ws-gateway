@@ -5,6 +5,7 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.connection.Connection;
+import com.cosmin.wsgateway.application.gateway.connection.events.BackendErrorEvent;
 import com.cosmin.wsgateway.application.gateway.connector.BackendConnector;
 import com.cosmin.wsgateway.application.gateway.connector.ConnectorResolver;
 import com.cosmin.wsgateway.domain.Backend;
@@ -54,7 +55,9 @@ public class SendEventToBackendsStage implements Function<Flux<InboundEvent>, Fl
                 pair.doSendEvent(inboundEvent),
                 context.getEndpoint(),
                 Map.of("backend.type", pair.backend.type().name(), "backend.destination", pair.backend.destination())
-        ).doOnError(e -> gatewayMetrics.recordBackendError(context.getEndpoint(), pair.backend, context.getId()));
+        )
+                .doOnError(e -> gatewayMetrics.recordBackendError(context.getEndpoint(), pair.backend, context.getId()))
+                .onErrorResume(e -> Mono.just(BackendErrorEvent.of(inboundEvent, e)));
     }
 
     @RequiredArgsConstructor

@@ -12,6 +12,10 @@ import lombok.Value;
 @Value
 @Builder
 public class HttpSettings implements BackendSettings {
+    private static final Map<String, String> DEFAULT_ADDITIONAL_HEADERS = Map.of();
+    private static final int READ_TIMEOUT_IN_MILLIS = 1500;
+    private static final int DEFAULT_CONNECT_TIMEOUT_IN_MILLIS = 200;
+
     @Size(max = 255)
     @NotNull
     private final Map<String, String> additionalHeaders;
@@ -26,11 +30,11 @@ public class HttpSettings implements BackendSettings {
     @NotNull
     private final Integer connectTimeoutInMillis;
 
-    public static HttpSettings defaultSettings() {
+    public static HttpSettings ofDefaults() {
         return HttpSettings.builder()
-                .additionalHeaders(Map.of())
-                .readTimeoutInMillis(1500)
-                .readTimeoutInMillis(200)
+                .additionalHeaders(DEFAULT_ADDITIONAL_HEADERS)
+                .readTimeoutInMillis(READ_TIMEOUT_IN_MILLIS)
+                .connectTimeoutInMillis(DEFAULT_CONNECT_TIMEOUT_IN_MILLIS)
                 .build();
     }
 }
