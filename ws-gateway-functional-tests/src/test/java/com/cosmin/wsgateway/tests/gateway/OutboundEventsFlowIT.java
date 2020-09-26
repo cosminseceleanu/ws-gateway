@@ -23,19 +23,23 @@ public class OutboundEventsFlowIT extends BaseTestIT {
         Given("an websocket connection");
         var connectionId = UUID.randomUUID().toString();
         var event1 = JsonUtils.toJson(Map.of("foo", "bar"));
+        var event2 = JsonUtils.toJson(List.of("foo", "bar2"));
 
         var endpoint = EndpointFixtures.getRepresentation("/outbound-events/test-1");
         endpointsClient.createAndAssert(endpoint);
         var connection = webSocketClient.connect(endpoint.getPath(), connectionId);
+        Awaitility.await().during(Duration.ofMillis(200)).until(() -> true);
 
         When("Connections outbound api is called");
         connectionsClient.sendEvent(connectionId, event1);
+        connectionsClient.sendEvent(connectionId, event2);
 
         Then("Gateway client receives msgs via api");
-        Awaitility.await("should receive messages")
+        Awaitility.await("should receive 2 messages")
                 .atMost(Duration.ofSeconds(20))
-                .until(Conditions.receivedMessages(connection), is(1));
+                .until(Conditions.receivedMessages(connection), is(2));
 
         assertTrue(connection.getReceivedMessages().contains(event1));
+        assertTrue(connection.getReceivedMessages().contains(event2));
     }
 }

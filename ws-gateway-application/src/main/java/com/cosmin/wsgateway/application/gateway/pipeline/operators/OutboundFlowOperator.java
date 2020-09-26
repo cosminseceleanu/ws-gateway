@@ -5,7 +5,6 @@ import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.application.gateway.connection.Connection;
 import com.cosmin.wsgateway.domain.Event;
 import com.cosmin.wsgateway.domain.events.TopicMessage;
-import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,10 @@ public class OutboundFlowOperator implements Function<Flux<String>, Flux<Event>>
                 .publishOn(context.getScheduler())
                 .transform(toOutboundEventOperator())
                 .transform(Operators.logEventOperator())
-                .transform(onErrorContinueOperator());
+                .onErrorContinue(Exception.class, (e, o) -> {
+                    gatewayMetrics.recordError(e, context.getConnectionId());
+                    log.error(e.getMessage(), e);
+                });
     }
 
     private Function<Flux<String>, Flux<Event>> toOutboundEventOperator() {
@@ -34,12 +36,5 @@ public class OutboundFlowOperator implements Function<Flux<String>, Flux<Event>>
                     gatewayMetrics.recordOutboundEventReceived(context.getEndpoint(), context.getConnectionId());
                 })
                 .map(msg -> new TopicMessage(context.getConnectionId(), transformer.toPayload(msg, Object.class)));
-    }
-
-    private <T extends Event> Function<Flux<T>, Flux<T>> onErrorContinueOperator() {
-        return flux -> flux.onErrorContinue(Exception.class, (e, o) -> {
-            gatewayMetrics.recordError(e, context.getConnectionId());
-            log.error(e.getMessage(), e);
-        });
     }
 }

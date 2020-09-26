@@ -58,7 +58,12 @@ public class Connection {
     }
 
     public Flux<Message> handle(Flux<Message> messages) {
-        var subscription = pubSub.subscribe(String.format(OUTBOUND_TOPIC_PATTERN, context.getConnectionId()));
+        logTraceIfEnabled(() -> {
+            log.trace("Subscribe for connection {} topic={}",
+                    keyValue("connectionId", getId()), context.getOutboundTopic());
+        });
+
+        var subscription = pubSub.subscribe(context.getOutboundTopic());
 
         return messages
                 .publishOn(context.getScheduler())
@@ -71,15 +76,19 @@ public class Connection {
     }
 
     private void onConnectionClosed(SignalType signalType, PubSub.Subscription subscription) {
-        log.trace("Unsubscribe for connection {} signalType={}", keyValue("connectionId", getId()), signalType);
+        logTraceIfEnabled(() -> {
+            log.trace("Unsubscribe for connection {} signalType={}", keyValue("connectionId", getId()), signalType);
+        });
         pubSub.unsubscribe(subscription);
-        log.trace("Mark connection {} as closed on signalType={}", keyValue("connectionId", getId()), signalType);
+        logTraceIfEnabled(() -> {
+            log.trace("Mark connection {} as closed on signalType={}", keyValue("connectionId", getId()), signalType);
+        });
         isClosed.compareAndSet(false, true);
     }
 
     private Function<Flux<Message>, Flux<Message>> resetHeartbeatOperator() {
         return flux -> flux
-                .doOnNext(m -> log.trace("Reset heartbeat on msg={}", m))
+                .doOnNext(m -> logTraceIfEnabled(() -> log.trace("Reset heartbeat on msg={}", m)))
                 .doOnNext(m -> missedPings.reset())
                 .filter(Predicate.not(Message::isHeartbeat));
     }
@@ -87,6 +96,12 @@ public class Connection {
     private void onError(Throwable e, Object o) {
         gatewayMetrics.recordError(e, context.getConnectionId());
         log.error(e.getMessage(), e);
+    }
+
+    private void logTraceIfEnabled(Runnable doLog) {
+        if (log.isTraceEnabled()) {
+            doLog.run();
+        }
     }
 
     private Function<Flux<Message>, Flux<Message>> processMessagesOperator(Flux<String> outboundFlux) {
@@ -103,10 +118,12 @@ public class Connection {
                 .map(l -> Message.ping())
                 .takeUntil(m -> isClosed.get())
                 .filter(m -> !isClosed.get())
-                .doOnNext(m -> log.trace("Send ping message"))
+                .doOnNext(m -> logTraceIfEnabled(() -> log.trace("Send ping message")))
                 .doOnNext(msg -> missedPings.increment())
                 .map(this::checkHeartbeat)
-                .doFinally(signalType -> log.trace("Heartbeat terminated on signalType={}", signalType));
+                .doFinally(signalType -> logTraceIfEnabled(() -> {
+                    log.trace("Heartbeat terminated on signalType={}", signalType);
+                }));
 
         return flux -> flux.mergeWith(heartbeatFlux);
     }
