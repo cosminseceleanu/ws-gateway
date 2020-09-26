@@ -137,11 +137,6 @@ public class WebSocketClient {
         private Queue<String> receivedMessages;
 
         @Override
-        public CompletionStage<?> onPing(WebSocket webSocket, ByteBuffer message) {
-            return null;
-        }
-
-        @Override
         public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
             webSocket.request(1);
             return CompletableFuture.completedFuture(data)

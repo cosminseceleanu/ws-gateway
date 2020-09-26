@@ -36,7 +36,7 @@ public class OutboundEventsFlowIT extends BaseTestIT {
 
         Then("Gateway client receives msgs via api");
         Awaitility.await("should receive 2 messages")
-                .atMost(Duration.ofSeconds(15))
+                .atMost(Duration.ofSeconds(20))
                 .until(Conditions.receivedMessages(connection), is(2));
 
         assertTrue(connection.getReceivedMessages().contains(event1));
