@@ -7,6 +7,7 @@ import static com.cosmin.wsgateway.api.representation.RouteRepresentation.Type.D
 import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
 import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
 import com.cosmin.wsgateway.api.representation.FilterRepresentation;
+import com.cosmin.wsgateway.api.representation.GeneralSettingsRepresentation;
 import com.cosmin.wsgateway.api.representation.HttpBackendRepresentation;
 import com.cosmin.wsgateway.api.representation.KafkaBackendRepresentation;
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
@@ -38,6 +39,7 @@ public final class EndpointFixtures {
                         createEmptyRoute("Disconnect", DISCONNECT),
                         createEmptyRoute("Default", DEFAULT)
                 ))
+                .generalSettings(new GeneralSettingsRepresentation())
                 .filters(new FilterRepresentation())
                 .build();
     }

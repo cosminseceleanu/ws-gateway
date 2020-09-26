@@ -8,6 +8,7 @@ import com.cosmin.wsgateway.tests.common.JsonUtils;
 import com.cosmin.wsgateway.tests.utils.Conditions;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import java.util.List;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,7 +27,7 @@ import static org.hamcrest.Matchers.is;
 
 @Tags.Gateway
 public class HttpBackendsIT extends BaseTestIT {
-    public static WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
+    private static final WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
     private static String backendUrl;
 
     private final Set<RouteRepresentation> httpRoutes = Set.of(

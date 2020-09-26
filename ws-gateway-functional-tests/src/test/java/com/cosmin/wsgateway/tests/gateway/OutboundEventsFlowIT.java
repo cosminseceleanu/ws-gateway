@@ -1,7 +1,6 @@
 package com.cosmin.wsgateway.tests.gateway;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cosmin.wsgateway.tests.BaseTestIT;
@@ -10,10 +9,10 @@ import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
 import com.cosmin.wsgateway.tests.utils.Conditions;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.awaitility.Awaitility;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 @Tags.Gateway
@@ -24,7 +23,7 @@ public class OutboundEventsFlowIT extends BaseTestIT {
         Given("an websocket connection");
         var connectionId = UUID.randomUUID().toString();
         var event1 = JsonUtils.toJson(Map.of("foo", "bar"));
-        var event2 = JsonUtils.toJson(Map.of("foo", "bar2"));
+        var event2 = JsonUtils.toJson(List.of("foo", "bar2"));
 
         var endpoint = EndpointFixtures.getRepresentation("/outbound-events/test-1");
         endpointsClient.createAndAssert(endpoint);

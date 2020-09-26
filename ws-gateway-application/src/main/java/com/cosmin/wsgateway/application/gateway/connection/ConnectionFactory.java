@@ -4,7 +4,7 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.PubSub;
-import com.cosmin.wsgateway.application.gateway.pipeline.StagesProvider;
+import com.cosmin.wsgateway.application.gateway.pipeline.operators.Operators;
 import com.cosmin.wsgateway.domain.Endpoint;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ConnectionFactory {
     private final PubSub pubSub;
-    private final StagesProvider stagesProvider;
+    private final Operators operators;
     private final Environment environment;
     private final GatewayMetrics gatewayMetrics;
 
@@ -32,7 +32,7 @@ public class ConnectionFactory {
                 keyValue("path", endpoint.getPath())
         );
 
-        return new Connection(pubSub, context, gatewayMetrics, stagesProvider);
+        return new Connection(pubSub, context, operators, gatewayMetrics);
     }
 
     private String getConnectionId(ConnectionRequest request) {

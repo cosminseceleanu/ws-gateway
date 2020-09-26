@@ -1,6 +1,5 @@
 package com.cosmin.wsgateway.application.gateway.connection;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -10,31 +9,35 @@ import static org.mockito.Mockito.when;
 import com.cosmin.wsgateway.application.Fixtures;
 import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
 import com.cosmin.wsgateway.application.gateway.PubSub;
-import com.cosmin.wsgateway.application.gateway.pipeline.StagesProvider;
+import com.cosmin.wsgateway.application.gateway.pipeline.operators.Operators;
 import com.cosmin.wsgateway.domain.Endpoint;
+import com.cosmin.wsgateway.domain.Event;
 import com.cosmin.wsgateway.domain.GeneralSettings;
-import com.cosmin.wsgateway.domain.events.InboundEvent;
 import com.cosmin.wsgateway.domain.events.OutboundEvent;
-import com.cosmin.wsgateway.domain.events.TopicMessage;
 import com.cosmin.wsgateway.domain.events.UserMessage;
 import java.time.Duration;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import reactor.test.publisher.TestPublisher;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ConnectionTest {
 
-    public static final String CONNECTION_ID = "id";
+    private static final String CONNECTION_ID = "id";
+
     @Mock
     private PubSub pubSub;
 
@@ -42,7 +45,7 @@ class ConnectionTest {
     private GatewayMetrics gatewayMetrics;
 
     @Mock
-    private StagesProvider stagesProvider;
+    private Operators operators;
 
     @Mock
     private PubSub.Subscription subscription;
@@ -51,34 +54,32 @@ class ConnectionTest {
 
     private Connection subject;
 
+    private final Function<Flux<Message>, Flux<Event>> inboundFlowOperator = f -> f.map(m -> new UserMessage(CONNECTION_ID, m.getPayload(), m.getPayload()));
+
+    private final Function<Flux<String>, Flux<Event>> outboundFlowOperator = f -> f.map(MockOutboundEvent::of);
+
+    private final Function<Flux<Event>, Flux<Message>> sendToUserOperator = f -> f.map(e -> Message.text(e.payload().toString()));
+
     @BeforeEach
     void setUp() {
-        when(stagesProvider.appendConnectionLifecyleEventsStage(anyString())).thenReturn(Function.identity());
-        when(stagesProvider.transformMessageStage(anyString()))
-                .thenReturn(f -> f.map(msg -> new UserMessage(CONNECTION_ID, msg.getPayload(), msg.getPayload())));
-
-        when(stagesProvider.sendEventToBackendsStage(any())).thenReturn(f -> f.map(MockOutboundEvent::of));
-        when(stagesProvider.transformReceivedOutboundEventsStage(any()))
-                .thenReturn(f -> f.map(msg -> new TopicMessage(CONNECTION_ID, msg)));
-        when(stagesProvider.sendEventToUserStage(any())).thenReturn(f -> f.map(o -> Message.text(o.payload().toString())));
+        when(operators.inboundFlow(any())).thenReturn(inboundFlowOperator);
+        when(operators.outboundFlow(any())).thenReturn(outboundFlowOperator);
+        when(operators.sendToUser(any())).thenReturn(sendToUserOperator);
 
         when(subscription.getEvents()).thenReturn(Flux.empty());
         when(pubSub.subscribe(anyString())).thenReturn(subscription);
 
         Connection.Context context = Connection.Context.newInstance(CONNECTION_ID, getEndpoint());
-        subject = new Connection(pubSub, context, gatewayMetrics, stagesProvider);
+        subject = new Connection(pubSub, context, operators, gatewayMetrics);
     }
 
     @Test
     public void testHandle_whenConnectionReceiveUserMessages_shouldForwardEventToBackends() {
-        var testPublisher = TestPublisher.<Message>create();
-        var result = subject.handle(testPublisher.flux());
+        var result = subject.handle(Flux.just(Message.text("m1"), Message.text("m2")));
 
         StepVerifier.create(result)
-                .then(() -> testPublisher.next(Message.text("m1"), Message.text("m2")))
                 .expectNext(Message.text("m1"))
                 .expectNext(Message.text("m2"))
-                .then(testPublisher::complete)
                 .expectComplete()
                 .verify();
     }
@@ -104,6 +105,29 @@ class ConnectionTest {
     }
 
     @Test
+    public void testHandle_whenFluxIsCompleted_shouldMarkConnectionAsClosed() {
+        var result = subject.handle(Flux.empty());
+
+        StepVerifier.create(result).verifyComplete();
+
+        Assertions.assertTrue(subject.isClosed());
+    }
+
+    @Test
+    public void testHandle_onError_shouldCompleteSuccessful() {
+        var testPublisher = TestPublisher.<Message>create();
+
+        var result = subject.handle(testPublisher.flux());
+
+        StepVerifier.create(result)
+                .then(() -> testPublisher.error(new RuntimeException("test")))
+                .expectComplete()
+                .verify();
+
+        verify(gatewayMetrics, times(1)).recordError(any(), any());
+    }
+
+    @Test
     public void testHandle_whenConnectionReceiveOutboundMessages_shouldBeSentToUser() {
         var testPublisher = TestPublisher.<Message>create();
 
@@ -119,46 +143,10 @@ class ConnectionTest {
     }
 
     @Test
-    public void testHandle_whenOutboundMessageFailsToBeProcessed_shouldContinueTheProcessing() {
-        var inboundPublisher = TestPublisher.<Message>create();
-        var outboundPublisher = TestPublisher.<String>create();
-
-        when(stagesProvider.transformReceivedOutboundEventsStage(any()))
-                .thenReturn(f -> f.map(msg -> new TopicMessage(CONNECTION_ID, msg)))
-                .thenThrow(new RuntimeException("Test"));
-
-        when(subscription.getEvents()).thenReturn(outboundPublisher.flux());
-
-        var result = subject.handle(inboundPublisher.flux());
-
-        StepVerifier.create(result)
-                .then(() -> outboundPublisher.next("o1"))
-                .expectNext(Message.text("o1"))
-                .then(() -> outboundPublisher.error(new RuntimeException("aaaa")))
-//                .then(() -> outboundPublisher.next("o2")) fix this
-//                .expectNext(Message.text("o2"))
-                .then(inboundPublisher::complete)
-                .expectComplete()
-                .verify();
-    }
-
-    @Test
-    public void testHandle_outboundMessages_shouldBeSentToUser() {
-        when(stagesProvider.sendEventToBackendsStage(any())).thenReturn(f -> f.map(MockOutboundEvent::of));
-
-        var result = subject.handle(Flux.just(Message.text("i1")));
-
-        StepVerifier.create(result)
-                .expectNext(Message.text("i1"))
-                .expectComplete()
-                .verify();
-    }
-
-    @Test
     public void testHandle_whenNoMessageIsReceived_shouldCloseConnection() {
         Endpoint endpoint = getEndpoint();
         Connection.Context context = Connection.Context.newInstance(CONNECTION_ID, endpoint);
-        subject = new Connection(pubSub, context, gatewayMetrics, stagesProvider);
+        subject = new Connection(pubSub, context, operators, gatewayMetrics);
         var testPublisher = TestPublisher.<Message>create();
 
         var result = subject.handle(testPublisher.flux());
@@ -175,10 +163,10 @@ class ConnectionTest {
     }
 
     @Test
-    public void testHandle_whenMessagesAreReceived_shouldKeepAliveConnection() {
+    public void testHandle_whenMessagesAreReceived_shouldKeepConnectionAlive() {
         Endpoint endpoint = getEndpoint();
         Connection.Context context = Connection.Context.newInstance(CONNECTION_ID, endpoint);
-        subject = new Connection(pubSub, context, gatewayMetrics, stagesProvider);
+        subject = new Connection(pubSub, context, operators, gatewayMetrics);
         var testPublisher = TestPublisher.<Message>create();
 
         var result = subject.handle(testPublisher.flux());
@@ -186,16 +174,16 @@ class ConnectionTest {
         StepVerifier.create(result)
                 .thenAwait(Duration.ofSeconds(1))
                 .expectNext(Message.ping())
-                .then(() -> testPublisher.next(Message.text("text")))
-                .expectNext(Message.text("text"))
+                .then(() -> testPublisher.next(Message.text("text1"), Message.text("text2")))
+                .expectNext(Message.text("text1"))
+                .expectNext(Message.text("text2"))
                 .thenAwait(Duration.ofSeconds(1))
                 .expectNext(Message.ping())
                 .then(() -> testPublisher.next(Message.pong()))
-                .expectNext(Message.ping())
-                .thenAwait(Duration.ofSeconds(1))
-                .expectNext(Message.ping())
-                .thenCancel()
-                .verify();
+                .then(testPublisher::complete)
+                .verifyComplete();
+
+        Assertions.assertEquals(0, subject.getMissedPings());
     }
 
     private Endpoint getEndpoint() {
@@ -213,16 +201,16 @@ class ConnectionTest {
     @ToString
     private static class MockOutboundEvent implements OutboundEvent {
 
-        private final InboundEvent event;
+        private final String rawMessage;
 
         @Override
         public String connectionId() {
-            return event.connectionId();
+            return CONNECTION_ID;
         }
 
         @Override
         public Object payload() {
-            return event.payload();
+            return rawMessage;
         }
     }
 }

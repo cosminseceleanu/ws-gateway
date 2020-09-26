@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.application.gateway.pipeline;
+package com.cosmin.wsgateway.application.gateway.pipeline.operators;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -34,7 +34,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class SendEventToBackendsStageTest {
+class SendToBackendsOperatorTest {
     @Mock
     private ConnectorResolver connectorResolver;
 
@@ -53,7 +53,7 @@ class SendEventToBackendsStageTest {
     @Mock
     private GatewayMetrics.Stopwatch stopwatch;
 
-    private SendEventToBackendsStage subject;
+    private SendToBackendsOperator subject;
 
 
     @BeforeEach
@@ -61,7 +61,7 @@ class SendEventToBackendsStageTest {
         when(gatewayMetrics.measureMono(any(), any(), any(), anyMap())).thenAnswer(a -> a.getArgument(1));
         when(gatewayMetrics.startTimer(any(), any())).thenReturn(stopwatch);
 
-        subject = SendEventToBackendsStage.newInstance(connectorResolver, context, gatewayMetrics);
+        subject = new SendToBackendsOperator(connectorResolver, context, gatewayMetrics);
     }
 
     @Test
@@ -84,7 +84,7 @@ class SendEventToBackendsStageTest {
         var result = subject.apply(Flux.fromIterable(List.of(event)));
 
         StepVerifier.create(result)
-                .expectNextCount(0)
+                .expectNextCount(2)
                 .verifyComplete();
 
         verify(httpConnector, times(1)).sendEvent(event, httpBackend);
@@ -104,7 +104,7 @@ class SendEventToBackendsStageTest {
         )));
 
         StepVerifier.create(result)
-                .expectNextCount(0)
+                .expectNextCount(2)
                 .verifyComplete();
 
         verify(stopwatch, times(2)).stop();
@@ -122,7 +122,7 @@ class SendEventToBackendsStageTest {
         )));
 
         StepVerifier.create(result)
-                .expectNextCount(0)
+                .expectNextCount(1)
                 .verifyComplete();
         verify(gatewayMetrics, times(1)).recordBackendError(any(), any(), any());
     }

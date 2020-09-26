@@ -87,16 +87,16 @@ public class WebSocketServer extends AbstractVerticle {
 
     private Flux<Message> createInboundFlux(WebSocketMessageProcessor processor) {
         return Flux.create(sink -> processor.setListener(new WebSocketMessageListener() {
-                @Override
-                public void onMessage(Message message) {
-                    sink.next(message);
-                }
+            @Override
+            public void onMessage(Message message) {
+                sink.next(message);
+            }
 
-                @Override
-                public void onClose() {
-                    sink.complete();
-                }
-            }));
+            @Override
+            public void onClose() {
+                sink.complete();
+            }
+        }));
     }
 
     private void doConnect(ServerWebSocket serverWebSocket, ConnectionRequest request,
@@ -108,7 +108,9 @@ public class WebSocketServer extends AbstractVerticle {
                 .doOnError(e -> handleConnectionError(e, handshakePromise))
                 .onErrorStop()
                 .flatMapMany(bridge -> bridge.handle(inboundMessages))
-                .subscribe(msg -> writeMessage(serverWebSocket, msg));
+                .subscribe(msg ->
+                    writeMessage(serverWebSocket, msg), e ->
+                    serverWebSocket.close((short) INTERNAL_SERVER_ERROR.value(), "Unknown error"));
     }
 
     private void acceptConnection(ServerWebSocket serverWebSocket, Promise<Integer> handshakePromise,

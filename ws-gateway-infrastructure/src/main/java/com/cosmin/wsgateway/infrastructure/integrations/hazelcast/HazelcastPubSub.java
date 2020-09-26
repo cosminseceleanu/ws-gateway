@@ -44,6 +44,7 @@ class HazelcastPubSub implements PubSub {
                     .map(hazelcastInstance::getTopic)
                     .ifPresent(topic -> {
                         topic.removeMessageListener(UUID.fromString(subscription.getId()));
+                        topicBySubscriptionId.remove(subscription.getId());
                     });
         });
     }
