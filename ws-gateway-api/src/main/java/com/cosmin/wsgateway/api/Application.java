@@ -32,8 +32,8 @@ public class Application {
 
     @PostConstruct
     public void startVertx() {
-        var deplomentOptions = new DeploymentOptions();
-        deplomentOptions.setInstances(gatewayProperties.getVertx().getGatewayVerticleInstances());
-        vertx.deployVerticle(verticleFactory::createWS, deplomentOptions);
+        var deploymentOptions = new DeploymentOptions();
+        deploymentOptions.setInstances(gatewayProperties.getVertx().getGatewayVerticleInstances());
+        vertx.deployVerticle(verticleFactory::createWS, deploymentOptions);
     }
 }
