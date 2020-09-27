@@ -6,8 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 public class HttpLogger {
@@ -71,9 +74,7 @@ public class HttpLogger {
         if (!log.isDebugEnabled()) {
             return;
         }
-        if (METHODS_WITH_BODY.contains(request.getMethod())) {
-            logRequestWithBody(request);
-        } else {
+        if (!METHODS_WITH_BODY.contains(request.getMethod())) {
             log.debug(getBaseRequestLogMessage(
                     request.getURI(),
                     request.getMethodValue(),
@@ -82,21 +83,36 @@ public class HttpLogger {
         }
     }
 
-    private static void logRequestWithBody(ServerHttpRequest request) {
-        request.getBody().doOnNext(body -> {
+    public static Flux<DataBuffer> logRequestWithBody(ServerHttpRequest request) {
+        if (!METHODS_WITH_BODY.contains(request.getMethod())) {
+            return request.getBody();
+        }
+        if (!log.isDebugEnabled()) {
+            return request.getBody();
+        }
+        AtomicBoolean hasBeenLogged = new AtomicBoolean(false);
+        return request.getBody().map(body -> {
+            if (hasBeenLogged.get()) {
+                return body;
+            }
             try {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                Channels.newChannel(byteArrayOutputStream).write(body.asByteBuffer().asReadOnlyBuffer());
                 var baseMessage = getBaseRequestLogMessage(
                         request.getURI(),
                         request.getMethodValue(),
                         request.getHeaders()
                 );
+                String bodyString = byteArrayOutputStream.toString(StandardCharsets.UTF_8.name());
                 baseMessage.append("Body: ")
                         .append(NEW_LINE)
-                        .append(inputStreamToString(body.asInputStream()));
+                        .append(bodyString);
                 log.debug(baseMessage.toString());
+                hasBeenLogged.compareAndSet(false, true);
             } catch (IOException e) {
                 log.warn("Failed to read request body", e);
             }
+            return body;
         });
     }
 

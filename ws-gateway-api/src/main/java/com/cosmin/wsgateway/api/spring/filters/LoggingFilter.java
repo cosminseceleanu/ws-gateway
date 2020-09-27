@@ -9,6 +9,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
@@ -47,22 +48,32 @@ public class LoggingFilter implements WebFilter, Ordered {
 
                     return chain.filter(new ExchangeDecorator(
                             exchange,
-                            new HttpResponseDecorator(exchange.getResponse(), exchange.getRequest())
+                            new HttpResponseDecorator(exchange.getResponse(), exchange.getRequest()),
+                            new HttpRequestDecorator(exchange.getRequest())
                     ));
                 });
     }
 
     private class ExchangeDecorator extends ServerWebExchangeDecorator {
         private final HttpResponseDecorator httpResponseDecorator;
+        private final HttpRequestDecorator httpRequestDecorator;
 
-        public ExchangeDecorator(ServerWebExchange delegate, HttpResponseDecorator httpResponseDecorator) {
+        public ExchangeDecorator(ServerWebExchange delegate,
+                                 HttpResponseDecorator httpResponseDecorator,
+                                 HttpRequestDecorator httpRequestDecorator) {
             super(delegate);
             this.httpResponseDecorator = httpResponseDecorator;
+            this.httpRequestDecorator = httpRequestDecorator;
         }
 
         @Override
         public ServerHttpResponse getResponse() {
             return httpResponseDecorator;
+        }
+
+        @Override
+        public ServerHttpRequest getRequest() {
+            return httpRequestDecorator;
         }
     }
 
@@ -95,6 +106,17 @@ public class LoggingFilter implements WebFilter, Ordered {
                 }
             }
             return super.writeWith(body);
+        }
+    }
+
+    private static class HttpRequestDecorator extends ServerHttpRequestDecorator {
+        public HttpRequestDecorator(ServerHttpRequest delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public Flux<DataBuffer> getBody() {
+            return HttpLogger.logRequestWithBody(getDelegate());
         }
     }
 }
