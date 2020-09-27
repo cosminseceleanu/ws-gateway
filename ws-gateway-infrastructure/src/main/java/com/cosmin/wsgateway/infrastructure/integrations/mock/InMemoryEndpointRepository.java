@@ -30,7 +30,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
         Set<Backend<? extends BackendSettings>> debugBackend = Collections.singleton(
                 HttpBackend.builder()
                         .destination("http://gateway-mock-backend.ns-ws-gateway.svc.cluster.local:8083/events/default")
-                        .settings(HttpSettings.defaultSettings())
+                        .settings(HttpSettings.ofDefaults())
                 .build()
         );
 
@@ -42,7 +42,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
                         Route.connect(debugBackend),
                         Route.disconnect(debugBackend)
                 ))
-                .generalSettings(GeneralSettings.defaultSettings())
+                .generalSettings(GeneralSettings.ofDefaults())
                 .build();
         Endpoint endpoint = Endpoint.builder()
                 .configuration(configuration)

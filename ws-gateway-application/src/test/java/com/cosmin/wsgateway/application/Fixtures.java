@@ -1,6 +1,5 @@
 package com.cosmin.wsgateway.application;
 
-import com.cosmin.wsgateway.domain.Authentication;
 import com.cosmin.wsgateway.domain.Backend;
 import com.cosmin.wsgateway.domain.BackendSettings;
 import com.cosmin.wsgateway.domain.Endpoint;
@@ -16,15 +15,11 @@ public class Fixtures {
 
     public static Endpoint defaultEndpoint() {
 
-        var configuration = EndpointConfiguration.builder()
-                .authentication(new Authentication.None())
-                .filters(Collections.emptySet())
-                .routes(Set.of(
-                        Route.connect(getDefaultBackends()),
-                        Route.defaultRoute(getDefaultBackends()),
-                        Route.disconnect(getDefaultBackends())
-                ))
-                .build();
+        var configuration = EndpointConfiguration.ofRoutes(Set.of(
+                Route.connect(getDefaultBackends()),
+                Route.defaultRoute(getDefaultBackends()),
+                Route.disconnect(getDefaultBackends())
+        ));
         return Endpoint.builder()
                 .configuration(configuration)
                 .id("id")

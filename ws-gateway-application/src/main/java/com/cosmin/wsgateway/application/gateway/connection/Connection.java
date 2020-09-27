@@ -3,26 +3,20 @@ package com.cosmin.wsgateway.application.gateway.connection;
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
-import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.application.gateway.PubSub;
-import com.cosmin.wsgateway.application.gateway.connector.BackendConnector;
-import com.cosmin.wsgateway.application.gateway.connector.ConnectorResolver;
-import com.cosmin.wsgateway.domain.Backend;
-import com.cosmin.wsgateway.domain.BackendSettings;
+import com.cosmin.wsgateway.application.gateway.pipeline.operators.Operators;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.Event;
-import com.cosmin.wsgateway.domain.events.Connected;
-import com.cosmin.wsgateway.domain.events.Disconnected;
-import com.cosmin.wsgateway.domain.events.InboundEvent;
-import com.cosmin.wsgateway.domain.events.OutboundEvent;
-import com.cosmin.wsgateway.domain.events.TopicMessage;
-import com.cosmin.wsgateway.domain.events.UserMessage;
-import java.util.Map;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.javatuples.Pair;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.SignalType;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
@@ -33,120 +27,137 @@ public class Connection {
     private static final String GATEWAY_POOL_THREAD_NAME = "gateway-thread";
 
     private final PubSub pubSub;
-    private final PayloadTransformer transformer;
-    private final ConnectorResolver connectorResolver;
-    private final ConnectionContext context;
+    private final Context context;
+    private final Operators operators;
     private final GatewayMetrics gatewayMetrics;
 
     private static final String OUTBOUND_TOPIC_PATTERN = "inbound.%s";
 
-    private final Scheduler scheduler = Schedulers.newBoundedElastic(
-            Schedulers.DEFAULT_BOUNDED_ELASTIC_SIZE,
-            Schedulers.DEFAULT_BOUNDED_ELASTIC_QUEUESIZE,
-            GATEWAY_POOL_THREAD_NAME
-    );
+    private final LongAdder missedPings = new LongAdder();
+
+    private final AtomicBoolean isClosed = new AtomicBoolean(false);
 
     public static String getOutboundTopic(String connectionId) {
         return String.format(OUTBOUND_TOPIC_PATTERN, connectionId);
     }
 
     public String getId() {
-        return context.getId();
+        return context.getConnectionId();
     }
 
     public Endpoint getEndpoint() {
         return context.getEndpoint();
     }
 
-    public Flux<String> handle(Flux<String> inbound) {
-        var subscription = pubSub.subscribe(String.format(OUTBOUND_TOPIC_PATTERN, context.getId()));
-        var receivedOutboundEvents = createOutboundFlux(subscription);
-
-        return doHandleInboundEvents(inbound)
-                .doFinally(signalType -> pubSub.unsubscribe(subscription))
-                .mergeWith(receivedOutboundEvents)
-                .doOnNext(this::logProcessedEvent)
-                .onErrorContinue(Exception.class, this::onError)
-                .map(e -> transformer.fromPayload(e.payload()))
-                .doOnNext(msg -> gatewayMetrics.recordOutboundEventSent(context.getEndpoint(), context.getId()));
+    public Long getMissedPings() {
+        return missedPings.longValue();
     }
 
-    private Flux<OutboundEvent> createOutboundFlux(PubSub.Subscription subscription) {
-        var outboundEvents = subscription.getEvents();
-
-        return outboundEvents
-                .publishOn(scheduler)
-                .doOnNext(n -> gatewayMetrics.recordOutboundEventReceived(context.getEndpoint(), context.getId()))
-                .map(msg -> new TopicMessage(context.getId(), transformer.toPayload(msg, Map.class)));
+    public boolean isClosed() {
+        return isClosed.get();
     }
 
-    private Flux<OutboundEvent> doHandleInboundEvents(Flux<String> inbound) {
-        Flux<InboundEvent> inboundEvents = inbound
-                .map(msg -> new UserMessage(context.getId(), transformer.toPayload(msg, Map.class), msg))
-                .ofType(InboundEvent.class)
-                .startWith(new Connected(context.getId()))
-                .concatWithValues(new Disconnected(context.getId()));
+    public Flux<Message> handle(Flux<Message> messages) {
+        logTraceIfEnabled(() -> {
+            log.trace("Subscribe for connection {} topic={}",
+                    keyValue("connectionId", getId()), context.getOutboundTopic());
+        });
 
-        return inboundEvents
-                .publishOn(scheduler)
-                .map(e -> Pair.with(e, gatewayMetrics.startTimer(GatewayMetrics.METRIC_INBOUND_EVENTS, getEndpoint())))
-                .flatMap(pair -> sendInboundEventToBackends(pair.getValue0()).map(e -> Pair.with(e, pair.getValue1())))
-                .doOnNext(pair -> pair.getValue1().stop())
-                .map(Pair::getValue0)
-                .ofType(OutboundEvent.class);
+        var subscription = pubSub.subscribe(context.getOutboundTopic());
 
+        return messages
+                .publishOn(context.getScheduler())
+                .doFinally(s -> onConnectionClosed(s, subscription))
+                .transform(resetHeartbeatOperator())
+                .doOnNext(msg -> missedPings.reset())
+                .transform(processMessagesOperator(subscription.getEvents()))
+                .transform(heartbeatOperator(messages))
+                .onErrorContinue(this::onError);
     }
 
-    private Flux<? extends Event> sendInboundEventToBackends(InboundEvent inboundEvent) {
-        var backends = inboundEvent.getRoute(context.getEndpoint()).getBackends();
-        log.debug("send {} to {}", keyValue("event", inboundEvent), keyValue("backends", backends));
-
-        return Flux.fromIterable(backends)
-                .map(b -> BackendConnectorPair.of(b, connectorResolver.getConnector(b)))
-                .flatMap(pair ->
-                        sendInboundEventToBackend(inboundEvent, pair),
-                        getEndpoint().getGeneralSettings().getBackendParallelism()
-                );
+    private void onConnectionClosed(SignalType signalType, PubSub.Subscription subscription) {
+        logTraceIfEnabled(() -> {
+            log.trace("Unsubscribe for connection {} signalType={}", keyValue("connectionId", getId()), signalType);
+        });
+        pubSub.unsubscribe(subscription);
+        logTraceIfEnabled(() -> {
+            log.trace("Mark connection {} as closed on signalType={}", keyValue("connectionId", getId()), signalType);
+        });
+        isClosed.compareAndSet(false, true);
     }
 
-    private Mono<Event> sendInboundEventToBackend(InboundEvent inboundEvent, Connection.BackendConnectorPair pair) {
-        return gatewayMetrics.measureMono(
-                GatewayMetrics.METRIC_INBOUND_BACKENDS,
-                pair.doSendEvent(inboundEvent),
-                getEndpoint(),
-                Map.of("backend.type", pair.backend.type().name(), "backend.destination", pair.backend.destination())
-        ).doOnError(e -> gatewayMetrics.recordBackendError(getEndpoint(), pair.backend, context.getId()));
-    }
-
-    private void logProcessedEvent(OutboundEvent e) {
-        if (log.isDebugEnabled()) {
-            log.debug("{} of {} was successfully processed",
-                    keyValue("event", e.toString()),
-                    keyValue("type", e.getClass().getName())
-            );
-        }
+    private Function<Flux<Message>, Flux<Message>> resetHeartbeatOperator() {
+        return flux -> flux
+                .doOnNext(m -> logTraceIfEnabled(() -> log.trace("Reset heartbeat on msg={}", m)))
+                .doOnNext(m -> missedPings.reset())
+                .filter(Predicate.not(Message::isHeartbeat));
     }
 
     private void onError(Throwable e, Object o) {
-        gatewayMetrics.recordError(e, context.getId());
+        gatewayMetrics.recordError(e, context.getConnectionId());
         log.error(e.getMessage(), e);
     }
 
-    @RequiredArgsConstructor
-    private static class BackendConnectorPair {
-        private final Backend<BackendSettings> backend;
-        private final BackendConnector<BackendSettings> connector;
-
-        public static BackendConnectorPair of(
-                Backend<? extends BackendSettings> b, BackendConnector<? extends BackendSettings> connector
-        ) {
-            return new BackendConnectorPair(
-                    (Backend<BackendSettings>) b, (BackendConnector<BackendSettings>) connector
-            );
+    private void logTraceIfEnabled(Runnable doLog) {
+        if (log.isTraceEnabled()) {
+            doLog.run();
         }
+    }
 
-        Mono<Event> doSendEvent(InboundEvent inboundEvent) {
-            return connector.sendEvent(inboundEvent, backend);
+    private Function<Flux<Message>, Flux<Message>> processMessagesOperator(Flux<String> outboundFlux) {
+        Flux<Event> outbound = outboundFlux.transform(operators.outboundFlow(context));
+
+        return flux -> flux
+                .transform(operators.inboundFlow(context))
+                .mergeWith(outbound)
+                .transform(operators.sendToUser(context));
+    }
+
+    private Function<Flux<Message>, Flux<Message>> heartbeatOperator(Flux<Message> inbound) {
+        var heartbeatFlux = Flux.interval(Duration.ofSeconds(getEndpoint().getHeartbeatIntervalInSeconds()))
+                .map(l -> Message.ping())
+                .takeUntil(m -> isClosed.get())
+                .filter(m -> !isClosed.get())
+                .doOnNext(m -> logTraceIfEnabled(() -> log.trace("Send ping message")))
+                .doOnNext(msg -> missedPings.increment())
+                .map(this::checkHeartbeat)
+                .doFinally(signalType -> logTraceIfEnabled(() -> {
+                    log.trace("Heartbeat terminated on signalType={}", signalType);
+                }));
+
+        return flux -> flux.mergeWith(heartbeatFlux);
+    }
+
+    private Message checkHeartbeat(Message msg) {
+        if (shouldKeepAliveConnection()) {
+            return msg;
+        }
+        log.info("Connection {} missed {} pings and it will be closed",
+                keyValue("connectionId", getId()),
+                missedPings.intValue()
+        );
+        isClosed.compareAndSet(false, true);
+        return Message.poisonPill("Missed heartbeats");
+    }
+
+    private boolean shouldKeepAliveConnection() {
+        return missedPings.intValue() <= getEndpoint().getHeartbeatMaxMissingPingFrames();
+    }
+
+    @Getter
+    @RequiredArgsConstructor(staticName = "newInstance")
+    public static class Context {
+        private final String connectionId;
+        private final Endpoint endpoint;
+
+        private final Scheduler scheduler = Schedulers.newBoundedElastic(
+                Schedulers.DEFAULT_BOUNDED_ELASTIC_SIZE,
+                Schedulers.DEFAULT_BOUNDED_ELASTIC_QUEUESIZE,
+                GATEWAY_POOL_THREAD_NAME
+        );
+
+        public String getOutboundTopic() {
+            return Connection.getOutboundTopic(connectionId);
         }
     }
 }

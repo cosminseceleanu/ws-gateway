@@ -3,9 +3,8 @@ package com.cosmin.wsgateway.application.gateway.connection;
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 import com.cosmin.wsgateway.application.gateway.GatewayMetrics;
-import com.cosmin.wsgateway.application.gateway.PayloadTransformer;
 import com.cosmin.wsgateway.application.gateway.PubSub;
-import com.cosmin.wsgateway.application.gateway.connector.ConnectorResolver;
+import com.cosmin.wsgateway.application.gateway.pipeline.operators.Operators;
 import com.cosmin.wsgateway.domain.Endpoint;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +19,20 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ConnectionFactory {
     private final PubSub pubSub;
-    private final PayloadTransformer transformer;
-    private final ConnectorResolver connectorResolver;
+    private final Operators operators;
     private final Environment environment;
     private final GatewayMetrics gatewayMetrics;
 
     public Connection create(Endpoint endpoint, ConnectionRequest request) {
         String connectionId = getConnectionId(request);
-        var context = ConnectionContext.newInstance(connectionId, endpoint);
-        log.debug("A new WS was created! {} for {} {}",
+        var context = Connection.Context.newInstance(connectionId, endpoint);
+        log.info("A new WS connection was created! {} for {} {}",
                 keyValue("connectionId", connectionId),
                 keyValue("endpointId", endpoint.getId()),
                 keyValue("path", endpoint.getPath())
         );
 
-        return new Connection(pubSub, transformer, connectorResolver, context, gatewayMetrics);
+        return new Connection(pubSub, context, operators, gatewayMetrics);
     }
 
     private String getConnectionId(ConnectionRequest request) {

@@ -20,7 +20,7 @@ public class EndpointRepresentation {
     private String path;
 
     @JsonProperty("settings")
-    private GeneralSettingsRepresentation generalSettings = new GeneralSettingsRepresentation();
+    private GeneralSettingsRepresentation generalSettings;
     private FilterRepresentation filters = new FilterRepresentation();
     private Set<RouteRepresentation> routes;
     private AuthenticationRepresentation authentication;

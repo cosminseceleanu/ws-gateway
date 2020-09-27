@@ -4,7 +4,6 @@ import com.cosmin.wsgateway.api.Application;
 import com.cosmin.wsgateway.tests.client.ConnectionsClient;
 import com.cosmin.wsgateway.tests.client.EndpointsClient;
 import com.cosmin.wsgateway.tests.client.WebSocketClient;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
@@ -47,18 +45,6 @@ public abstract class BaseTestIT {
         connectionsClient = new ConnectionsClient(webClient);
         webSocketClient = new WebSocketClient(8081);
         isConfigured.compareAndSet(false, true);
-    }
-
-    public void await() {
-        await(Duration.ofSeconds(10));
-    }
-
-    public void await(Duration duration) {
-        try {
-            Thread.sleep(duration.toMillis());
-        } catch (InterruptedException e) {
-            Assertions.fail(e);
-        }
     }
 
     protected static void Given(String msg) {

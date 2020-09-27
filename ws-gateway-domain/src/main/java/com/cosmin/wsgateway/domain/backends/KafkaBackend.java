@@ -33,4 +33,11 @@ public class KafkaBackend implements Backend<KafkaSettings> {
     public Type type() {
         return Type.KAFKA;
     }
+
+    public static Backend<KafkaSettings> ofDefaults(String topic, String boostrapServers) {
+        return KafkaBackend.builder()
+                .settings(KafkaSettings.ofDefaults(boostrapServers))
+                .topic(topic)
+                .build();
+    }
 }

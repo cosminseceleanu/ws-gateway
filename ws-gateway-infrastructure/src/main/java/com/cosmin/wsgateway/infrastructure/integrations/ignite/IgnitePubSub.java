@@ -18,16 +18,20 @@ class IgnitePubSub implements PubSub {
     public Subscription subscribe(String topic) {
         var processor = new EventProcessor();
 
+        Flux<String> events = Flux.create(sink -> processor.setListener(sink::next));
+
         var subscriptionId = igniteMessaging.remoteListen(topic, (nodeId, msg) -> {
-            log.debug("Received event message [msg=" + msg + ", from=" + nodeId + ']');
+            if (log.isTraceEnabled()) {
+                log.trace("Received event message [msg={}, from={}]", msg, nodeId);
+            }
             if (msg instanceof String) {
                 processor.onMessage((String) msg);
+            } else if (log.isDebugEnabled()) {
+                log.debug("Drop ignite message [msg={}, from={}]", msg, nodeId);
             }
 
             return true; // Return true to continue listening.
         });
-
-        Flux<String> events = Flux.create(sink -> processor.setListener(sink::next));
 
         return new Subscription(subscriptionId.toString(), events);
     }

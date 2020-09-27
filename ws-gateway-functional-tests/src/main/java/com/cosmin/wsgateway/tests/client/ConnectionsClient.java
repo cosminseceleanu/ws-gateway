@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class ConnectionsClient {
     private final WebTestClient webTestClient;
 
-    public void sendOutbound(String connectionId, String payload) {
+    public void sendEvent(String connectionId, String payload) {
         this.webTestClient.post()
                 .uri(Api.Paths.CONNECTIONS + "/" + connectionId)
                 .contentType(MediaType.APPLICATION_JSON)

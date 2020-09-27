@@ -93,7 +93,7 @@ public class HttpLogger {
                 baseMessage.append("Body: ")
                         .append(NEW_LINE)
                         .append(inputStreamToString(body.asInputStream()));
-
+                log.debug(baseMessage.toString());
             } catch (IOException e) {
                 log.warn("Failed to read request body", e);
             }

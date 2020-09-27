@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.net.http.WebSocketHandshakeException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -124,6 +125,10 @@ public class WebSocketClient {
 
         public CompletableFuture<?> disconnectAsync() {
             return socket.sendClose(WebSocket.NORMAL_CLOSURE, "");
+        }
+
+        public boolean isClosed() {
+            return socket.isInputClosed();
         }
     }
 

@@ -1,6 +1,8 @@
 package com.cosmin.wsgateway.application.gateway;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,7 +14,9 @@ public interface PubSub {
 
     Mono<Void> unsubscribe(Subscription subscription);
 
-    @Value
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @Getter
     class Subscription {
         private final String id;
         private final Flux<String> events;

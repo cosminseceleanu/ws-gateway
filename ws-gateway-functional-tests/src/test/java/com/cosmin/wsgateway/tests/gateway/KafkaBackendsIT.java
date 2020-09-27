@@ -1,6 +1,7 @@
 package com.cosmin.wsgateway.tests.gateway;
 
 import static com.cosmin.wsgateway.tests.common.EndpointFixtures.createRouteWithKafkaBackend;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
@@ -13,6 +14,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.awaitility.Awaitility;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 @Tags.Gateway
@@ -34,7 +37,9 @@ public class KafkaBackendsIT extends BaseTestIT {
         When("A WS connection is created with the gateway");
         var connection = webSocketClient.connect("/kafka-backend/test-1", connectionId);
         connection.disconnect();
-        await(Duration.ofMillis(3000));
+        Awaitility.await("disconnect event should be sent")
+            .atMost(Duration.ofSeconds(6))
+            .until(() -> KafkaUtils.getRecords(disconnectTopic, embeddedKafkaBroker).size(), is(1));
 
         Then("Kafka backend for connect and disconnect routes has received connection events");
         var connectionEvents = KafkaUtils.getRecords(connectTopic, embeddedKafkaBroker);
@@ -43,7 +48,6 @@ public class KafkaBackendsIT extends BaseTestIT {
         assertEquals(1, connectionEvents.size());
         assertEquals(expectedPayload, connectionEvents.get(0));
 
-        assertEquals(1, disconnectEvents.size());
         assertEquals(expectedPayload, disconnectEvents.get(0));
     }
 
@@ -66,12 +70,13 @@ public class KafkaBackendsIT extends BaseTestIT {
         connection.send(expectedPayload);
         connection.send(expectedPayload);
         connection.send(expectedPayload);
-        await(Duration.ofMillis(3000));
+        Awaitility.await("events are received")
+                .atMost(Duration.ofSeconds(6))
+                .until(() -> KafkaUtils.getRecords("test.2.default", embeddedKafkaBroker).size(), is(4));
 
         Then("Kafka backend receives user sent events");
         var events = KafkaUtils.getRecords("test.2.default", embeddedKafkaBroker);
 
-        assertEquals(4, events.size());
         assertEquals(expectedPayload, events.get(0));
     }
 

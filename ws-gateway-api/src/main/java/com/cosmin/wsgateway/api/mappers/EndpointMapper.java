@@ -5,7 +5,6 @@ import com.cosmin.wsgateway.domain.Authentication;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.EndpointConfiguration;
 import com.cosmin.wsgateway.domain.Filter;
-import com.cosmin.wsgateway.domain.GeneralSettings;
 import com.cosmin.wsgateway.domain.Route;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ public class EndpointMapper implements RepresentationMapper<EndpointRepresentati
     private final RouteMapper routeMapper;
     private final AuthenticationMapper authenticationMapper;
     private final FilterMapper filterMapper;
+    private final GeneralSettingsMapper generalSettingsMapper;
 
     @Override
     public Endpoint toModel(EndpointRepresentation representation) {
@@ -27,10 +27,7 @@ public class EndpointMapper implements RepresentationMapper<EndpointRepresentati
 
         EndpointConfiguration configuration = EndpointConfiguration.builder()
                 .authentication(authentication)
-                .generalSettings(GeneralSettings
-                        .builder()
-                        .backendParallelism(representation.getGeneralSettings().getBackendParallelism())
-                        .build())
+                .generalSettings(generalSettingsMapper.toModel(representation.getGeneralSettings()))
                 .filters(filters)
                 .routes(routes)
                 .build();
@@ -51,6 +48,7 @@ public class EndpointMapper implements RepresentationMapper<EndpointRepresentati
         representation.setAuthentication(authenticationMapper.toRepresentation(domain.getAuthentication()));
         representation.setFilters(filterMapper.toRepresentation(domain.getFilters()));
         representation.setRoutes(Set.copyOf(routeMapper.toRepresentations(domain.getRoutes())));
+        representation.setGeneralSettings(generalSettingsMapper.toRepresentation(domain.getGeneralSettings()));
 
         return representation;
     }

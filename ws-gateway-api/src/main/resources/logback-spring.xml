@@ -44,6 +44,7 @@
         <logger name="com.github.tomakehurst.wiremock" level="WARN"/>
         <logger name="com.cosmin.wsgateway.application.gateway" level="DEBUG"/>
         <logger name="com.cosmin.wsgateway.api" level="DEBUG"/>
+        <logger name="com.cosmin.wsgateway.application.gateway.connection.Connection" level="trace"/>
     </springProfile>
 
     <root level="info">

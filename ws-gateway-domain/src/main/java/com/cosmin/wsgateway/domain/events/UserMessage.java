@@ -2,11 +2,13 @@ package com.cosmin.wsgateway.domain.events;
 
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.Route;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @ToString
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public class UserMessage implements InboundEvent {
     private final String connectionId;
     private final Object payload;

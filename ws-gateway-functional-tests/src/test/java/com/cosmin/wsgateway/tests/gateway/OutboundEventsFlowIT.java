@@ -1,15 +1,18 @@
 package com.cosmin.wsgateway.tests.gateway;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;
+import com.cosmin.wsgateway.tests.utils.Conditions;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 @Tags.Gateway
@@ -20,21 +23,22 @@ public class OutboundEventsFlowIT extends BaseTestIT {
         Given("an websocket connection");
         var connectionId = UUID.randomUUID().toString();
         var event1 = JsonUtils.toJson(Map.of("foo", "bar"));
-        var event2 = JsonUtils.toJson(Map.of("foo", "bar2"));
+        var event2 = JsonUtils.toJson(List.of("foo", "bar2"));
 
         var endpoint = EndpointFixtures.getRepresentation("/outbound-events/test-1");
         endpointsClient.createAndAssert(endpoint);
         var connection = webSocketClient.connect(endpoint.getPath(), connectionId);
-
+        Awaitility.await().during(Duration.ofMillis(200)).until(() -> true);
 
         When("Connections outbound api is called");
-        connectionsClient.sendOutbound(connectionId, event1);
-        connectionsClient.sendOutbound(connectionId, event2);
+        connectionsClient.sendEvent(connectionId, event1);
+        connectionsClient.sendEvent(connectionId, event2);
 
         Then("Gateway client receives msgs via api");
-        await(Duration.ofMillis(9000));
+        Awaitility.await("should receive 2 messages")
+                .atMost(Duration.ofSeconds(20))
+                .until(Conditions.receivedMessages(connection), is(2));
 
-        assertEquals(2, connection.getReceivedMessages().size());
         assertTrue(connection.getReceivedMessages().contains(event1));
         assertTrue(connection.getReceivedMessages().contains(event2));
     }
