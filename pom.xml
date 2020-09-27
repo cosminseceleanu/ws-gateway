@@ -302,10 +302,6 @@
 						</reports>
 					</reportSet>
 				</reportSets>
-				<configuration>
-					<excludes>
-					</excludes>
-				</configuration>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -348,28 +344,6 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
-							<rules>
-								<rule>
-									<element>BUNDLE</element>
-									<includes>
-										<include>com.cosmin.wsgateway.domain.**</include>
-										<include>com.cosmin.wsgateway.application.**</include>
-										<include>com.cosmin.wsgateway.requests.**</include>
-									</includes>
-									<limits>
-										<limit>
-											<counter>LINE</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>0.50</minimum>
-										</limit>
-										<limit>
-											<counter>INSTRUCTION</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>0.50</minimum>
-										</limit>
-									</limits>
-								</rule>
-							</rules>
 						</configuration>
 					</execution>
 				</executions>
@@ -381,17 +355,8 @@
 				<configuration>
 					<configLocation>.mvn/checkstyle.xml</configLocation>
 					<consoleOutput>true</consoleOutput>
-					<failsOnError>true</failsOnError>
+					<failsOnError>false</failsOnError>
 				</configuration>
-				<executions>
-					<execution>
-						<id>validate</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

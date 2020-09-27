@@ -16,7 +16,7 @@ jobs:
       with:
         java-version: 11
     - name: Run All Tests
-      run: mvn --no-transfer-progress clean verify
+      run: mvn --no-transfer-progress clean test
     - name: Run Tests for Apache Ignite integration
       run: mvn --no-transfer-progress test -Dgroups=pubsub -Dspring.profiles.active=ignite,tests
     - uses: codecov/codecov-action@v1
