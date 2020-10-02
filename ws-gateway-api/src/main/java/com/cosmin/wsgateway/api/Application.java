@@ -25,7 +25,7 @@ public class Application {
     @Autowired
     private GatewayProperties gatewayProperties;
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Schedulers.enableMetrics();
         SpringApplication.run(Application.class, args);
     }
