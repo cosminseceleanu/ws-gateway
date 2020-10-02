@@ -1,4 +1,4 @@
-package com.cosmin.wsgateway.api.fixtures;
+package com.cosmin.wsgateway.infrastructure.fixtures;
 
 import java.util.List;
 import java.util.Map;

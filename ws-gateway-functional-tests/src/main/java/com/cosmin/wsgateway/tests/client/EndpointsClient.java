@@ -1,7 +1,7 @@
 package com.cosmin.wsgateway.tests.client;
 
 
-import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.EndpointRepresentation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

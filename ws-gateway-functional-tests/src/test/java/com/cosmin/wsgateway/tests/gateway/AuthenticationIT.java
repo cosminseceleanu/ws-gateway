@@ -7,7 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.AuthenticationRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.client.WebSocketConnectionException;

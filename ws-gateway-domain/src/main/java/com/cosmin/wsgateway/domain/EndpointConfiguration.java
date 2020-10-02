@@ -40,7 +40,7 @@ public class EndpointConfiguration {
 
     @NotNull
     @EqualsAndHashCode.Exclude
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final LocalDateTime createdAt;
 
     public static EndpointConfiguration ofRoutes(Set<Route> routes) {
         return EndpointConfiguration.builder()

@@ -6,6 +6,11 @@ spring:
         streams:
           enabled: false
 
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+
 management:
   endpoint:
     health:

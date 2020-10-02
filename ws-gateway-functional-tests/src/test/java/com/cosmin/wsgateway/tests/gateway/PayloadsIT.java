@@ -9,8 +9,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.Matchers.greaterThan;
 
-import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
-import com.cosmin.wsgateway.api.representation.RouteRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.EndpointRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.RouteRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
 import com.cosmin.wsgateway.tests.common.JsonUtils;

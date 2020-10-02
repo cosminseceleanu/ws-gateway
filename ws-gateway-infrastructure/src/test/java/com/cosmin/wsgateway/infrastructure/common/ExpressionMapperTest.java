@@ -1,8 +1,7 @@
-package com.cosmin.wsgateway.api.mappers;
+package com.cosmin.wsgateway.infrastructure.common;
 
-import static com.cosmin.wsgateway.api.fixtures.ExpressionFixtures.createBooleanExpression;
-import static com.cosmin.wsgateway.api.fixtures.ExpressionFixtures.createTerminalExpression;
 import static com.cosmin.wsgateway.domain.Expression.Name.*;
+import static com.cosmin.wsgateway.infrastructure.fixtures.ExpressionFixtures.createTerminalExpression;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,11 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
 import com.cosmin.wsgateway.domain.Expression;
 import com.cosmin.wsgateway.domain.expressions.Expressions;
+import com.cosmin.wsgateway.infrastructure.fixtures.ExpressionFixtures;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -43,11 +41,11 @@ class ExpressionMapperTest {
 
     @Test
     public void testToModel_whenExpressionIsNested() {
-        Map<String, Object> or = createBooleanExpression(OR.getValue(),
+        Map<String, Object> or = ExpressionFixtures.createBooleanExpression(OR.getValue(),
                 createTerminalExpression("$.b", 8.0, EQUAL.getValue()),
                 createTerminalExpression("$.a", "a", EQUAL.getValue())
         );
-        Map<String, Object> root = createBooleanExpression(
+        Map<String, Object> root = ExpressionFixtures.createBooleanExpression(
                 AND.getValue(),
                 createTerminalExpression("$.c", "*", MATCHES.getValue()),
                 or
@@ -70,9 +68,9 @@ class ExpressionMapperTest {
     public void testToModel_whenNestedLevelIsGreaterThan2_thenExceptionIsThrown() {
         Map<String, Object> expr1 = createTerminalExpression("$.b", 8.0, EQUAL.getValue());
         Map<String, Object> expr2 = createTerminalExpression("$.a", "a", EQUAL.getValue());
-        Map<String, Object> and = createBooleanExpression(AND.getValue(), expr1, expr2);
-        Map<String, Object> or1 = createBooleanExpression(OR.getValue(), and, expr2);
-        Map<String, Object> root = createBooleanExpression(OR.getValue(), or1, expr1);
+        Map<String, Object> and = ExpressionFixtures.createBooleanExpression(AND.getValue(), expr1, expr2);
+        Map<String, Object> or1 = ExpressionFixtures.createBooleanExpression(OR.getValue(), and, expr2);
+        Map<String, Object> root = ExpressionFixtures.createBooleanExpression(OR.getValue(), or1, expr1);
 
         IncorrectExpressionException thrown = assertThrows(IncorrectExpressionException.class, () -> {
             subject.toModel(root);
@@ -84,7 +82,7 @@ class ExpressionMapperTest {
     public void testToModel_whenRootHasMoreThanOneElement_thenExceptionIsThrown() {
         Map<String, Object> expr1 = createTerminalExpression("$.b", 8.0, EQUAL.getValue());
         Map<String, Object> expr2 = createTerminalExpression("$.a", "a", EQUAL.getValue());
-        Map<String, Object> root = new HashMap<>(createBooleanExpression(AND.getValue(), expr1, expr2));
+        Map<String, Object> root = new HashMap<>(ExpressionFixtures.createBooleanExpression(AND.getValue(), expr1, expr2));
         root.put(EQUAL.getValue(), expr1.get(EQUAL.getValue()));
 
         IncorrectExpressionException thrown = assertThrows(IncorrectExpressionException.class, () -> {
@@ -147,15 +145,15 @@ class ExpressionMapperTest {
                 )
         );
 
-        Map<String, Object> expected = createBooleanExpression(
+        Map<String, Object> expected = ExpressionFixtures.createBooleanExpression(
                 AND.getValue(),
                 createTerminalExpression("$.c", "*", MATCHES.getValue()),
-                createBooleanExpression(OR.getValue(),
+                ExpressionFixtures.createBooleanExpression(OR.getValue(),
                         createTerminalExpression("$.b", 8.0, EQUAL.getValue()),
                         createTerminalExpression("$.a", "a", EQUAL.getValue())
                 )
         );
-        Map<String, Object> result = subject.toRepresentation(initial);
+        Map<String, Object> result = subject.toMap(initial);
 
         assertEquals(expected, result);
     }

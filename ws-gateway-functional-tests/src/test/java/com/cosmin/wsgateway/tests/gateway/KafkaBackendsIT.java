@@ -4,7 +4,7 @@ import static com.cosmin.wsgateway.tests.common.EndpointFixtures.createRouteWith
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.cosmin.wsgateway.api.representation.RouteRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.RouteRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.awaitility.Awaitility;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 @Tags.Gateway

@@ -22,7 +22,7 @@ public class EndpointsProvider {
 
     public Mono<Endpoint> getById(String id) {
         return endpointRepository.getById(id)
-                .map(e -> e.orElseThrow(() -> new EndpointNotFoundException(id)));
+                .switchIfEmpty(Mono.error(new EndpointNotFoundException(id)));
     }
 
     public Mono<Endpoint> getFirstMatch(String path) {

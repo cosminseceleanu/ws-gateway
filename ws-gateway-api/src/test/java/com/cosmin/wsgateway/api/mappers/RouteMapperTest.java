@@ -6,6 +6,7 @@ import com.cosmin.wsgateway.api.representation.RouteRepresentation;
 import com.cosmin.wsgateway.domain.Expression;
 import com.cosmin.wsgateway.domain.Route;
 import com.cosmin.wsgateway.domain.expressions.Expressions;
+import com.cosmin.wsgateway.infrastructure.common.ExpressionMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -76,7 +77,7 @@ class RouteMapperTest {
     public void testToRepresentation_aRouteWithExpression_shouldMapAllFieldsToRepresentation() {
         Route route = Route.custom(defaultExpression);
         doReturn(Set.of(BackendFixtures.defaultHttpRepresentation())).when(backendMapper).toRepresentations(any());
-        doReturn(Map.of("key", "value")).when(expressionMapper).toRepresentation(defaultExpression);
+        doReturn(Map.of("key", "value")).when(expressionMapper).toMap(defaultExpression);
 
         RouteRepresentation result = subject.toRepresentation(route);
 

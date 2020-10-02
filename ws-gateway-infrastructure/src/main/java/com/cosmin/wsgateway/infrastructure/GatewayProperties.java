@@ -46,5 +46,6 @@ public class GatewayProperties {
     @Data
     public static class Persistence {
         private Boolean mocked = true;
+        private Boolean mongo = false;
     }
 }

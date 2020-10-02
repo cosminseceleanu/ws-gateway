@@ -12,8 +12,8 @@ import lombok.Value;
 @Value
 @Builder
 public class KafkaSettings implements BackendSettings {
-    private static final int DEFAULT_RETRIES_NR = 1;
-    private static final Ack DEFAULT_ACK = Ack.LEADER;
+    public static final int DEFAULT_RETRIES_NR = 1;
+    public static final Ack DEFAULT_ACK = Ack.LEADER;
 
     @NotNull
     private final String bootstrapServers;

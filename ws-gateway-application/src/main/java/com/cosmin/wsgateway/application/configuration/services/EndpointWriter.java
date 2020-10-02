@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toSet;
 import com.cosmin.wsgateway.application.configuration.repositories.EndpointRepository;
 import com.cosmin.wsgateway.domain.Endpoint;
 import com.cosmin.wsgateway.domain.Route;
+import com.cosmin.wsgateway.domain.exceptions.EndpointNotFoundException;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.Valid;
@@ -53,6 +54,7 @@ public class EndpointWriter {
 
     public Mono<Endpoint> delete(String id) {
         return endpointsProvider.getById(id)
-                .flatMap(e -> endpointRepository.deleteById(id));
+                .flatMap(e -> endpointRepository.deleteById(id))
+                .switchIfEmpty(Mono.error(new EndpointNotFoundException(id)));
     }
 }

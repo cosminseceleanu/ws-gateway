@@ -1,16 +1,16 @@
 package com.cosmin.wsgateway.tests.common;
 
-import static com.cosmin.wsgateway.api.representation.RouteRepresentation.Type.CONNECT;
-import static com.cosmin.wsgateway.api.representation.RouteRepresentation.Type.DEFAULT;
-import static com.cosmin.wsgateway.api.representation.RouteRepresentation.Type.DISCONNECT;
+import static com.cosmin.wsgateway.infrastructure.representation.RouteRepresentation.Type.CONNECT;
+import static com.cosmin.wsgateway.infrastructure.representation.RouteRepresentation.Type.DEFAULT;
+import static com.cosmin.wsgateway.infrastructure.representation.RouteRepresentation.Type.DISCONNECT;
 
-import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
-import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
-import com.cosmin.wsgateway.api.representation.FilterRepresentation;
-import com.cosmin.wsgateway.api.representation.GeneralSettingsRepresentation;
-import com.cosmin.wsgateway.api.representation.HttpBackendRepresentation;
-import com.cosmin.wsgateway.api.representation.KafkaBackendRepresentation;
-import com.cosmin.wsgateway.api.representation.RouteRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.AuthenticationRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.EndpointRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.FilterRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.GeneralSettingsRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.HttpBackendRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.KafkaBackendRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.RouteRepresentation;
 import java.util.Collections;
 import java.util.Set;
 

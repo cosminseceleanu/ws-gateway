@@ -3,6 +3,7 @@ package com.cosmin.wsgateway.api.mappers;
 import com.cosmin.wsgateway.api.representation.RouteRepresentation;
 import com.cosmin.wsgateway.domain.Expression;
 import com.cosmin.wsgateway.domain.Route;
+import com.cosmin.wsgateway.infrastructure.common.ExpressionMapper;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class RouteMapper implements RepresentationMapper<RouteRepresentation, Ro
         RouteRepresentation representation = selfMapper.fromRoute(domain);
         representation.setBackends(Set.copyOf(backendMapper.toRepresentations(domain.getBackends())));
         representation.setExpression(domain.getExpression()
-                .map(expressionMapper::toRepresentation)
+                .map(expressionMapper::toMap)
                 .orElse(null)
         );
 

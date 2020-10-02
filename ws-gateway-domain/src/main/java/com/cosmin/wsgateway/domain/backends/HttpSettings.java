@@ -12,9 +12,9 @@ import lombok.Value;
 @Value
 @Builder
 public class HttpSettings implements BackendSettings {
-    private static final Map<String, String> DEFAULT_ADDITIONAL_HEADERS = Map.of();
-    private static final int READ_TIMEOUT_IN_MILLIS = 1500;
-    private static final int DEFAULT_CONNECT_TIMEOUT_IN_MILLIS = 200;
+    public static final Map<String, String> DEFAULT_ADDITIONAL_HEADERS = Map.of();
+    public static final int READ_TIMEOUT_IN_MILLIS = 1500;
+    public static final int DEFAULT_CONNECT_TIMEOUT_IN_MILLIS = 200;
 
     @Size(max = 255)
     @NotNull

@@ -58,8 +58,11 @@ public class InMemoryEndpointRepository implements EndpointRepository {
     }
 
     @Override
-    public Mono<Optional<Endpoint>> getById(String id) {
-        return Mono.just(Optional.ofNullable(storage.get(id)));
+    public Mono<Endpoint> getById(String id) {
+        if (storage.containsKey(id)) {
+            return Mono.empty();
+        }
+        return Mono.just(storage.get(id));
     }
 
     @Override
@@ -74,7 +77,7 @@ public class InMemoryEndpointRepository implements EndpointRepository {
     @Override
     public Mono<Endpoint> deleteById(String id) {
         return getById(id)
-            .map(e -> e.orElseThrow(() -> new EndpointNotFoundException(id)))
+            .switchIfEmpty(Mono.error(new EndpointNotFoundException(id)))
             .doOnSuccess(e -> storage.remove(e.getId()));
     }
 }

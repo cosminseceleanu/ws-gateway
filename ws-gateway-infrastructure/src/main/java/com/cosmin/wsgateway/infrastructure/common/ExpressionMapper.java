@@ -1,8 +1,7 @@
-package com.cosmin.wsgateway.api.mappers;
+package com.cosmin.wsgateway.infrastructure.common;
 
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
-import com.cosmin.wsgateway.api.representation.TerminalExpressionRepresentation;
 import com.cosmin.wsgateway.domain.Expression;
 import com.cosmin.wsgateway.domain.exceptions.IncorrectExpressionException;
 import com.cosmin.wsgateway.domain.expressions.And;
@@ -21,17 +20,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
-public class ExpressionMapper implements RepresentationMapper<Map<String, Object>, Expression<Boolean>> {
+@RequiredArgsConstructor
+public class ExpressionMapper {
     private final ObjectMapper objectMapper;
 
-    @Override
     public Expression<Boolean> toModel(Map<String, Object> representation) {
         JsonNode jsonNode = objectMapper.convertValue(representation, JsonNode.class);
 
@@ -77,8 +78,8 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
             Expression.Name name, ObjectNode jsonNode, BiFunction<String, Object, Expression<Boolean>> createExpr
     ) {
         try {
-            TerminalExpressionRepresentation representation = objectMapper.treeToValue(
-                    jsonNode.get(name.getValue()), TerminalExpressionRepresentation.class
+            TerminalNode representation = objectMapper.treeToValue(
+                    jsonNode.get(name.getValue()), TerminalNode.class
             );
             return createExpr.apply(representation.getPath(), representation.getValue());
         } catch (JsonProcessingException e) {
@@ -111,8 +112,7 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
         }
     }
 
-    @Override
-    public Map<String, Object> toRepresentation(Expression<Boolean> domain) {
+    public Map<String, Object> toMap(Expression<Boolean> domain) {
         if (domain instanceof TerminalExpression) {
             return Map.of(domain.name().getValue(), Map.of(
                     "path", ((TerminalExpression) domain).path(),
@@ -121,8 +121,16 @@ public class ExpressionMapper implements RepresentationMapper<Map<String, Object
         }
         BooleanExpression booleanExpression = (BooleanExpression) domain;
         return Map.of(booleanExpression.name().getValue(), List.of(
-                toRepresentation(booleanExpression.left()),
-                toRepresentation(booleanExpression.right())
+                toMap(booleanExpression.left()),
+                toMap(booleanExpression.right())
         ));
+    }
+
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class TerminalNode {
+        private String path;
+        private Object value;
     }
 }

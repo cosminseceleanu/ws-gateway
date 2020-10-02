@@ -20,7 +20,7 @@ public interface Expression<T> {
         AND("and");
         private final String value;
 
-        private static Map<String, Name> namesByValue = Arrays.stream(values())
+        private static final Map<String, Name> namesByValue = Arrays.stream(values())
                 .collect(Collectors.toMap(Name::getValue, Function.identity()));
 
         public static Name fromValue(String name) {

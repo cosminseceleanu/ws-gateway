@@ -1,9 +1,8 @@
 package com.cosmin.wsgateway.tests.configuration;
 
-import com.cosmin.wsgateway.api.representation.AuthenticationRepresentation;
-import com.cosmin.wsgateway.api.representation.EndpointRepresentation;
-import com.cosmin.wsgateway.api.representation.ErrorRepresentation;
-import com.cosmin.wsgateway.domain.Endpoint;
+import com.cosmin.wsgateway.infrastructure.representation.AuthenticationRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.EndpointRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.ErrorRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;

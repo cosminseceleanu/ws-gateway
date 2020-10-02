@@ -10,9 +10,9 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class GeneralSettings {
 
-    private static final int DEFAULT_BACKEND_PARALLELISM = 8;
-    private static final int DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS = 15;
-    private static final int DEFAULT_HEARTBEAT_MAX_MISSING_PING_FRAMES = 3;
+    public static final int DEFAULT_BACKEND_PARALLELISM = 8;
+    public static final int DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS = 15;
+    public static final int DEFAULT_HEARTBEAT_MAX_MISSING_PING_FRAMES = 3;
 
     @NotNull
     @Min(1)

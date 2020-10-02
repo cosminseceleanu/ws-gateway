@@ -1,6 +1,6 @@
 package com.cosmin.wsgateway.tests.gateway;
 
-import com.cosmin.wsgateway.api.representation.RouteRepresentation;
+import com.cosmin.wsgateway.infrastructure.representation.RouteRepresentation;
 import com.cosmin.wsgateway.tests.BaseTestIT;
 import com.cosmin.wsgateway.tests.Tags;
 import com.cosmin.wsgateway.tests.common.EndpointFixtures;
@@ -8,7 +8,6 @@ import com.cosmin.wsgateway.tests.common.JsonUtils;
 import com.cosmin.wsgateway.tests.utils.Conditions;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import java.util.List;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
