@@ -32,7 +32,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<vertx.version>3.8.5</vertx.version>
-		<jackson.version>2.10.3</jackson.version>
+		<jackson.version>2.12.6.1</jackson.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<hibernate-validator.version>6.1.2.Final</hibernate-validator.version>
 		<json-path.version>2.4.0</json-path.version>
